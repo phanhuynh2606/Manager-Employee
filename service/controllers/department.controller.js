@@ -1,0 +1,132 @@
+const Department = require("../models/department");
+const Employee = require("../models/employee");
+
+// Tạo phòng ban
+const createDepartment = async (req, res) => {
+  const { name, description, roomNumber, managerId } = req.body;
+  if (!name || !roomNumber) {
+    return res.status(400).json({
+      success: false,
+      message: "Name and room number are required",
+    });
+  }
+
+  try {
+    const department = await Department.create({
+      name,
+      description,
+      roomNumber,
+      managerId,
+    });
+    return res.status(201).json({ success: true, data: department });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+// Xem danh sách phòng ban
+const getDepartments = async (req, res) => {
+  try {
+    const departments = await Department.find({ deleted: false });
+    return res.status(200).json({ success: true, data: departments });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Xem thông tin phòng ban theo id
+const getDepartmentById = async (req, res) => {
+  try {
+    const department = await Department.findById(req.params.id);
+    if (!department) {
+      return res.status(404).json({ success: false, message: "Department not found" });
+    }
+    return res.status(200).json({ success: true, data: department });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+//Cap nhat phong ban
+const updateDepartment = async (req, res) => {
+  try {
+    const department = await Department.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!department) return res.status(404).json({ success: false, message: "Department not found" });
+    return res.status(200).json({ success: true, data: department });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Xóa phòng ban
+const deleteDepartment = async (req, res) => {
+  try {
+    const department = await Department.findByIdAndUpdate(req.params.id, { deleted: true }, { new: true });
+    if (!department) return res.status(404).json({ success: false, message: "Department not found" });
+    return res.status(200).json({ success: true, message: "Department deleted successfully", data: department });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// Gán nhân viên vào phòng ban
+const asignEmployeeToDepartment = async (req, res) => {
+  try {
+    const { employeeId } = req.body;
+    const department = await Department.findById(req.params.id);
+    if (!department) return res.status(404).json({ success: false, message: "Department not found" });
+
+    const employee = await Employee.findById(employeeId);
+    if (!employee) return res.status(404).json({ success: false, message: "Employee not found" });
+
+    employee.departmentId = department._id;
+    await employee.save();
+
+    res.status(200).json({ success: true, message: "Employee assigned to department successfully", data: employee });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+// Xem danh sách nhân viên theo phòng ban
+const getEmployeesByDepartment = async (req, res) => {
+  try {
+    const employees = await Employee.find({ department: req.params.id });
+    return res.status(200).json({
+      success: true,
+      data: employees,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const removeEmployeeFromDepartment = async (req, res) => {
+  try {
+    const { employeeId } = req.params;
+    const employee = await Employee.findById(employeeId);
+    if (!employee) return res.status(404).json({ success: false, message: "Employee not found" });
+
+    employee.departmentId = null;
+    await employee.save();
+
+    res.status(200).json({ success: true, message: "Employee removed from department successfully", data: employee });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+module.exports = {
+  createDepartment,
+  getDepartments,
+  getDepartmentById,
+  updateDepartment,
+  deleteDepartment,
+  asignEmployeeToDepartment,
+  getEmployeesByDepartment,
+  removeEmployeeFromDepartment,
+};

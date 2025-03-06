@@ -12,13 +12,21 @@ const departmentSchema = new Schema({
       type: String,
       trim: true
     },
-    location: {
+    roomNumber: {
       type: String,
-      trim: true
+      required: true
     },
     managerId: {
       type: Schema.Types.ObjectId,
       ref: 'Employee'
+    },
+    deleted: {
+      type: Boolean,
+      default: false
+    },
+    createBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User'
     }
   }, {
     timestamps: true
