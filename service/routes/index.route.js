@@ -1,4 +1,5 @@
 const departmentRoute = require('./department.route');
+const employeeRoute = require('./employee.route');
 const initRoutes = (app) => {
 
   app.get('/', (req, res) => {
@@ -6,6 +7,7 @@ const initRoutes = (app) => {
   });
 
   app.use('/departments', departmentRoute);
+  app.use('/employee', employeeRoute);
 }
 
 module.exports = initRoutes;
