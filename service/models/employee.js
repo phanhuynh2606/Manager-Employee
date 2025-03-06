@@ -49,7 +49,8 @@ const employeeSchema = new Schema({
       required: true
     },
     avatarUrl: {
-      type: String
+      type: String,
+      default: '/assets/avatarDefault.png'
     },
     isActive: {
       type: Boolean,
