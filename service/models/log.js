@@ -12,6 +12,9 @@ const activityLogSchema = new Schema({
       enum: ['CREATE', 'UPDATE', 'DELETE', 'LOGIN', 'LOGOUT'],
       required: true
     },
+    message: {
+      type: String,
+    },
     entityType: {
       type: String,
       required: true

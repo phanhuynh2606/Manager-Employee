@@ -8,7 +8,8 @@ const createEmployee = async (req, res) => {
         const {
             username,
             email,
-            fullname,
+            password,
+            fullName,
             dateOfBirth,
             gender,
             address,
@@ -19,11 +20,11 @@ const createEmployee = async (req, res) => {
             hireDate,
             leaveBalance
         } = req.body;
-        if (!username || !email || !fullname || !departmentId) {
-            return res.status(400).json({
-                success: false,
-                message: 'Vui lòng cung cấp đủ thông tin !'
-            });
+        if (!username || !email || !fullName || !departmentId) {
+          return res.status(400).json({
+            success: false,
+            message: "Vui lòng cung cấp đủ thông tin !",
+          });
         }
         const user = await User.findOne({ $or: [{ username }, { email }] });
         if (user) return res.status(400).json({ success: false, message: 'Username hoặc Email đã tồn tại trong hệ thống !' });
@@ -32,33 +33,35 @@ const createEmployee = async (req, res) => {
             username,
             passwordRandom,
             email,
-            role: 'EMPLOYEE'
+            role: 'EMPLOYEE',
+            password: req.body.password
         });
         const newEmployee = await Employee.create({
-            userId: newUser._id,
-            fullname,
-            dateOfBirth: new Date(dateOfBirth),
-            gender,
-            address,
-            phoneNumber,
-            departmentId,
-            position,
-            baseSalary: parseFloat(baseSalary),
-            hireDate: new Date(hireDate),
-            isActive: true,
-            leaveBalance: leaveBalance
+          userId: newUser._id,
+          fullName,
+          dateOfBirth: new Date(dateOfBirth),
+          gender,   
+          address,
+          phoneNumber,
+          departmentId,
+          position,
+          baseSalary: parseFloat(baseSalary),
+          hireDate: new Date(hireDate),
+          isActive: true,
+          leaveBalance: leaveBalance,
         });
         await User.findByIdAndUpdate(newUser._id, { employeeId: newEmployee._id });
         const emailContent = `Hi ${newEmployee.fullname}, Tài khoản của bạn vừa được đăng ký thành công ! Vui lòng sử dụng thông tin bên dưới để truy cập vào Hệ thống\n
                         Tài khoản đăng nhập: ${newUser.username}\nMật khẩu đăng nhập: ${newUser.passwordRandom}\nVui lòng đổi mật khẩu sau khi đăng nhập lần đầu !`;
         await sendEmail(newUser.email, 'Cấp Tài Khoản Đăng Nhập Hệ Thống', emailContent);
-        await logActivity(req, "Create new employee", 'employees', newEmployee._id, null, newEmployee);
+        await logActivity(req,"CREATE", "Create new employee", 'employees', newEmployee._id, null, newEmployee);
         return res.status(201).json({
             success: true,
             message: 'Đăng ký tài khoản nhân viên thành công, thông tin truy cập đã được gửi đến email của nhân viên !',
             data: newEmployee
         })
     } catch (error) {
+        console.log(error)
         return res.status(500).json({
             success: false,
             message: 'Lỗi hệ thống khi tạo tài khoản: ' + error.message
