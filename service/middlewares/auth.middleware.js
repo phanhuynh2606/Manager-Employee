@@ -37,5 +37,21 @@ const authenticate = async (req, res, next) => {
         });
     }
 };
-
-module.exports = {authenticate};
+const isAdmin = async (req, res, next) => {
+  try {
+    if (req?.user?.role === "ADMIN") {
+      next();
+    } else {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+  } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: e.message || "Internal Server Error",
+      });
+  }
+};
+module.exports = {authenticate,isAdmin};
