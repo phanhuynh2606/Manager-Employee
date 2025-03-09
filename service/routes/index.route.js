@@ -1,6 +1,7 @@
 const departmentRoute = require('./department.route'); 
 const authRoute = require('./auth.route'); 
 const employeeRoute = require('./employee.route'); 
+const statisticRoute = require("./statistic.route")
 const initRoutes = (app) => {
 
   app.get('/', (req, res) => {
@@ -10,6 +11,7 @@ const initRoutes = (app) => {
   app.use('/departments', departmentRoute); 
   app.use('/auth', authRoute); 
   app.use('/employee', employeeRoute); 
+  app.use('/statistic', statisticRoute); 
 }
 
 module.exports = initRoutes;

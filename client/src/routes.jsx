@@ -5,12 +5,13 @@ import {
   InformationCircleIcon,
   ServerStackIcon,
   RectangleStackIcon,
-  HomeModernIcon
+  HomeModernIcon,
+  ChartPieIcon
 } from "@heroicons/react/24/solid";
 import { Home, Profile, Tables, Notifications } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
 import Department from "./pages/department/Department";
-
+import Statistic  from "./pages/statistic/statistic"
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -48,6 +49,12 @@ export const routes = [
         name: "Departments",
         path:'/departments',
         element: <Department />,
+      },
+      {
+        icon: <ChartPieIcon {...icon} />,
+        name: "Statistic",
+        path:'/statistic',
+        element: <Statistic />,
       }
     ],
   },

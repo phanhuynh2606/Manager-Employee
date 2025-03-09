@@ -35,6 +35,7 @@ export function Sidenav({ brandImg, brandName, routes }) {
             {brandName}
           </Typography>
         </Link>
+        
         <IconButton
           variant="text"
           color="white"
@@ -45,6 +46,7 @@ export function Sidenav({ brandImg, brandName, routes }) {
         >
           <XMarkIcon strokeWidth={2.5} className="h-5 w-5 text-white" />
         </IconButton>
+        
       </div>
       <div className="m-4">
         {routes.map(({ layout, title, pages }, key) => (
@@ -91,6 +93,7 @@ export function Sidenav({ brandImg, brandName, routes }) {
           </ul>
         ))}
       </div>
+      
     </aside>
   );
 }
