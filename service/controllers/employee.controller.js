@@ -51,13 +51,14 @@ const createEmployee = async (req, res) => {
         await User.findByIdAndUpdate(newUser._id, { employeeId: newEmployee._id });
         const emailContent = `Hi ${newEmployee.fullName}, Tài khoản của bạn vừa được đăng ký thành công ! Vui lòng sử dụng thông tin bên dưới để truy cập vào Hệ thống\nTài khoản đăng nhập: ${newUser.email}\nMật khẩu đăng nhập: ${passwordRandom}\nVui lòng đổi mật khẩu sau khi đăng nhập lần đầu !`;
         await sendEmail(newUser.email, 'Cấp Tài Khoản Đăng Nhập Hệ Thống', emailContent);
-        await logActivity(req, "Create new employee", 'employees', newEmployee._id, null, newEmployee);
+        await logActivity(req,"CREATE", "Create new employee", 'employees', newEmployee._id, null, newEmployee);
         return res.status(201).json({
             success: true,
             message: 'Đăng ký tài khoản nhân viên thành công, thông tin truy cập đã được gửi đến email của nhân viên !',
             data: newEmployee
         })
     } catch (error) {
+        console.log(error)
         return res.status(500).json({
             success: false,
             message: 'Lỗi hệ thống khi tạo tài khoản: ' + error.message

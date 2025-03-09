@@ -1,10 +1,13 @@
 const router = require('express').Router();
-
 const ctrls = require('../controllers/department.controller');
+const {authenticate,isAdmin} = require('../middlewares/auth.middleware');
 
-router.post('/', ctrls.createDepartment);
+// router.use(authenticate);
 router.get('/', ctrls.getDepartments);
 router.get('/:id', ctrls.getDepartmentById);
+
+// router.use(isAdmin);
+router.post('/', ctrls.createDepartment);
 router.put('/:id', ctrls.updateDepartment);
 router.delete('/:id', ctrls.deleteDepartment);
 router.post("/departments/:id/employees",ctrls.asignEmployeeToDepartment);

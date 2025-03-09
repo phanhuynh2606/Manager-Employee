@@ -10,6 +10,9 @@ const activityLogSchema = new Schema({
       type: String, 
       required: true
     },
+    message: {
+      type: String,
+    },
     entityType: {
       type: String,
       required: true
