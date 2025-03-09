@@ -1,9 +1,10 @@
 const jwt = require('jsonwebtoken');
 const User = require("../models/user");
 
+
 const authenticate = async (req, res, next) => {
     try {
-        const {accessToken} = req.cookies;
+        const {accessToken} = req.cookies;  
         if (!accessToken) {
             return res.status(401).json({
                 success: false,
@@ -19,7 +20,7 @@ const authenticate = async (req, res, next) => {
                 });
             }
 
-            const user = await User.findById(decoded.id);
+            const user = await User.findById(decoded.id).select("-password -__v ");
             if (!user) {
                 return res.status(404).json({
                     success: false,
@@ -30,6 +31,7 @@ const authenticate = async (req, res, next) => {
             next();
         });
     } catch (e) {
+      console.log(e);
         res.status(500).json({
             success: false,
             message: e.message || "Internal Server Error"

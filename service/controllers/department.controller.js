@@ -26,6 +26,7 @@ const createDepartment = async (req, res) => {
 // Xem danh sách phòng ban
 const getDepartments = async (req, res) => {
   try {
+    console.log(req.user);
     const departments = await Department.find({ deleted: false });
     return res.status(200).json({ success: true, data: departments });
   } catch (error) {
