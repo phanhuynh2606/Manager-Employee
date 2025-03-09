@@ -2,7 +2,8 @@
 import axios from 'axios';
 import {refreshToken} from "@/apis/auth/auth.js";
 const instance = axios.create({
-  baseURL: 'http://localhost:4000'
+  baseURL: 'http://localhost:4000',
+  // withCredentials: true,
 });
 
 

@@ -3,12 +3,21 @@ const express = require('express');
 const cors = require('cors');
 const initRoutes = require('./routes/index.route');
 const connectDB = require('./config/mongo');
+const cookieParser = require('cookie-parser');
 const path = require('path'); 
 const app = express();
 const port = process.env.PORT || 9000;
-app.use(cors());
+app.use(cors(
+  {
+    origin: '*',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],  
+  }
+));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use('/assets/images', express.static(path.join(__dirname, 'assets/images'))); 
 
 connectDB(); 
