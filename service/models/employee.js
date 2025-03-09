@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const employeeSchema = new Schema({
     userId: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'user',
       unique: true
     },
     fullName: {
@@ -32,7 +32,7 @@ const employeeSchema = new Schema({
     },
     departmentId: {
       type: Schema.Types.ObjectId,
-      ref: 'Department',
+      ref: 'department',
       required: true
     },
     position: {
@@ -50,7 +50,7 @@ const employeeSchema = new Schema({
     },
     avatarUrl: {
       type: String,
-      default: '/assets/avatarDefault.png'
+      default: '/assets/images/avatar-default.png'
     },
     isActive: {
       type: Boolean,

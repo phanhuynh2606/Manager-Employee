@@ -10,6 +10,8 @@ import {
 import { Home, Profile, Tables, Notifications } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
 import Department from "./pages/department/Department";
+import Employee from "./pages/employee/Employee";
+import ViewEmployee from "./pages/employee/ViewEmployee";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -48,7 +50,17 @@ export const routes = [
         name: "Departments",
         path:'/departments',
         element: <Department />,
-      }
+      },
+      {
+        icon: <UserCircleIcon {...icon} />,
+        name: "Employees",
+        path:'/employee',
+        element: <Employee />,
+      } ,
+      { 
+        path:'/employee/:employeeId',
+        element: <ViewEmployee />, 
+      } 
     ],
   },
   {

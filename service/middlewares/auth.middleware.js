@@ -25,8 +25,7 @@ const authenticate = async (req, res, next) => {
                     success: false,
                     message: "User not found!"
                 });
-            }
-
+            } 
             req.user = user;
             next();
         });
