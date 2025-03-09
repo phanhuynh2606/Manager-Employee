@@ -34,7 +34,7 @@ const createEmployee = async (req, res) => {
             passwordRandom,
             email,
             role: 'EMPLOYEE',
-            password: req.body.password
+            password: req.body.password ? req.body.password : passwordRandom,
         });
         const newEmployee = await Employee.create({
           userId: newUser._id,
