@@ -33,8 +33,7 @@ const attendanceSchema = new Schema({
   }, {
     timestamps: true
   });
-  
-  // Tạo index compound unique để đảm bảo mỗi nhân viên chỉ có một bản ghi chấm công mỗi ngày
+   
   attendanceSchema.index({ employeeId: 1, date: 1 }, { unique: true });
 
 module.exports = mongoose.model('attendance', attendanceSchema);

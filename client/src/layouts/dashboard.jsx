@@ -40,7 +40,7 @@ export function Dashboard() {
               pages.map(({ path, element }) => (
                 <Route exact path={path} element={element} />
               ))
-          )}
+          )} 
         </Routes>
       </div>
     </div>

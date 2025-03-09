@@ -16,9 +16,8 @@ const userSchema = new Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
-    trim: true,
-    lowercase: true
+    unique: true, 
+    trim: true,  
   },
   role: {
     type: String,
@@ -31,7 +30,7 @@ const userSchema = new Schema({
   },
   employeeId: {
     type: Schema.Types.ObjectId,
-    ref: 'Employee'
+    ref: 'employee'
   },
   lastLogin: {
     type: Date

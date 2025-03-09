@@ -8,8 +8,7 @@ const activityLogSchema = new Schema({
       required: true
     },
     action: {
-      type: String,
-      enum: ['CREATE', 'UPDATE', 'DELETE', 'LOGIN', 'LOGOUT'],
+      type: String, 
       required: true
     },
     entityType: {
@@ -30,8 +29,7 @@ const activityLogSchema = new Schema({
       type: String
     }
   }, {
-    timestamps: true,
-    // Chỉ cần createdAt, không cần updatedAt
+    timestamps: true, 
     updatedAt: false
   });
 

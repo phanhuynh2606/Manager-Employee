@@ -18,7 +18,7 @@ const departmentSchema = new Schema({
     },
     managerId: {
       type: Schema.Types.ObjectId,
-      ref: 'Employee'
+      ref: 'employee'
     },
     deleted: {
       type: Boolean,
@@ -26,7 +26,7 @@ const departmentSchema = new Schema({
     },
     createBy: {
       type: Schema.Types.ObjectId,
-      ref: 'User'
+      ref: 'user'
     }
   }, {
     timestamps: true
