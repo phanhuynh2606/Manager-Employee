@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
- 
+
 const employeeSchema = new Schema({
     userId: {
       type: Schema.Types.ObjectId,
