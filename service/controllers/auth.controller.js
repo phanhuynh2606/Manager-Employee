@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require("../models/user");
+const {isActiveUser} = require("../utils/isActiveUser");
 
 const authLogin = async (req, res) => {
     try {
@@ -11,9 +12,9 @@ const authLogin = async (req, res) => {
                 success: false,
                 message: "Email and password are required!"
             });
-        };
+        }
 
-        const user = await User.findOne({email}).select("+password");
+        const user = await User.findOne({email});
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -28,6 +29,9 @@ const authLogin = async (req, res) => {
                 message: "Invalid password!"
             });
         }
+
+        const isActiveResponse = isActiveUser(user.isActive, res);
+        if (isActiveResponse) return isActiveResponse;
 
         const accessToken = user.SignAccessToken();
         const refreshToken = user.SignRefreshToken();
@@ -52,6 +56,9 @@ const authLogin = async (req, res) => {
         res.status(200).json({
             success: true,
             message: "Login successfully!",
+            email: user.email,
+            role: user.role,
+            active: user.isActive
         });
     } catch (e) {
         res.status(500).json({
@@ -103,4 +110,60 @@ const refreshAccessToken = async (req, res) => {
     }
 };
 
-module.exports = {authLogin, refreshAccessToken};
+const firstTimeChangePassword = async (req, res) => {
+    try {
+        const {email, oldPassword, newPassword, newConfirmPassword} = req.body;
+
+        if (!oldPassword || !newPassword || !newConfirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "Please all field!"
+            });
+        }
+
+        if (oldPassword === newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "Old password need to different new password!"
+            });
+        }
+
+        if (newPassword !== newConfirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "New password need to same confirm password!"
+            });
+        }
+
+        const user = await User.findOne({email});
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found!"
+            });
+        }
+
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({
+                success: false,
+                message: "Old password is incorrect!"
+            });
+        }
+
+        user.password = newPassword;
+        user.isActive = "1";
+        await user.save();
+        return res.status(200).json({
+            success: true,
+            message: "Password changed successfully!"
+        });
+    } catch (e) {
+        res.status(401).json({
+            success: false,
+            message: e.message
+        });
+    }
+};
+
+module.exports = {authLogin, refreshAccessToken, firstTimeChangePassword};

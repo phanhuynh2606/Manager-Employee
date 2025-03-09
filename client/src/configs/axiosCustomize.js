@@ -1,5 +1,6 @@
 // Add a request interceptor
 import axios from 'axios';
+import {refreshToken} from "@/apis/auth/auth.js";
 const instance = axios.create({
   baseURL: 'http://localhost:4000'
 });
@@ -32,5 +33,17 @@ instance.interceptors.response.use(function (response) {
     }
     return error.response.data;
   });
+
+instance.interceptors.response.use((response) => response, async (error) => {
+    if(error.response && error.response.status === 401){
+        try {
+            await refreshToken();
+        } catch (e) {
+            console.error(e, "error");
+            window.location = "/auth/sign-in";
+        }
+    }
+   }
+)
 
 export default instance;
