@@ -114,15 +114,10 @@ const EmployeeDetail = () => {
 
   const handleUpdate = async () => {
     try {
-        const dataForm = await form.validateFields();
-        const formattedData = {
-            ...dataForm,
-            dateOfBirth: dataForm.dateOfBirth ? dataForm.dateOfBirth.format('YYYY-MM-DD') : null,
-            hireDate: dataForm.hireDate ? dataForm.hireDate.format('YYYY-MM-DD') : null
-          };
-        const response = await axios.put(`/employee/${employeeId}`, formattedData);
+        const dataForm = await form.validateFields(); 
+        const response = await axios.put(`/employee/${employeeId}`, dataForm);
         if(response.success){  
-          setUpdateModalVisible(false);
+          setUpdateModalVisible(false); 
           await fetchEmployeeData();
           setTimeout(() => {
             messageApi.success(response.message);
@@ -138,14 +133,14 @@ const EmployeeDetail = () => {
   }; 
   const handleDelete = async () => {
     try {
-      const response = await axios.delete(`/api/employees/${employeeId}`);
-      if (response.data.success) {
-        messageApi.success("Employee deleted successfully");
+      const response = await axios.delete(`/employee/${employeeId}`);
+      if (response.success) {
+        messageApi.success(response.message);
         setTimeout(() => {
-          navigate("/employee");
+          navigate("/dashboard/employee");
         }, 1000);
       } else {
-        messageApi.error("Failed to delete employee");
+        messageApi.error(response.message);
       }
     } catch (error) {
       console.error("Failed to delete employee:", error);
@@ -329,7 +324,7 @@ const EmployeeDetail = () => {
         <Col span={12}>
           <Button
             icon={<ArrowLeftOutlined />}
-            onClick={() => navigate("/employee")}
+            onClick={() => navigate("/dashboard/employee")}
           >
             Back to Employees
           </Button>

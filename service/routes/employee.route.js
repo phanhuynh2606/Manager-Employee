@@ -7,5 +7,6 @@ router.get('/search', employeeController.filterEmployee);
 router.get('/positions', employeeController.getEmployeePosition); 
 router.get('/:id', employeeController.getEmployeeDetail); 
 router.put('/:id', employeeController.updateEmployee); 
+router.delete('/:employeeId', employeeController.removeEmployee); 
 
 module.exports = router;
