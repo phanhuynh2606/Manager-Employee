@@ -26,7 +26,7 @@ const departmentSchema = new Schema({
     },
     createBy: {
       type: Schema.Types.ObjectId,
-      ref: 'User'
+      ref: 'user'
     }
   }, {
     timestamps: true

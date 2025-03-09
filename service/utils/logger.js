@@ -3,7 +3,7 @@ const ActivityLog = require('../models/log');
 
 const logActivity = async (req, action, entityType, entityId, oldValues = null, newValues = null) => {
     const activityLog = new ActivityLog({
-        userId: req?.user?.id,
+        userId: req?.user?.id || null,
         action,
         entityType,
         entityId,
