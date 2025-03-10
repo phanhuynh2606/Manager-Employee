@@ -5,6 +5,7 @@ const Department = require('../models/department');
 const { generatePassword, generateUsername } = require('../utils/generate');
 const { sendEmail } = require('../utils/email');
 const { logActivity } = require('../utils/logger');
+
 const createEmployee = async (req, res) => {
     try {
         const {
@@ -51,7 +52,7 @@ const createEmployee = async (req, res) => {
         await User.findByIdAndUpdate(newUser._id, { employeeId: newEmployee._id });
         const emailContent = `Hi ${newEmployee.fullName}, Tài khoản của bạn vừa được đăng ký thành công ! Vui lòng sử dụng thông tin bên dưới để truy cập vào Hệ thống\nTài khoản đăng nhập: ${newUser.email}\nMật khẩu đăng nhập: ${passwordRandom}\nVui lòng đổi mật khẩu sau khi đăng nhập lần đầu !`;
         await sendEmail(newUser.email, 'Cấp Tài Khoản Đăng Nhập Hệ Thống', emailContent);
-        await logActivity(req,"CREATE", "Create new employee", 'employees', newEmployee._id, null, newEmployee);
+        await logActivity(req, "Create new employee", 'employees', newEmployee._id, null, newEmployee);
         return res.status(201).json({
             success: true,
             message: 'Đăng ký tài khoản nhân viên thành công, thông tin truy cập đã được gửi đến email của nhân viên !',
@@ -219,7 +220,7 @@ const getEmployeePosition = async (req, res) => {
 
 const removeEmployee = async (req, res) => {
     try {
-        const { employeeId } = req.params; 
+        const { employeeId } = req.params;
         const employee = await Employee.findById(employeeId);
         if (!employee) {
             return res.status(404).json({
@@ -230,10 +231,10 @@ const removeEmployee = async (req, res) => {
         if (employee.userId) {
             await User.findByIdAndUpdate(employee.userId._id, { isActive: 3 });
         }
-        console.log(employee)
+        await logActivity(req, `Delete employee ${employee.fullName}`, 'employees', employee._id, employee, null);
         return res.status(200).json({
             success: true,
-            message: `Xóa nhân viên ${employee.fullName} thành công !`, 
+            message: `Xóa nhân viên ${employee.fullName} thành công !`,
         });
     } catch (error) {
         res.status(500).json({
@@ -242,6 +243,68 @@ const removeEmployee = async (req, res) => {
         });
     }
 }
+const resetPassword = async (req, res) => {
+    try {
+        const { employeeId } = req.body;
+        const employee = await Employee.findById(employeeId);
+        if (!employee || !employee.userId) {
+            return res.status(404).json({
+                success: false,
+                message: 'Employee not found'
+            });
+        }
+        const newPassword = generatePassword();
+        const user = await User.findByIdAndUpdate(employee.userId._id, { isActive: 0 });
+        user.password = newPassword;
+        await user.save();
+        const emailContent = `Hi ${employee.fullName}, Tài khoản của bạn vừa được yêu cầu reset mật khẩu ! Vui lòng sử dụng mật khẩu bên dưới để truy cập vào Hệ thống\nMật khẩu đăng nhập mới: ${newPassword}\nVui lòng đổi mật khẩu sau khi đăng nhập lần đầu !`;
+        await sendEmail(user.email, 'Reset Mật Khẩu Đăng Nhập', emailContent);
+        await logActivity(req, `Reset password employee ${employee.fullName}`, 'employees', employee._id, employee, employee);
+        return res.status(200).json({
+            success: true,
+            message: `Reset mật khẩu nhân viên ${user.username} thành công !`
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+}
+
+const changeAvatar = async (req, res) => {
+    try { 
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'No file uploaded'
+            });
+        } 
+        const employeeId = req.params.employeeId; 
+        const avatarUrl = req.file.filename;
+        const updatedEmployee = await Employee.findByIdAndUpdate(
+            employeeId,
+            { avatarUrl: avatarUrl },
+            { new: true }
+        ); 
+        if (!updatedEmployee) {
+            return res.status(404).json({
+                success: false,
+                message: 'Employee not found'
+            });
+        } 
+        return res.status(200).json({
+            success: true,
+            message: 'Avatar updated successfully',
+            data: { avatarUrl: avatarUrl }
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
 
 module.exports = {
     createEmployee,
@@ -250,5 +313,7 @@ module.exports = {
     filterEmployee,
     getEmployeeDetail,
     getEmployeePosition,
-    removeEmployee
+    removeEmployee,
+    resetPassword,
+    changeAvatar
 };

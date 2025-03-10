@@ -196,7 +196,7 @@ const EmployeeManagement = () => {
       render: (_, record) => (
         <Space>
           <Avatar
-            src={`http://localhost:4000${record.avatarUrl}`}
+            src={`http://localhost:4000/assets/images/${record.avatarUrl}`}
             icon={<UserOutlined />}
             size="large"
           />
