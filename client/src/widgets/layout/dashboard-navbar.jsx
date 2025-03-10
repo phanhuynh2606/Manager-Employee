@@ -29,6 +29,8 @@ import {useEffect, useState} from "react";
 import {toast} from "react-toastify";
 import {getProfile, logout} from "@/apis/auth/auth.js";
 import {useNavigate} from 'react-router-dom';
+import { useDispatch } from "react-redux";
+import {setLogout} from "@/redux/slice/auth/auth.slice.js";
 
 export function DashboardNavbar() {
     const [controller, dispatch] = useMaterialTailwindController();
@@ -36,6 +38,7 @@ export function DashboardNavbar() {
     const {pathname} = useLocation();
     const [layout, page] = pathname.split("/").filter((el) => el !== "");
     const navigate = useNavigate();
+    const dispatched = useDispatch();
     const [userName, setUserName] = useState("");
 
     useEffect(() => {
@@ -64,11 +67,14 @@ export function DashboardNavbar() {
         try {
             const response = await logout();
             if (response.success) {
+                dispatched(setLogout());
+
                 toast.success(response.message, {
                     autoClose: 2000,
                     closeOnClick: true,
                     pauseOnHover: false,
                 });
+
                 return navigate('/auth/sign-in');
             }
         } catch (e) {

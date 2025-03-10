@@ -9,9 +9,12 @@ import {toast} from 'react-toastify';
 import {useNavigate} from 'react-router-dom';
 import {authLogin} from "@/apis/auth/auth.js";
 import {Loader} from "@/Loading/Loader.jsx";
+import { useDispatch } from "react-redux";
+import {setUser} from "@/redux/slice/auth/auth.slice.js";
 
 export function SignIn() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -35,8 +38,10 @@ export function SignIn() {
                     closeOnClick: true,
                     pauseOnHover: false,
                 });
-                return navigate('/auth/first-time-password-change', {state: {email: result.email}});
+                return navigate('/auth/first-time-password-change', { state: { email: result.email } });
             }
+
+            dispatch(setUser({ email: result.email, role: result.role }));
 
             toast.success(result.message, {
                 autoClose: 3000,
