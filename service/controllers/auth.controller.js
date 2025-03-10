@@ -72,15 +72,15 @@ const refreshAccessToken = async (req, res) => {
     try {
         const {refreshToken} = req.cookies;
         if (!refreshToken) {
-            return res.status(401).json({
+            return res.status(403).json({
                 success: false,
-                message: "Unauthorized"
+                message: "No refresh token provided"
             });
         }
 
         const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-
         const user = await User.findById(decoded.id);
+
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -98,14 +98,23 @@ const refreshAccessToken = async (req, res) => {
             maxAge: 15 * 60 * 1000
         });
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             accessToken: newAccessToken
         });
     } catch (e) {
-        res.status(401).json({
+        console.error("Refresh token error:", e);
+
+        if (e.name === "TokenExpiredError") {
+            return res.status(403).json({
+                success: false,
+                message: "Refresh token expired"
+            });
+        }
+
+        return res.status(403).json({
             success: false,
-            message: "Invalid or expired refresh token"
+            message: "Invalid refresh token"
         });
     }
 };
@@ -196,7 +205,7 @@ const authLogout = async (req, res) => {
 
 const getProfile = (req, res) => {
     try {
-        const { username } = req.user;
+        const {username} = req.user;
         res.status(200).json({
             success: true,
             result: {
