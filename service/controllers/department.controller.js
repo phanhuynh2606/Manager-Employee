@@ -26,6 +26,12 @@ const createDepartment = async (req, res) => {
       managerId,
       createBy: req.user._id,
     });
+    const employee = await Employee.findById(managerId);
+    if (employee) {
+      employee.departmentId = department._id;
+      await employee.save();
+    }
+
     return res.status(201).json({ success: true, data: department });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -62,6 +68,16 @@ const getDepartmentById = async (req, res) => {
 //Cap nhat phong ban
 const updateDepartment = async (req, res) => {
   try {
+    const { managerId } = req.body;
+    if(managerId){
+      const departmentManager = await Department.findOne({
+        managerId: managerId,
+      });
+      if(departmentManager){
+        departmentManager.managerId = null;
+        await departmentManager.save();
+      }
+    }
     const department = await Department.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -71,6 +87,11 @@ const updateDepartment = async (req, res) => {
       return res
         .status(404)
         .json({ success: false, message: "Department not found" });
+    const employee = await Employee.findById(department.managerId);
+    if (employee) {
+      employee.departmentId = department._id;
+      await employee.save();
+    }
     return res.status(200).json({ success: true, data: department });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

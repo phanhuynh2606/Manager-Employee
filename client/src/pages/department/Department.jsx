@@ -82,7 +82,6 @@ const [messageApi, contextHolder] = message.useMessage();
     dept?.roomNumber?.toLowerCase().includes(searchText.toLowerCase())
   );
   const ColorList = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae'];
-  console.log(Math.floor(Math.random() * 4));
   return (
     <div className="p-6">
       <Space style={{ marginBottom: 16 }}>
@@ -104,8 +103,9 @@ const [messageApi, contextHolder] = message.useMessage();
           { title: "Manager",
             dataIndex: ["manager", "fullName"], // Truy cập nested object
             key: "manager.fullName",
-            render: (text, record) => (
-              <Space>
+            render: (text, record) => (<>
+              {record?.managerId ?(
+                <Space>
                 {
                   record.managerId?.avatarUrl ? 
                   <Avatar src={record.managerId?.avatarUrl} /> : 
@@ -113,6 +113,8 @@ const [messageApi, contextHolder] = message.useMessage();
                 }
                   {record.managerId?.fullName}
               </Space>
+              ): <> ⚠️<b>Không có quản lý</b></>}
+              </>
             )},
           {
             title: "Actions",
