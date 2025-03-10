@@ -30,7 +30,7 @@ export function SignIn() {
             }
 
             if (result.active === "0") {
-                toast.error("You need to change your password.", {
+                toast.warning("You need to change your password.", {
                     autoClose: 2000,
                     closeOnClick: true,
                     pauseOnHover: false,
