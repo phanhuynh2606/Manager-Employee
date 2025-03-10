@@ -4,7 +4,7 @@ const User = require("../models/user");
 
 const authenticate = async (req, res, next) => {
     try {
-        const {accessToken} = req.cookies;  
+        const {accessToken} = req.cookies;
         if (!accessToken) {
             return res.status(401).json({
                 success: false,
@@ -13,7 +13,13 @@ const authenticate = async (req, res, next) => {
         }
 
         jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, async (err, decoded) => {
-            if (err || !decoded?.id) {
+            if (err) {
+                if (err.name === "TokenExpiredError") {
+                    return res.status(401).json({
+                        success: false,
+                        message: "token_expired",
+                    });
+                }
                 return res.status(401).json({
                     success: false,
                     message: "Unauthorized"
@@ -26,12 +32,12 @@ const authenticate = async (req, res, next) => {
                     success: false,
                     message: "User not found!"
                 });
-            } 
+            }
             req.user = user;
             next();
         });
     } catch (e) {
-      console.log(e);
+        console.log(e);
         res.status(500).json({
             success: false,
             message: e.message || "Internal Server Error"
@@ -39,20 +45,20 @@ const authenticate = async (req, res, next) => {
     }
 };
 const isAdmin = async (req, res, next) => {
-  try {
-    if (req?.user?.role === "ADMIN") {
-      next();
-    } else {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
+    try {
+        if (req?.user?.role === "ADMIN") {
+            next();
+        } else {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized",
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: e.message || "Internal Server Error",
+        });
     }
-  } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: e.message || "Internal Server Error",
-      });
-  }
 };
-module.exports = {authenticate,isAdmin};
+module.exports = {authenticate, isAdmin};
