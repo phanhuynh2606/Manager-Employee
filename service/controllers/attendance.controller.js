@@ -3,7 +3,7 @@ const User = require('../models/user');
 const Department = require('../models/department');
 const Attendance = require('../models/attendance');
 const os = require('os');
-
+const moment = require('moment-timezone');
 const configTimeWork = {
     workStartTime : { hour: 8, minute: 30 },
      morningStartTime : { hour: 8, minute: 30 },
@@ -27,15 +27,16 @@ const getLocalNetwork = () => {
 };
 const getInformation = async (req, res) => {
     try {
-        const user = req.body.user;
+        const user = req.user;
         if (!user) {
             return res.status(404).json({ success: false, message: "Must be login!" });
         }
+        console.log(new Date());
         const role = user.role;
-        const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.ip;;
-        const normalizedIp = ip.replace('::ffff:', '');
-        console.log(ip)
-        console.log(normalizedIp);
+        // const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.ip;;
+        // const normalizedIp = ip.replace('::ffff:', '');
+        // console.log(ip)
+        // console.log(normalizedIp);
         let formatData;
         switch (role) {
             case 'ADMIN':
@@ -44,33 +45,53 @@ const getInformation = async (req, res) => {
                 const departmentId = employeeIds.map(employee => employee.departmentId);
                 const department = await Department.find({ _id: { $in: departmentId } });
                 const employees = await Employee.find({ _id: { $in: employeeIds } });
-                formatData = employees.map(employee => {
+
+                formatData = await Promise.all(employees.map(async (employee) => {
+                    const count = await Attendance.countDocuments({ employeeId: employee._id, status: 'LATE' });
+                    const totalWorkingHours = await Attendance.aggregate([
+                        { $match: { employeeId: employee._id } },
+                        { $group: { _id: null, totalWorkingHours: { $sum: "$workingHours" } } }
+                    ]);
+                    const attendance = await Attendance.find({ employeeId: employee._id });
+                    if (!attendance) {
+                        return res.status(404).json({ success: false, message: "Attendance not found!" });
+                    }
+                    const totalWorkingHour = totalWorkingHours?.length > 0 ? totalWorkingHours[0].totalWorkingHours : 0;
+                    const totalOvertimeHours = attendance.reduce((sum, record) => sum + (record.overtimeHours || 0), 0);
                     return {
                         fullName: employee.fullName,
-                        dateOfBirth: employee.dateOfBirth,
-                        gender: employee.gender,
-                        address: employee.address,
-                        phoneNumber: employee.phoneNumber,
                         department: department.name,
                         position: employee.position,
-                        baseSalary: employee.baseSalary,
-                        avatarUrl: employee.avatarUrl,
-                    }
-                });
+                        workingPoint: totalWorkingHour,
+                        leaveBalance: 12,
+                        leaveTaken: count,
+                        overtime: totalOvertimeHours
+                    };
+                }));
                 return res.status(200).json({ success: true, data: formatData });
             case 'EMPLOYEE':
-                const employee = await User.findById({ _id: user._id }, '-password');
+                const employee = await User.findOne({ email: user.email }, '-password');
                 const employeeDetail = await Employee.findById({ _id: employee.employeeId }).populate('departmentId', 'name');
-                 formatData = {
+                const attendanceEmploy = await Attendance.findOne({ employeeId: employeeDetail._id });
+                if (!attendanceEmploy) {
+                    return res.status(404).json({ success: false, message: "Attendance not found!" });
+                }
+                const totalWorkingHours = await Attendance.aggregate([
+                    { $match: { employeeId: employeeDetail._id } },
+                    { $group: { _id: null, totalWorkingHours: { $sum: "$workingHours" } } }
+                ]);
+
+                const totalWorkingHour = totalWorkingHours?.length > 0 ? totalWorkingHours[0].totalWorkingHours : 0;
+                const totalOvertimeHoursEmp = attendanceEmploy.reduce((sum, record) => sum + (record.overtimeHours || 0), 0);
+                const count = await Attendance.countDocuments({ employeeId: employeeDetail._id, status: 'LATE' })
+                formatData = {
                     fullName: employeeDetail.fullName,
-                    dateOfBirth: employeeDetail.dateOfBirth,
-                    gender: employeeDetail.gender,
-                    address: employeeDetail.address,
-                    phoneNumber: employeeDetail.phoneNumber,
                     department: employeeDetail.departmentId.name,
                     position: employeeDetail.position,
-                    baseSalary: employeeDetail.baseSalary,
-                    avatarUrl: employeeDetail.avatarUrl,
+                    workingPoint: totalWorkingHour,
+                    leaveBalance: 12,
+                    leaveTaken: count,
+                    overtime: totalOvertimeHoursEmp
                 }
                 return res.status(200).json({ success: true, data: formatData });
             default:
@@ -83,7 +104,7 @@ const getInformation = async (req, res) => {
 
 const checkin = async (req, res) => {
     try {
-        const user = req.body.user;
+        const user = req.user;
         if (!user) {
             return res.status(401).json({ success: false, message: "Must be logged in!" });
         }
@@ -101,10 +122,10 @@ const checkin = async (req, res) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const todayStart = new Date();
-        todayStart.setHours(0, 0, 0, 0);
-        const todayEnd = new Date();
-        todayEnd.setHours(23, 59, 59, 999);
+        const todayStart = moment().tz('Asia/Ho_Chi_Minh').startOf('day').toDate();
+        // todayStart.setHours(0, 0, 0, 0);
+        const todayEnd = moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
+        // todayEnd.setHours(23, 59, 59, 999);
 
         const attendance = await Attendance.findOne({
             employeeId: employeeDetail._id,
@@ -115,15 +136,12 @@ const checkin = async (req, res) => {
             return res.status(400).json({ success: false, message: "You have already checked in today!" });
         }
         // Lấy giờ hiện tại cho checkin
-        const now = new Date();
+        const now = moment().tz('Asia/Ho_Chi_Minh').toDate();
 
-        const expectedCheckInTime = new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            now.getDate(),
-            configTimeWork.workStartTime.hour,
-            configTimeWork.workStartTime.minute
-        );
+        const expectedCheckInTime = moment().tz('Asia/Ho_Chi_Minh').set({
+            hour: configTimeWork.workStartTime.hour,
+            minute: configTimeWork.workStartTime.minute
+        }).toDate();
 
         // Tính số phút đi muộn
         const lateMinutes = now > expectedCheckInTime ?
@@ -159,7 +177,7 @@ const checkin = async (req, res) => {
 
 const checkout = async (req, res) => {
     try {
-        const user = req.body.user;
+        const user = req.user;
         if (!user) {
             return res.status(401).json({ success: false, message: "Must be logged in!" });
         }
@@ -175,10 +193,8 @@ const checkout = async (req, res) => {
         }
 
         // Lấy ngày hiện tại
-        const todayStart = new Date();
-        todayStart.setHours(0, 0, 0, 0);
-        const todayEnd = new Date();
-        todayEnd.setHours(23, 59, 59, 999);
+        const todayStart = moment().tz('Asia/Ho_Chi_Minh').startOf('day').toDate();
+        const todayEnd = moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
 
         // Tìm bản ghi chấm công ngày hôm nay
         const attendance = await Attendance.findOne({
@@ -194,33 +210,31 @@ const checkout = async (req, res) => {
             return res.status(400).json({ success: false, message: "You have already checked out today!" });
         }
         // Lấy thời gian hiện tại để checkout
-        const now = new Date();
+        const now = moment().tz('Asia/Ho_Chi_Minh').toDate();
         attendance.checkOut = now;
 
         // Tạo các mốc thời gian quan trọng trong ngày
-        const morningStart = new Date(
-            now.getFullYear(), now.getMonth(), now.getDate(),
-            configTimeWork.morningStartTime.hour, configTimeWork.morningStartTime.minute
-        );
-        const morningEnd = new Date(
-            now.getFullYear(), now.getMonth(), now.getDate(),
-            configTimeWork.morningEndTime.hour, configTimeWork.morningEndTime.minute
-        );
-        const afternoonStart = new Date(
-            now.getFullYear(), now.getMonth(), now.getDate(),
-            configTimeWork.afternoonStartTime.hour, configTimeWork.afternoonStartTime.minute
-        );
-        const afternoonEnd = new Date(
-            now.getFullYear(), now.getMonth(), now.getDate(),
-            configTimeWork.afternoonEndTime.hour, configTimeWork.afternoonEndTime.minute
-        );
+        const morningStart = moment().tz('Asia/Ho_Chi_Minh').set({
+            hour: configTimeWork.morningStartTime.hour,
+            minute: configTimeWork.morningStartTime.minute
+        }).toDate();
+        const morningEnd = moment().tz('Asia/Ho_Chi_Minh').set({
+            hour: configTimeWork.morningEndTime.hour,
+            minute: configTimeWork.morningEndTime.minute
+        }).toDate();
+        const afternoonStart = moment().tz('Asia/Ho_Chi_Minh').set({
+            hour: configTimeWork.afternoonStartTime.hour,
+            minute: configTimeWork.afternoonStartTime.minute
+        }).toDate();
+        const afternoonEnd = moment().tz('Asia/Ho_Chi_Minh').set({
+            hour: configTimeWork.afternoonEndTime.hour,
+            minute: configTimeWork.afternoonEndTime.minute
+        }).toDate();
 
         // Tính giờ làm buổi sáng
         let morningHours = 0;
-        if (attendance?.checkIn <= morningEnd &&
-            (attendance?.checkIn >= morningStart || attendance?.status === 'LATE')) {
-            const morningCheckOutTime = attendance.checkOut <= morningEnd ?
-                attendance.checkOut : morningEnd;
+        if (attendance?.checkIn <= morningEnd && (attendance?.checkIn >= morningStart || attendance?.status === 'LATE')) {
+            const morningCheckOutTime = attendance.checkOut <= morningEnd ? attendance.checkOut : morningEnd;
             morningHours = (morningCheckOutTime - attendance?.checkIn) / (1000 * 60 * 60);
         }
 
@@ -235,7 +249,7 @@ const checkout = async (req, res) => {
         // Tính tổng số giờ làm việc
         let totalWorkingHours = morningHours + afternoonHours;
         totalWorkingHours = parseFloat(totalWorkingHours.toFixed(2));
-        console.log("totalWorkingHours", totalWorkingHours);
+
         // Tính giờ làm thêm (OT)
         const overtimeHours = attendance.checkOut > afternoonEnd ?
             parseFloat(((attendance.checkOut - afternoonEnd) / (1000 * 60 * 60)).toFixed(2)) : 0;

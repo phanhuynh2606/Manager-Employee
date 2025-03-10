@@ -22,6 +22,11 @@ const attendanceSchema = new Schema({
         enum: ['PRESENT', 'ABSENT', 'LATE', 'LEAVE', 'EARLY_LEAVE'],
         required: true
     },
+    workingHours: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
     overtimeHours: {
       type: Number,
       default: 0,
