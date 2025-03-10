@@ -59,16 +59,22 @@ export const routes = [
         path:'/employee',
         element: <Employee />,
       } ,
-      { 
-        path:'/employee/:employeeId',
-        element: <ViewEmployee />, 
-      },
       {
-        icon: <BanknotesIcon {...icon} />,
-        name: "Salary",
-        path:'/salaries',
-        element: <Salary />,
+        path:'/employee/:employeeId',
+        element: <ViewEmployee />,
       },
+        {
+            icon: <BanknotesIcon {...icon} />,
+            name: "Salary",
+            path:'/salaries',
+            element: <Salary />,
+        },
+        {
+            icon: <UserCircleIcon {...icon} />,
+            name: "Attendance",
+            path:'/attendance',
+            element: <AttendanceManagement />,
+        }
     ],
   },
   {
