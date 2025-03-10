@@ -34,4 +34,22 @@ export const refreshToken = async () => {
     } catch (e) {
         return e;
     }
-}
+};
+
+export const logout = async () => {
+    try {
+        const response = await axios.get(API_BE.LOGOUT);
+        return response;
+    } catch (e) {
+        return e;
+    }
+};
+
+export const getProfile = async () => {
+    try {
+        const response = await axios.get(API_BE.GET_PROFILE);
+        return response;
+    } catch (e) {
+        return e;
+    }
+};

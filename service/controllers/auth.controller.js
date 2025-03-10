@@ -63,7 +63,7 @@ const authLogin = async (req, res) => {
     } catch (e) {
         res.status(500).json({
             success: false,
-            message: e.message || "Internal Server Error"
+            message: e.message
         });
     }
 };
@@ -166,4 +166,49 @@ const firstTimeChangePassword = async (req, res) => {
     }
 };
 
-module.exports = {authLogin, refreshAccessToken, firstTimeChangePassword};
+const authLogout = async (req, res) => {
+    try {
+        res.clearCookie("accessToken", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Strict",
+            path: "/"
+        });
+
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Strict",
+            path: "/"
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Logged out successfully!"
+        });
+    } catch (e) {
+        res.status(500).json({
+            success: false,
+            message: e.message
+        });
+    }
+};
+
+const getProfile = (req, res) => {
+    try {
+        const { username } = req.user;
+        res.status(200).json({
+            success: true,
+            result: {
+                username
+            }
+        });
+    } catch (e) {
+        res.status(500).json({
+            success: false,
+            message: e.message
+        });
+    }
+};
+
+module.exports = {authLogin, refreshAccessToken, firstTimeChangePassword, authLogout, getProfile};
