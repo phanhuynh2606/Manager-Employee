@@ -5,13 +5,15 @@ import {
   InformationCircleIcon,
   ServerStackIcon,
   RectangleStackIcon,
-  HomeModernIcon
+  HomeModernIcon,
+  BanknotesIcon
 } from "@heroicons/react/24/solid";
 import { Home, Profile, Tables, Notifications } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
 import Department from "./pages/department/Department";
 import Employee from "./pages/employee/Employee";
 import ViewEmployee from "./pages/employee/ViewEmployee";
+import Salary from "./pages/salary/salary";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -60,7 +62,13 @@ export const routes = [
       { 
         path:'/employee/:employeeId',
         element: <ViewEmployee />, 
-      } 
+      },
+      {
+        icon: <BanknotesIcon {...icon} />,
+        name: "Salary",
+        path:'/salaries',
+        element: <Salary />,
+      },
     ],
   },
   {
