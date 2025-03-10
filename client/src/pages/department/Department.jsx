@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Table, Input, Button, Modal, Form, Space, Row, Col, Select, message } from "antd";
-import { getDepartments } from "@/apis/departments/departments";
-
+import { Table, Input, Button, Modal, Form, Space, Row, Col, Select, message, Avatar, Popconfirm } from "antd";
+import { assignManager, createDepartment, deleteDepartment, getDepartments, updateDepartment } from "@/apis/departments/departments";
+import { QuestionCircleOutlined } from "@ant-design/icons";
+const { Option } = Select;
 const DepartmentManagement = () => {
   const [departments, setDepartments] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -10,54 +11,19 @@ const DepartmentManagement = () => {
   const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
+  const [managerList, setManagerList] = useState([]);
 const [messageApi, contextHolder] = message.useMessage();
-  const showMessage = async (action, apiCall) => {
-  const key = `department-${action.toLowerCase()}`;
-  setLoading(true);
-  messageApi.open({
-    key,
-    type: "loading",
-    content: `${action} department...`,
-  });
-
-  try {
-    await apiCall(); // Gọi API xử lý logic
-
-    messageApi.open({
-      key,
-      type: "success",
-      content: `Department ${action.toLowerCase()}d successfully!`,
-      duration: 2,
-    });
-
-    await fetchDepartments(); // Cập nhật danh sách phòng ban sau khi thành công
-    setModalOpen(false);
-    setEditingDepartment(null);
-    form.resetFields();
-  } catch (error) {
-    messageApi.open({
-      key,
-      type: "error",
-      content: `Failed to ${action.toLowerCase()} department.`,
-      duration: 2,
-    });
-    console.error(`Operation failed: ${error}`);
-  } finally {
-    setLoading(false);
-  }
-};
-
   useEffect(() => {
     fetchDepartments();
   }, []);
 
   const fetchDepartments = async () => {
     try {
-      const res = await getDepartments();
-      console.log(res)
+      const [res, resManager] = await Promise.all([getDepartments(), assignManager()]);
       if(res.success){
         setLoadingData(false);
         setDepartments(res.data);
+        setManagerList(resManager.data);
       }else{
         setLoadingData(true);
       }
@@ -71,15 +37,25 @@ const [messageApi, contextHolder] = message.useMessage();
     const values = await form.validateFields();
 
     if (editingDepartment) {
-      await showMessage("Update", async () => {
-        // await axios.put(`/api/departments/${editingDepartment._id}`, values);
-        console.log("Updating department:", values);
-      });
+      const res = await updateDepartment(editingDepartment?._id, values);
+      if(res.success){
+        messageApi.success("Update department success");
+        setModalOpen(false);
+        form.resetFields();
+        fetchDepartments();
+      }else{
+        messageApi.error("Update department failed");
+      }
     } else {
-      await showMessage("Create", async () => {
-        // await axios.post("/api/departments", values);
-        console.log("Creating department:", values);
-      });
+      const res = await createDepartment(values);
+      if(res.success){
+        messageApi.success("Create department success");
+        setModalOpen(false);
+        form.resetFields();
+        fetchDepartments();
+      }else{
+        messageApi.error("Create department failed");
+      }
     }
   } catch (error) {
     console.error("Validation failed:", error);
@@ -89,8 +65,12 @@ const [messageApi, contextHolder] = message.useMessage();
 
   const handleDelete = async (id) => {
     try {
-      // await axios.delete(`/api/departments/${id}`);
-
+      const res = await deleteDepartment(id);
+      if(res.success){
+        messageApi.success("Delete department success");
+      }else{
+        messageApi.error("Delete department failed");
+      }
       fetchDepartments();
     } catch (error) {
       console.error("Failed to delete department");
@@ -101,7 +81,8 @@ const [messageApi, contextHolder] = message.useMessage();
     dept?.name?.toLowerCase().includes(searchText.toLowerCase()) || 
     dept?.roomNumber?.toLowerCase().includes(searchText.toLowerCase())
   );
-
+  const ColorList = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae'];
+  console.log(Math.floor(Math.random() * 4));
   return (
     <div className="p-6">
       <Space style={{ marginBottom: 16 }}>
@@ -120,14 +101,35 @@ const [messageApi, contextHolder] = message.useMessage();
         columns={[
           { title: "Name", dataIndex: "name", key: "name" },
           { title: "Room", dataIndex: "roomNumber", key: "roomNumber" },
-          {title: "Manager", dataIndex: "managerId", key: "managerId"},
+          { title: "Manager",
+            dataIndex: ["manager", "fullName"], // Truy cập nested object
+            key: "manager.fullName",
+            render: (text, record) => (
+              <Space>
+                {
+                  record.managerId?.avatarUrl ? 
+                  <Avatar src={record.managerId?.avatarUrl} /> : 
+                  <Avatar style={{ backgroundColor: ColorList[Math.floor(Math.random() * 4)], verticalAlign: "middle" }}>{record.managerId?.fullName.charAt(0)}</Avatar>
+                }
+                  {record.managerId?.fullName}
+              </Space>
+            )},
           {
             title: "Actions",
             key: "actions",
             render: (_, dept) => (
               <Space>
-                <Button type="link" onClick={() => { setEditingDepartment(dept); form.setFieldsValue(dept); setModalOpen(true); }}>Edit</Button>
-                <Button type="link" danger onClick={() => handleDelete(dept._id)}>Delete</Button>
+                <Button type="link" onClick={() => { setEditingDepartment(dept); form.setFieldsValue({...dept,managerId:dept?.managerId?._id}); setModalOpen(true); }}>Edit</Button>
+                <Popconfirm
+                  title="Are you sure you want to delete this department?"
+                  okText="Yes, Delete"
+                  cancelText="Cancel"
+                  okType="danger"
+                  icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                  onConfirm={() => handleDelete(dept._id)}
+                >
+                  <Button type="link" danger>Delete</Button>
+                </Popconfirm>
               </Space>
             )
           }
@@ -160,14 +162,21 @@ const [messageApi, contextHolder] = message.useMessage();
                 name="managerId"
                 label="Manager"
               >
-                <Select
-                  placeholder="Select manager"
-                  allowClear
-                >
-                  <Option value="male">male</Option>
-                  <Option value="female">female</Option>
-                  <Option value="other">other</Option>
-                </Select>
+              <Select placeholder="Select manager" allowClear 
+               style={{ width: "100%", minWidth: 200 }} // Đảm bảo rộng tối thiểu
+               dropdownStyle={{ maxHeight: 400, overflow: "auto" }} // Tăng chiều cao dropdown
+               dropdownAlign={{ offset: [0, 10] }} // Dịch chuyển dropdown
+               popupMatchSelectWidth={false}
+              >
+                {managerList.map(manager => (
+                <Option key={manager._id} value={manager._id}>
+                  <div className="flex items-center gap-2">
+                    <img src={`https://cdn-icons-png.flaticon.com/512/149/149071.png`} alt={manager.fullName} height={30} width={30} />
+                    <span>{manager?.fullName} - {manager?.roler}</span>
+                  </div>
+                </Option>
+              ))}
+              </Select>
               </Form.Item>
             </Col>
         </Row>
