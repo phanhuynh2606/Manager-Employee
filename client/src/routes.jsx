@@ -14,6 +14,7 @@ import Department from "./pages/department/Department";
 import Employee from "./pages/employee/Employee";
 import ViewEmployee from "./pages/employee/ViewEmployee";
 import Salary from "./pages/salary/salary";
+import AttendanceManagement from "./pages/attendance/attendance";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -63,18 +64,18 @@ export const routes = [
         path:'/employee/:employeeId',
         element: <ViewEmployee />,
       },
-        {
+      {
             icon: <BanknotesIcon {...icon} />,
             name: "Salary",
             path:'/salaries',
             element: <Salary />,
-        },
-        {
+      },
+      {
             icon: <UserCircleIcon {...icon} />,
             name: "Attendance",
             path:'/attendance',
             element: <AttendanceManagement />,
-        }
+      }
     ],
   },
   {

@@ -5,8 +5,6 @@ const initialState = {
     isAuthenticated: false,
 };
 
-console.log(initialState.user, "123");
-
 const authSlice = createSlice({
     name: "auth",
     initialState,
