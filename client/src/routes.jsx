@@ -6,7 +6,8 @@ import {
   ServerStackIcon,
   RectangleStackIcon,
   HomeModernIcon,
-  BanknotesIcon
+  BanknotesIcon,
+  PowerIcon
 } from "@heroicons/react/24/solid";
 import { Home, Profile, Tables, Notifications } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
@@ -75,6 +76,10 @@ export const routes = [
             name: "Attendance",
             path:'/attendance',
             element: <AttendanceManagement />,
+      },
+      {
+        icon: <PowerIcon {...icon} />,
+        name: "Logout",
       }
     ],
   },

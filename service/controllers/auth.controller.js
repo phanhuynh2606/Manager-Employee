@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require("../models/user");
+const Employee = require("../models/employee");
+const Department =require("../models/department");
 const {isActiveUser} = require("../utils/isActiveUser");
 
 const authLogin = async (req, res) => {
@@ -10,7 +12,7 @@ const authLogin = async (req, res) => {
         if (!email || !password) {
             return res.status(400).json({
                 success: false,
-                message: "Email and password are required!"
+                message: "Email và mật khẩu là bắt buộc!"
             });
         }
 
@@ -18,15 +20,23 @@ const authLogin = async (req, res) => {
         if (!user) {
             return res.status(404).json({
                 success: false,
-                message: "Email not found!"
+                message: "Email không tìm thấy!"
             });
+        }
+
+        const getEmployee = await Employee.findOne({userId: user._id});
+
+        let manager = "";
+        const getManager = await Department.findOne({managerId: getEmployee._id});
+        if(getManager) {
+            manager = "MANAGER";
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(401).json({
                 success: false,
-                message: "Invalid password!"
+                message: "Mật khẩu không hợp lệ!"
             });
         }
 
@@ -55,15 +65,16 @@ const authLogin = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: "Login successfully!",
+            message: "Đăng nhập thành công!",
             email: user.email,
             role: user.role,
-            active: user.isActive
+            active: user.isActive,
+            position: manager
         });
     } catch (e) {
         res.status(500).json({
             success: false,
-            message: e.message
+            message: "Đăng nhập thất bại!"
         });
     }
 };
@@ -74,7 +85,7 @@ const refreshAccessToken = async (req, res) => {
         if (!refreshToken) {
             return res.status(403).json({
                 success: false,
-                message: "No refresh token provided"
+                message: "Không có refresh token được cung cấp"
             });
         }
 
@@ -84,7 +95,7 @@ const refreshAccessToken = async (req, res) => {
         if (!user) {
             return res.status(404).json({
                 success: false,
-                message: "User not found!"
+                message: "Người dùng không tìm thấy!"
             });
         }
 
@@ -108,13 +119,13 @@ const refreshAccessToken = async (req, res) => {
         if (e.name === "TokenExpiredError") {
             return res.status(403).json({
                 success: false,
-                message: "Refresh token expired"
+                message: "Refresh token đã hết hạn"
             });
         }
 
         return res.status(403).json({
             success: false,
-            message: "Invalid refresh token"
+            message: "Refresh token không hợp lệ"
         });
     }
 };
@@ -126,21 +137,21 @@ const firstTimeChangePassword = async (req, res) => {
         if (!oldPassword || !newPassword || !newConfirmPassword) {
             return res.status(400).json({
                 success: false,
-                message: "Please all field!"
+                message: "Vui lòng điền đầy đủ các trường!"
             });
         }
 
         if (oldPassword === newPassword) {
             return res.status(400).json({
                 success: false,
-                message: "Old password need to different new password!"
+                message: "Mật khẩu cũ cần khác với mật khẩu mới!"
             });
         }
 
         if (newPassword !== newConfirmPassword) {
             return res.status(400).json({
                 success: false,
-                message: "New password need to same confirm password!"
+                message: "Mật khẩu mới cần giống với mật khẩu xác nhận!"
             });
         }
 
@@ -148,7 +159,7 @@ const firstTimeChangePassword = async (req, res) => {
         if (!user) {
             return res.status(404).json({
                 success: false,
-                message: "User not found!"
+                message: "Không tìm thấy người dùng!"
             });
         }
 
@@ -156,7 +167,7 @@ const firstTimeChangePassword = async (req, res) => {
         if (!isMatch) {
             return res.status(400).json({
                 success: false,
-                message: "Old password is incorrect!"
+                message: "Mật khẩu cũ không chính xác!"
             });
         }
 
@@ -165,12 +176,12 @@ const firstTimeChangePassword = async (req, res) => {
         await user.save();
         return res.status(200).json({
             success: true,
-            message: "Password changed successfully!"
+            message: "Mật khẩu đã được thay đổi thành công!"
         });
     } catch (e) {
         res.status(401).json({
             success: false,
-            message: e.message
+            message: "Thay đổi mật khẩu thất bại!"
         });
     }
 };
@@ -193,12 +204,12 @@ const authLogout = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: "Logged out successfully!"
+            message: "Đăng xuất thành công!"
         });
     } catch (e) {
         res.status(500).json({
             success: false,
-            message: e.message
+            message: "Thay đổi mật khẩu không thành công!"
         });
     }
 };
@@ -215,7 +226,7 @@ const getProfile = (req, res) => {
     } catch (e) {
         res.status(500).json({
             success: false,
-            message: e.message
+            message: "Đăng xuất thất bại!"
         });
     }
 };

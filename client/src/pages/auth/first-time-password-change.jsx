@@ -5,33 +5,39 @@ import {
     Button,
     Typography,
 } from "@material-tailwind/react";
-import {useState} from "react";
-import {toast} from 'react-toastify';
-import {useNavigate, useLocation} from 'react-router-dom';
+import { useState } from "react";
+import { toast } from 'react-toastify';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-import {Loader} from "@/Loading/Loader.jsx";
-import {firstTimeChangePassword} from "@/apis/auth/auth.js";
+import { Loader } from "@/Loading/Loader.jsx";
+import { firstTimeChangePassword } from "@/apis/auth/auth.js";
 
 export function FirstTimeChangePassword() {
     const navigate = useNavigate();
     const location = useLocation();
-    const {email} = location.state
+    const { email } = location.state
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [newConfirmPassword, setNewConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    const handleError = (response) => {
+        const message = response?.data?.message || response?.message || 'Something went wrong';
+        toast.error(message, {
+            autoClose: 2000,
+            closeOnClick: true,
+            pauseOnHover: false,
+        });
+    };
+
     const handleChangePassword = async () => {
         setLoading(true);
         try {
             const result = await firstTimeChangePassword(email, oldPassword, newPassword, newConfirmPassword);
-            if (!result.success) {
-                return toast.error(result.message, {
-                    autoClose: 2000,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                });
+
+            if (result?.response?.data?.success === false || result?.success === false) {
+                handleError(result?.response?.data || result);
             }
 
             toast.success(result.message, {
@@ -43,7 +49,7 @@ export function FirstTimeChangePassword() {
             return navigate('/auth/sign-in');
         } catch (e) {
             console.error(e, "Error");
-            toast.error("Change password failed!", {
+            toast.error("Thay đổi mật khẩu không thành công!", {
                 autoClose: 2000,
                 closeOnClick: true,
                 pauseOnHover: false,
@@ -55,7 +61,7 @@ export function FirstTimeChangePassword() {
 
     return (
         <>
-            {loading ? (<Loader/>) : (<section className="m-8 flex">
+            {loading ? (<Loader />) : (<section className="m-8 flex">
                 <div className="w-2/5 h-full hidden lg:block">
                     <img
                         src="/img/pattern.png"
@@ -64,15 +70,15 @@ export function FirstTimeChangePassword() {
                 </div>
                 <div className="w-full lg:w-3/5 flex flex-col items-center justify-center">
                     <div className="text-center">
-                        <Typography variant="h2" className="font-bold mb-4">First Time Change Password</Typography>
-                        <Typography variant="paragraph" color="blue-gray" className="text-lg font-normal">Enter your
-                            password
-                            and new password to change.</Typography>
+                        <Typography variant="h2" className="font-bold mb-4">Thay đổi mật khẩu lần đầu</Typography>
+                        <Typography variant="paragraph" color="blue-gray" className="text-lg font-normal">
+                            Nhập mật khẩu của bạn và mật khẩu mới để thay đổi.
+                        </Typography>
                     </div>
                     <form className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2">
                         <div className="mb-1 flex flex-col gap-6">
                             <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
-                                Old Password
+                                Mật khẩu cũ
                             </Typography>
                             <Input
                                 type={showPassword ? 'text' : 'password'}
@@ -86,7 +92,7 @@ export function FirstTimeChangePassword() {
                             />
 
                             <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
-                                New Password
+                                Mật khẩu mới
                             </Typography>
                             <Input
                                 type={showPassword ? 'text' : 'password'}
@@ -100,7 +106,7 @@ export function FirstTimeChangePassword() {
                             />
 
                             <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
-                                Confirm New Password
+                                Xác nhận mật khẩu mới
                             </Typography>
                             <Input
                                 type={showPassword ? 'text' : 'password'}
@@ -120,20 +126,21 @@ export function FirstTimeChangePassword() {
                                     color="gray"
                                     className="flex items-center justify-start font-medium"
                                 >
-                                    Show password
+                                    Hiển thị mật khẩu
                                 </Typography>
                             }
-                            containerProps={{className: "-ml-2.5"}}
+                            containerProps={{ className: "-ml-2.5" }}
                             checked={showPassword}
                             onChange={() => setShowPassword(!showPassword)}
                         />
                         <Button className="mt-6" fullWidth onClick={handleChangePassword}>
-                            Change Password
+                            Thay đổi mật khẩu
                         </Button>
                     </form>
                 </div>
             </section>)}
         </>
+
     );
 }
 

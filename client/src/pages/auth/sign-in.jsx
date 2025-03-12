@@ -3,14 +3,14 @@ import {
     Button,
     Typography,
 } from "@material-tailwind/react";
-import {useState} from "react";
-import {EyeIcon, EyeSlashIcon} from '@heroicons/react/24/solid';
-import {toast} from 'react-toastify';
-import {useNavigate} from 'react-router-dom';
-import {authLogin} from "@/apis/auth/auth.js";
-import {Loader} from "@/Loading/Loader.jsx";
+import { useState } from "react";
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import { authLogin } from "@/apis/auth/auth.js";
+import { Loader } from "@/Loading/Loader.jsx";
 import { useDispatch } from "react-redux";
-import {setUser} from "@/redux/slice/auth/auth.slice.js";
+import { setUser } from "@/redux/slice/auth/auth.slice.js";
 
 export function SignIn() {
     const navigate = useNavigate();
@@ -20,20 +20,26 @@ export function SignIn() {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    const handleError = (response) => {
+        const message = response?.data?.message || response?.message || "Lỗi máy chủ nội bộ";
+        toast.error(message, {
+            autoClose: 2000,
+            closeOnClick: true,
+            pauseOnHover: false,
+        });
+    };
+
     const handleLogin = async () => {
         setLoading(true);
         try {
             const result = await authLogin(email, password);
-            if (!result.success) {
-                return toast.error(result.message, {
-                    autoClose: 2000,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                });
+
+            if (result?.response?.data?.success === false || result?.success === false) {
+                handleError(result?.response?.data || result);
             }
 
             if (result.active === "0") {
-                toast.warning("You need to change your password.", {
+                toast.warning("Bạn cần thay đổi mật khẩu của mình.", {
                     autoClose: 2000,
                     closeOnClick: true,
                     pauseOnHover: false,
@@ -56,7 +62,7 @@ export function SignIn() {
             }
         } catch (e) {
             console.error(e, "Error");
-            toast.error("Login failed!", {
+            toast.error("Đăng nhập thất bại!", {
                 autoClose: 2000,
                 closeOnClick: true,
                 pauseOnHover: false,
@@ -69,18 +75,18 @@ export function SignIn() {
     return (
         <>
             {
-                loading ? (<Loader/>) : (<section className="m-8 flex gap-4">
+                loading ? (<Loader />) : (<section className="m-8 flex gap-4">
                     <div className="w-full lg:w-3/5 mt-24">
                         <div className="text-center">
-                            <Typography variant="h2" className="font-bold mb-4">Sign In</Typography>
+                            <Typography variant="h2" className="font-bold mb-4">Đăng Nhập</Typography>
                             <Typography variant="paragraph" color="blue-gray" className="text-lg font-normal">
-                                Enter your email and password to Sign In.
+                                Nhập email và mật khẩu của bạn để đăng nhập.
                             </Typography>
                         </div>
                         <form className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2">
                             <div className="mb-1 flex flex-col gap-6">
                                 <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
-                                    Your email
+                                    Email của bạn
                                 </Typography>
                                 <Input
                                     size="lg"
@@ -92,7 +98,7 @@ export function SignIn() {
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
                                 <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
-                                    Password
+                                    Mật khẩu
                                 </Typography>
                                 <div className="relative">
                                     <Input
@@ -111,15 +117,15 @@ export function SignIn() {
                                         onClick={() => setShowPassword(!showPassword)}
                                     >
                                         {showPassword ? (
-                                            <EyeSlashIcon className="h-5 w-5 text-gray-500"/>
+                                            <EyeSlashIcon className="h-5 w-5 text-gray-500" />
                                         ) : (
-                                            <EyeIcon className="h-5 w-5 text-gray-500"/>
+                                            <EyeIcon className="h-5 w-5 text-gray-500" />
                                         )}
                                     </button>
                                 </div>
                             </div>
                             <Button className="mt-6" fullWidth onClick={handleLogin}>
-                                Sign In
+                                Đăng Nhập
                             </Button>
                         </form>
                     </div>
@@ -127,7 +133,7 @@ export function SignIn() {
                         <img
                             src="/img/pattern.png"
                             className="h-full w-full object-cover rounded-3xl"
-                            alt={"Section"}/>
+                            alt={"Section"} />
                     </div>
                 </section>)
             }
