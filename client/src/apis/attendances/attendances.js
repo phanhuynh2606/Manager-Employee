@@ -30,20 +30,36 @@ export const getAttendanceToday = async () => {
     }
 }
 
-export const checkin = async () => {
+export const checkin = async (date) => {
     try {
-        const response = await axios.post('/attendance/checkin');
+        const response = await axios.post('/attendance/checkin',{
+            date: date
+        });
         return response;
     } catch (error) {
         return error;
     }
 }
 
-export const checkout = async () => {
+export const checkout = async (date) => {
     try {
-        const response = await axios.post('/attendance/checkout');
+        const response = await axios.post('/attendance/checkout', {
+            date: date
+        });
         return response;
     } catch (error) {
         return error;
+    }
+}
+
+export const getAttendanceHistoryByMonth = async (startDate, endDate) => {
+    try {
+        const response = await axios.post(`/attendance/getAttendanceHistoryByMonth`, {
+            startDate: startDate,
+            endDate: endDate
+        });
+        return response;
+    }catch (e) {
+        return e;
     }
 }
