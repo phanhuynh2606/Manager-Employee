@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Box,
     Container,
@@ -52,28 +52,19 @@ import { format } from 'date-fns';
 import viLocale from 'date-fns/locale/vi';
 import ReactApexChart from 'react-apexcharts';
 import * as XLSX from 'xlsx';
+import {
+    checkin,
+    checkout,
+    getAttendanceHistory,
+    getAttendances,
+    getAttendanceToday
+} from "@/apis/attendances/attendances.js";
+import {toast} from "react-toastify";
+import moment from 'moment-timezone';
 
-// Dữ liệu giả định
-const initialEmployeeData = {
-    id: 1,
-    name: "Nguyễn Văn A",
-    position: "Nhân viên",
-    department: "Phòng Kỹ thuật",
-    workingDays: 22,
-    leaveBalance: 12,
-    leaveTaken: 2,
-    overtime: 5,
-};
-
-const initialAttendanceData = [
-    { date: "2025-03-01", checkIn: "08:00", checkOut: "17:30", status: "Đúng giờ", note: "" },
-    { date: "2025-03-02", checkIn: "08:15", checkOut: "17:45", status: "Đi muộn", note: "Tắc đường" },
-    { date: "2025-03-03", checkIn: "08:00", checkOut: "19:00", status: "Làm thêm giờ", note: "Dự án gấp" },
-    { date: "2025-03-04", checkIn: "", checkOut: "", status: "Nghỉ phép", note: "Nghỉ phép năm" },
-    { date: "2025-03-05", checkIn: "08:00", checkOut: "17:30", status: "Đúng giờ", note: "" },
-    { date: "2025-03-06", checkIn: "08:00", checkOut: "17:30", status: "Đúng giờ", note: "" },
-    { date: "2025-03-07", checkIn: "08:05", checkOut: "17:35", status: "Đúng giờ", note: "" },
-];
+const now = new Date();
+const offset = now.getTimezoneOffset() * 60000;
+const localDate = new Date(now.getTime() - offset);
 
 const initialEmployees = [
     { id: 1, name: "Nguyễn Văn A", position: "Nhân viên", department: "Phòng Kỹ thuật" },
@@ -82,8 +73,8 @@ const initialEmployees = [
 
 function AttendanceManagement() {
     const [tabValue, setTabValue] = useState(0);
-    const [attendanceData, setAttendanceData] = useState(initialAttendanceData);
-    const [employeeData, setEmployeeData] = useState(initialEmployeeData);
+    const [attendanceData, setAttendanceData] = useState();
+    const [employeeData, setEmployeeData] = useState();
     const [employees, setEmployees] = useState(initialEmployees);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [openCheckInDialog, setOpenCheckInDialog] = useState(false);
@@ -92,17 +83,69 @@ function AttendanceManagement() {
     const [openOvertimeDialog, setOpenOvertimeDialog] = useState(false);
     const [leaveData, setLeaveData] = useState({ startDate: null, endDate: null, reason: "", type: "Nghỉ phép năm" });
     const [overtimeData, setOvertimeData] = useState({ date: null, hours: "", reason: "" });
-    const [currentMonth, setCurrentMonth] = useState(new Date());
+    const [currentMonth, setCurrentMonth] = useState(localDate);
     const [notification, setNotification] = useState({ open: false, message: "", severity: "success" });
     const [leaveRequests, setLeaveRequests] = useState([]);
     const [departmentFilter, setDepartmentFilter] = useState("Tất cả");
-
     const departments = ["Tất cả", "Phòng Kỹ thuật", "Phòng Kinh doanh"];
-
+    const [attendanceDataToday, setAttendanceDataToday] = useState([]);
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
     };
+    const fetchDataEmployee = async () => {
+        try {
+            const response = await getAttendances();
+            if (!response) return;
+            setEmployeeData(response.data);
+        }catch (error) {
+            console.error(error, "Error");
+            toast.error("Lấy dữ liệu thất bại!", {
+                autoClose: 2000,
+                closeOnClick: true,
+                pauseOnHover: false,
+            });
+        }
+    }
+    const getFirstAndLastDayOfMonth = (year, month) => {
+        const firstDay = moment(`${year}-${month}`, 'YYYY-MM').startOf('month').format('YYYY-MM-DD');
+        const lastDay = moment(`${year}-${month}`, 'YYYY-MM').endOf('month').format('YYYY-MM-DD');
+        return { firstDay, lastDay };
+    };
+    const fetchAttendanceData = async () => {
+        try {
+            const Month = localDate.getMonth();
+            const Year = localDate.getFullYear();
+            const { startDate, endDate } = getFirstAndLastDayOfMonth(Year, Month);
+            const response = await getAttendanceHistory(startDate, endDate);
+            if (!response) return;
+            setAttendanceData(response.data);
+        }catch (error) {
+            console.error(error, "Error");
+            toast.error("Lấy dữ liệu thất bại!", {
+                autoClose: 2000,
+                closeOnClick: true,
+                pauseOnHover: false,
+            });
+        }
+    }
 
+    const fetchAttendanceToday = async () => {
+            const response = await getAttendanceToday();
+            if (!response) {
+                console.error(error, "Error");
+                return toast.error("Lấy dữ liệu thất bại!", {
+                    autoClose: 2000,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                })}
+            setAttendanceDataToday(response.data);
+    }
+
+    useEffect(() => {
+        fetchDataEmployee();
+        fetchAttendanceData();
+        fetchAttendanceToday();
+    }, []);
     const handleCheckInOpen = () => setOpenCheckInDialog(true);
     const handleCheckInClose = () => setOpenCheckInDialog(false);
     const handleCheckOutOpen = () => setOpenCheckOutDialog(true);
@@ -112,59 +155,38 @@ function AttendanceManagement() {
     const handleOvertimeOpen = () => setOpenOvertimeDialog(true);
     const handleOvertimeClose = () => setOpenOvertimeDialog(false);
 
-    const handleCheckIn = () => {
-        const now = new Date();
-        const currentTime = format(now, 'HH:mm');
-        const currentDateStr = format(now, 'yyyy-MM-dd');
-        const existingIndex = attendanceData.findIndex(item => item.date === currentDateStr);
-
-        if (existingIndex !== -1) {
-            const newData = [...attendanceData];
-            newData[existingIndex].checkIn = currentTime;
-            newData[existingIndex].status = now.getHours() >= 8 && now.getMinutes() > 15 ? "Đi muộn" : "Đúng giờ";
-            setAttendanceData(newData);
-        } else {
-            const newRecord = {
-                date: currentDateStr,
-                checkIn: currentTime,
-                checkOut: "",
-                status: now.getHours() >= 8 && now.getMinutes() > 15 ? "Đi muộn" : "Đúng giờ",
-                note: ""
-            };
-            setAttendanceData([newRecord, ...attendanceData]);
+    const handleCheckIn = async () => {
+        const response = await checkin();
+        console.log(response)
+        if (!response.success){
+            setOpenCheckInDialog(false);
+            return toast.error(response.response.data.message, {
+                autoClose: 2000,
+                closeOnClick: true,
+                pauseOnHover: false,
+            });
         }
+        await fetchAttendanceData();
+        await fetchAttendanceToday();
         setOpenCheckInDialog(false);
-        setNotification({ open: true, message: "Đã chấm công vào lúc " + currentTime, severity: "success" });
+        setNotification({ open: true, message: response.message + response.data.checkInTime, severity: "success" });
     };
 
-    const handleCheckOut = () => {
-        const now = new Date();
-        const currentTime = format(now, 'HH:mm');
-        const currentDateStr = format(now, 'yyyy-MM-dd');
-        const existingIndex = attendanceData.findIndex(item => item.date === currentDateStr);
-
-        if (existingIndex !== -1) {
-            const newData = [...attendanceData];
-            newData[existingIndex].checkOut = currentTime;
-            const hour = now.getHours();
-            const isOvertime = hour >= 18;
-            if (isOvertime && newData[existingIndex].status !== "Đi muộn") {
-                newData[existingIndex].status = "Làm thêm giờ";
-                setEmployeeData({ ...employeeData, overtime: employeeData.overtime + (hour - 17) });
-            }
-            setAttendanceData(newData);
-        } else {
-            const newRecord = {
-                date: currentDateStr,
-                checkIn: "--:--",
-                checkOut: currentTime,
-                status: "Bất thường",
-                note: "Không có dữ liệu check-in"
-            };
-            setAttendanceData([newRecord, ...attendanceData]);
+    const handleCheckOut = async () => {
+        const response = await checkout();
+        console.log(response)
+        if (!response.success){
+            setOpenCheckOutDialog(false);
+            return toast.error(response.response.data.message, {
+                autoClose: 2000,
+                closeOnClick: true,
+                pauseOnHover: false,
+            });
         }
+        await fetchAttendanceData();
+        await fetchAttendanceToday();
         setOpenCheckOutDialog(false);
-        setNotification({ open: true, message: "Đã chấm công ra lúc " + currentTime, severity: "success" });
+        setNotification({ open: true, message: response.message + response.data.checkOutTime, severity: "success" });
     };
 
     const handleLeaveSubmit = () => {
@@ -221,31 +243,31 @@ function AttendanceManagement() {
 
     const handleNotificationClose = () => setNotification({ ...notification, open: false });
 
-    const getCurrentMonthAttendance = () => {
-        const year = currentMonth.getFullYear();
-        const month = currentMonth.getMonth();
-        return attendanceData.filter(item => {
-            const itemDate = new Date(item.date);
-            return itemDate.getFullYear() === year && itemDate.getMonth() === month;
-        });
-    };
+    // const getCurrentMonthAttendance = () => {
+    //     const year = currentMonth.getFullYear();
+    //     const month = currentMonth.getMonth();
+    //     return attendanceData.filter(item => {
+    //         const itemDate = new Date(item.date);
+    //         return itemDate.getFullYear() === year && itemDate.getMonth() === month;
+    //     });
+    // };
 
-    const calculateMonthlyStats = () => {
-        const filteredData = getCurrentMonthAttendance();
-        const workDays = filteredData.filter(item => ["Đúng giờ", "Đi muộn", "Làm thêm giờ"].includes(item.status)).length;
-        const lateDays = filteredData.filter(item => item.status === "Đi muộn").length;
-        const leaveDays = filteredData.filter(item => item.status === "Nghỉ phép").length;
-        const overtimeDays = filteredData.filter(item => item.status === "Làm thêm giờ").length;
-        return { workDays, lateDays, leaveDays, overtimeDays };
-    };
+    // const calculateMonthlyStats = () => {
+    //     const filteredData = getCurrentMonthAttendance();
+    //     const workDays = filteredData.filter(item => ["Đúng giờ", "Đi muộn", "Làm thêm giờ"].includes(item.status)).length;
+    //     const lateDays = filteredData.filter(item => item.status === "Đi muộn").length;
+    //     const leaveDays = filteredData.filter(item => item.status === "Nghỉ phép").length;
+    //     const overtimeDays = filteredData.filter(item => item.status === "Làm thêm giờ").length;
+    //     return { workDays, lateDays, leaveDays, overtimeDays };
+    // };
 
-    const stats = calculateMonthlyStats();
+    // const stats = calculateMonthlyStats();
 
-    const todayAttendance = attendanceData.filter(row => row.date === format(new Date(), 'yyyy-MM-dd'));
+    // const todayAttendance = attendanceData.filter(row => row.date === format(new Date(), 'yyyy-MM-dd'));
 
-    const filteredAttendance = getCurrentMonthAttendance().filter(
-        row => departmentFilter === "Tất cả" || employeeData.department === departmentFilter
-    );
+    // const filteredAttendance = getCurrentMonthAttendance().filter(
+    //     row => departmentFilter === "Tất cả" || employeeData.department === departmentFilter
+    // );
 
     const exportReport = () => {
         const ws = XLSX.utils.json_to_sheet(getCurrentMonthAttendance());
@@ -400,19 +422,19 @@ function AttendanceManagement() {
                                             <CardContent>
                                                 <Typography variant="h6" gutterBottom>Thông tin nhân viên</Typography>
                                                 <Divider sx={{ mb: 2 }} />
-                                                <Typography variant="body1"><strong>Họ và tên:</strong> {employeeData.name}</Typography>
-                                                <Typography variant="body1"><strong>Chức vụ:</strong> {employeeData.position}</Typography>
-                                                <Typography variant="body1"><strong>Phòng ban:</strong> {employeeData.department}</Typography>
+                                                <Typography variant="body1"><strong>Họ và tên:</strong> {employeeData?.fullName}</Typography>
+                                                <Typography variant="body1"><strong>Chức vụ:</strong> {employeeData?.position}</Typography>
+                                                <Typography variant="body1"><strong>Phòng ban:</strong> {employeeData?.department}</Typography>
                                             </CardContent>
                                         </Card>
                                         <Card>
                                             <CardContent>
                                                 <Typography variant="h6" gutterBottom>Tổng quan tháng {currentMonth.getMonth() + 1}/{currentMonth.getFullYear()}</Typography>
                                                 <Divider sx={{ mb: 2 }} />
-                                                <Typography variant="body1"><strong>Số ngày công:</strong> {stats.workDays}/{employeeData.workingDays}</Typography>
-                                                <Typography variant="body1"><strong>Số ngày nghỉ phép:</strong> {stats.leaveDays}/{employeeData.leaveBalance}</Typography>
-                                                <Typography variant="body1"><strong>Số ngày đi muộn:</strong> {stats.lateDays}</Typography>
-                                                <Typography variant="body1"><strong>Số ngày làm thêm giờ:</strong> {stats.overtimeDays}</Typography>
+                                                <Typography variant="body1"><strong>Số ngày công:</strong> {(attendanceData?.totalWorkingHours)/8}/{employeeData?.workingDay}</Typography>
+                                                <Typography variant="body1"><strong>Số ngày nghỉ phép:</strong> {attendanceData?.leaveDays}/{employeeData?.leaveBalance}</Typography>
+                                                <Typography variant="body1"><strong>Số ngày đi muộn:</strong> {attendanceData?.lateDays}</Typography>
+                                                <Typography variant="body1"><strong>Số giờ làm thêm:</strong> {attendanceData?.totalOvertimeHours}</Typography>
                                             </CardContent>
                                         </Card>
                                     </Grid>
@@ -457,15 +479,13 @@ function AttendanceManagement() {
                                                             </TableRow>
                                                         </TableHead>
                                                         <TableBody>
-                                                            {todayAttendance.length > 0 ? (
-                                                                todayAttendance.map((row, index) => (
-                                                                    <TableRow key={index}>
-                                                                        <TableCell>{employeeData.name}</TableCell>
-                                                                        <TableCell>{row.checkIn || "--:--"}</TableCell>
-                                                                        <TableCell>{row.checkOut || "--:--"}</TableCell>
-                                                                        <TableCell>{row.status}</TableCell>
+                                                            {attendanceDataToday ? (
+                                                                    <TableRow>
+                                                                        <TableCell>{attendanceDataToday.name}</TableCell>
+                                                                        <TableCell>{attendanceDataToday.checkIn || "--:--"}</TableCell>
+                                                                        <TableCell>{attendanceDataToday.checkOut || "--:--"}</TableCell>
+                                                                        <TableCell>{attendanceDataToday.status}</TableCell>
                                                                     </TableRow>
-                                                                ))
                                                             ) : (
                                                                 <TableRow>
                                                                     <TableCell colSpan={4}>Không có dữ liệu hôm nay</TableCell>
@@ -521,26 +541,26 @@ function AttendanceManagement() {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {filteredAttendance.sort((a, b) => new Date(b.date) - new Date(a.date)).map((row, index) => (
-                                                <TableRow key={index}>
-                                                    <TableCell>{format(new Date(row.date), 'dd/MM/yyyy')}</TableCell>
-                                                    <TableCell>{row.checkIn || "--:--"}</TableCell>
-                                                    <TableCell>{row.checkOut || "--:--"}</TableCell>
-                                                    <TableCell>
-                                                        <Typography
-                                                            color={
-                                                                row.status === "Đúng giờ" ? "primary" :
-                                                                    row.status === "Đi muộn" ? "error" :
-                                                                        row.status === "Nghỉ phép" ? "warning" :
-                                                                            row.status === "Làm thêm giờ" ? "success" : "default"
-                                                            }
-                                                        >
-                                                            {row.status}
-                                                        </Typography>
-                                                    </TableCell>
-                                                    <TableCell>{row.note}</TableCell>
-                                                </TableRow>
-                                            ))}
+                                            {/*{filteredAttendance.sort((a, b) => new Date(b.date) - new Date(a.date)).map((row, index) => (*/}
+                                            {/*    <TableRow key={index}>*/}
+                                            {/*        <TableCell>{format(new Date(row.date), 'dd/MM/yyyy')}</TableCell>*/}
+                                            {/*        <TableCell>{row.checkIn || "--:--"}</TableCell>*/}
+                                            {/*        <TableCell>{row.checkOut || "--:--"}</TableCell>*/}
+                                            {/*        <TableCell>*/}
+                                            {/*            <Typography*/}
+                                            {/*                color={*/}
+                                            {/*                    row.status === "Đúng giờ" ? "primary" :*/}
+                                            {/*                        row.status === "Đi muộn" ? "error" :*/}
+                                            {/*                            row.status === "Nghỉ phép" ? "warning" :*/}
+                                            {/*                                row.status === "Làm thêm giờ" ? "success" : "default"*/}
+                                            {/*                }*/}
+                                            {/*            >*/}
+                                            {/*                {row.status}*/}
+                                            {/*            </Typography>*/}
+                                            {/*        </TableCell>*/}
+                                            {/*        <TableCell>{row.note}</TableCell>*/}
+                                            {/*    </TableRow>*/}
+                                            {/*))}*/}
                                         </TableBody>
                                     </Table>
                                 </TableContainer>
