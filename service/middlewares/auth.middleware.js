@@ -7,7 +7,7 @@ const authenticate = async (req, res, next) => {
         if (!accessToken) {
             return res.status(401).json({
                 success: false,
-                message: "Unauthorized"
+                message: "Không được phép"
             });
         }
 
@@ -16,12 +16,12 @@ const authenticate = async (req, res, next) => {
                 if (err.name === "TokenExpiredError") {
                     return res.status(401).json({
                         success: false,
-                        message: "token_expired",
+                        message: "Token đã hết hạn"
                     });
                 }
                 return res.status(401).json({
                     success: false,
-                    message: "Unauthorized"
+                    message: "Không được phép"
                 });
             }
 
@@ -29,7 +29,7 @@ const authenticate = async (req, res, next) => {
             if (!user) {
                 return res.status(404).json({
                     success: false,
-                    message: "User not found!"
+                    message: "Không tìm thấy người dùng!"
                 });
             }
             req.user = user;
@@ -39,7 +39,7 @@ const authenticate = async (req, res, next) => {
         console.log(e);
         res.status(500).json({
             success: false,
-            message: e.message || "Internal Server Error"
+            message: "Lỗi máy chủ nội bộ"
         });
     }
 };

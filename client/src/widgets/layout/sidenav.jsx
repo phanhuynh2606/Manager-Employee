@@ -8,6 +8,11 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import { useMaterialTailwindController, setOpenSidenav } from "@/context";
+import { toast } from "react-toastify";
+import { logout } from "@/apis/auth/auth.js";
+import { useDispatch } from "react-redux";
+import { useNavigate } from 'react-router-dom';
+import { setLogout } from "@/redux/slice/auth/auth.slice.js";
 
 export function Sidenav({ brandImg, brandName, routes }) {
   const [controller, dispatch] = useMaterialTailwindController();
@@ -17,12 +22,45 @@ export function Sidenav({ brandImg, brandName, routes }) {
     white: "bg-white shadow-sm",
     transparent: "bg-transparent",
   };
+  const dispatched = useDispatch();
+  const navigate = useNavigate();
+
+  const handleToast = (message, type) => {
+    const toastMethod = type === 'error' ? toast.error : toast.success;
+    toastMethod(message, {
+      autoClose: 2000,
+      closeOnClick: true,
+      pauseOnHover: false,
+    });
+  };
+
+  const handleLogout = async () => {
+    try {
+      const response = await logout();
+
+      if (response && response.response && response.response.data.success === false) {
+        return handleToast(response.response.data.message, 'error');
+      }
+
+      if (response && response.success) {
+        dispatched(setLogout());
+        handleToast(response.message, 'success');
+        return navigate('/auth/sign-in');
+      }
+    } catch (e) {
+      console.error(e, "Error");
+      toast.error("Đăng xuất thất bại!", {
+        autoClose: 2000,
+        closeOnClick: true,
+        pauseOnHover: false,
+      });
+    }
+  }
 
   return (
     <aside
-      className={`${sidenavTypes[sidenavType]} ${
-        openSidenav ? "translate-x-0" : "-translate-x-80"
-      } fixed inset-0 z-50 my-4 ml-4 h-[calc(100vh-32px)] w-72 rounded-xl transition-transform duration-300 xl:translate-x-0 border border-blue-gray-100`}
+      className={`${sidenavTypes[sidenavType]} ${openSidenav ? "translate-x-0" : "-translate-x-80"
+        } fixed inset-0 z-50 my-4 ml-4 h-[calc(100vh-32px)] w-72 rounded-xl transition-transform duration-300 xl:translate-x-0 border border-blue-gray-100`}
     >
       <div
         className={`relative`}
@@ -60,9 +98,17 @@ export function Sidenav({ brandImg, brandName, routes }) {
                 </Typography>
               </li>
             )}
-            {pages.filter(page => page.name).map(({ icon, name, path },index) => (
+            {pages.filter(page => page.name).map(({ icon, name, path }, index) => (
               <li key={index}>
-                <NavLink to={`/${layout}${path}`}>
+                <NavLink
+                  to={`/${layout}${path}`}
+                  onClick={e => {
+                    if (name === "Logout") {
+                      e.preventDefault();
+                      handleLogout();
+                    }
+                  }}
+                >
                   {({ isActive }) => (
                     <Button
                       variant={isActive ? "gradient" : "text"}
@@ -70,8 +116,8 @@ export function Sidenav({ brandImg, brandName, routes }) {
                         isActive
                           ? sidenavColor
                           : sidenavType === "dark"
-                          ? "white"
-                          : "gray"
+                            ? "white"
+                            : "gray"
                       }
                       className="flex items-center gap-4 px-4 capitalize"
                       fullWidth
@@ -81,13 +127,18 @@ export function Sidenav({ brandImg, brandName, routes }) {
                         color="inherit"
                         className="font-medium capitalize"
                       >
-                        {name} 
+                        {name === "Logout" ? (
+                          <span>Logout</span>
+                        ) : (
+                          name
+                        )}
                       </Typography>
                     </Button>
                   )}
                 </NavLink>
               </li>
             ))}
+
           </ul>
         ))}
       </div>
