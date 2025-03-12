@@ -4,9 +4,10 @@ const {authenticate,isAdmin} = require('../middlewares/auth.middleware');
 
 router.use(authenticate); 
 router.get('/', ctrls.getDepartments);
+router.get("/assign-manager",isAdmin,ctrls.getEmployeeByManager);
 router.get('/:id', ctrls.getDepartmentById);
 
-// router.use(isAdmin);
+router.use(isAdmin);
 router.post('/', ctrls.createDepartment);
 router.put('/:id', ctrls.updateDepartment);
 router.delete('/:id', ctrls.deleteDepartment);
