@@ -140,16 +140,17 @@ const checkin = async (req, res) => {
         if (attendance) {
             return res.status(400).json({ success: false, message: "Bạn đã điểm danh vào làm ngày hôm nay !" });
         }
+        const dateNow = req.body.date;
         let expectedCheckInTime;
-        if (localDate > morningEnd) {
+        if (dateNow > morningEnd) {
             expectedCheckInTime = afternoonStart;
         } else {
             expectedCheckInTime = morningStart;
         }
 
         // Tính số phút đi muộn
-        const lateMinutes = localDate > expectedCheckInTime ?
-            Math.floor((localDate - expectedCheckInTime) / (1000 * 60)) : 0;
+        const lateMinutes = dateNow > expectedCheckInTime ?
+            Math.floor((dateNow - expectedCheckInTime) / (1000 * 60)) : 0;
 
         // Xác định trạng thái
         const status = lateMinutes > 0 ? 'LATE' : 'PRESENT';
@@ -158,7 +159,7 @@ const checkin = async (req, res) => {
         const newAttendance = new Attendance({
             employeeId: employeeDetail._id,
             date: todayStart,
-            checkIn: localDate,
+            checkIn: dateNow,
             status: status,
             lateMinutes: lateMinutes,
             note: req.body.note || ''
@@ -169,7 +170,7 @@ const checkin = async (req, res) => {
             success: true,
             message: 'Điểm danh vào làm thành công !',
             data: {
-                checkInTime: localDate,
+                checkInTime: dateNow,
                 status: status,
                 lateMinutes: lateMinutes
             }
@@ -210,8 +211,8 @@ const checkout = async (req, res) => {
             return res.status(400).json({ success: false, message: "Bạn đã điểm danh ra về hôm nay!" });
         }
         // Lấy thời gian hiện tại để checkout
-        const timeCheckout = new Date();
-        attendance.checkOut = new Date(timeCheckout.getTime() - offset);
+        const timeCheckout = req.body.date;
+        attendance.checkOut = timeCheckout;
 
         // Tính giờ làm buổi sáng
         let morningHours = 0;
@@ -297,7 +298,6 @@ const getAttendanceHistory = async (req, res) => {
         }
 
         const { startDate, endDate } = req.body;
-
         // Xác định employeeId để truy vấn
         let targetEmployeeId;
 
@@ -319,12 +319,9 @@ const getAttendanceHistory = async (req, res) => {
         // Thêm điều kiện ngày nếu có
         if (startDate && endDate) {
             const start = new Date(moment.tz(startDate, 'Asia/Ho_Chi_Minh').startOf('day').toDate().getTime() - offset);
-            console.log(start)
             const end = new Date(moment.tz(endDate, 'Asia/Ho_Chi_Minh').startOf('day').toDate().getTime() - offset);
-            console.log(end)
             query.date = { $gte: start, $lte: end };
         }
-
         // Truy vấn dữ liệu
         const attendanceRecords = await Attendance.find(query)
             .sort({ date: -1 })
@@ -469,6 +466,72 @@ const requestLeave = async (req, res) => {
     }
 };
 
+const getAttendanceHistoryByMonth = async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        return res.status(401).json({ success: false, message: "Bạn cần phải đăng nhập!" });
+    }
+
+    const { startDate, endDate } = req.body;
+
+    // Xác định employeeId để truy vấn
+    let targetEmployeeId;
+
+    // Nếu là admin hoặc HR và có truyền employeeId, sử dụng employeeId đó
+    if ((user.role === 'ADMIN') && user.employeeId) {
+        targetEmployeeId = user.employeeId;
+    } else {
+        // Ngược lại, chỉ xem dữ liệu của bản thân
+        const employee = await User.findById(user._id, '-password');
+        if (!employee || !employee.employeeId) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy nhân viên!" });
+        }
+        targetEmployeeId = employee.employeeId;
+    }
+
+    // Tạo điều kiện truy vấn
+    const query = { employeeId: targetEmployeeId };
+
+    // Thêm điều kiện ngày nếu có
+    if (startDate && endDate) {
+        const start = new Date(moment.tz(startDate, 'Asia/Ho_Chi_Minh').startOf('day').toDate().getTime() - offset);
+        const end = new Date(moment.tz(endDate, 'Asia/Ho_Chi_Minh').startOf('day').toDate().getTime() - offset);
+        query.date = { $gte: start, $lte: end };
+    }
+
+    // Truy vấn dữ liệu
+    const attendanceRecords = await Attendance.find(query)
+        .sort({ date: -1 })
+        .populate('employeeId', 'name departmentId position');
+    if (!attendanceRecords){
+        return res.status(200).json({
+            success: true,
+            data: {
+                name: '',
+                checkIn: "00:00:00",
+                checkOut: "00:00:00",
+                status: '',
+                note: ''
+            }
+        });
+    }
+    // Format dữ liệu trả về
+    const formatData = attendanceRecords.map((record) => {
+        return {
+            date: record.date,
+            checkIn: record.checkIn,
+            checkOut: record.checkOut,
+            status: record.status,
+            note: record.note
+        };
+    });
+
+    return res.status(200).json({
+        success: true,
+        data: formatData
+    });
+};
+
 const toDoLeave = {}
 
 
@@ -480,5 +543,6 @@ module.exports = {
     getAttendanceHistory,
     requestLeave,
     getAttendanceToday,
-    toDoLeave
+    toDoLeave,
+    getAttendanceHistoryByMonth
 }

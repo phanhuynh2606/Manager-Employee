@@ -55,21 +55,21 @@ import * as XLSX from 'xlsx';
 import {
     checkin,
     checkout,
-    getAttendanceHistory,
+    getAttendanceHistory, getAttendanceHistoryByMonth,
     getAttendances,
     getAttendanceToday
 } from "@/apis/attendances/attendances.js";
 import {toast} from "react-toastify";
 import moment from 'moment-timezone';
 
-const now = new Date();
-const offset = now.getTimezoneOffset() * 60000;
-const localDate = new Date(now.getTime() - offset);
-
 const initialEmployees = [
     { id: 1, name: "Nguyễn Văn A", position: "Nhân viên", department: "Phòng Kỹ thuật" },
     { id: 2, name: "Trần Thị B", position: "Trưởng phòng", department: "Phòng Kinh doanh" },
 ];
+
+const now = new Date();
+const offset = now.getTimezoneOffset() * 60000;
+const localDate = new Date(now.getTime() - offset);
 
 function AttendanceManagement() {
     const [tabValue, setTabValue] = useState(0);
@@ -88,7 +88,8 @@ function AttendanceManagement() {
     const [leaveRequests, setLeaveRequests] = useState([]);
     const [departmentFilter, setDepartmentFilter] = useState("Tất cả");
     const departments = ["Tất cả", "Phòng Kỹ thuật", "Phòng Kinh doanh"];
-    const [attendanceDataToday, setAttendanceDataToday] = useState([]);
+    const [attendanceDataToday, setAttendanceDataToday] = useState();
+    const [attendanceDataByMonth, setAttendanceDataByMonth] = useState([]);
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
     };
@@ -113,9 +114,14 @@ function AttendanceManagement() {
     };
     const fetchAttendanceData = async () => {
         try {
-            const Month = localDate.getMonth();
-            const Year = localDate.getFullYear();
-            const { startDate, endDate } = getFirstAndLastDayOfMonth(Year, Month);
+            const now = new Date();
+            const offset = now.getTimezoneOffset() * 60000;
+            const dateNow = new Date(now.getTime() - offset);
+            const Month = dateNow.getMonth() + 1;
+            const Year = dateNow.getFullYear();
+            const check = getFirstAndLastDayOfMonth(Year, Month);
+            const startDate = check.firstDay;
+            const endDate = check.lastDay;
             const response = await getAttendanceHistory(startDate, endDate);
             if (!response) return;
             setAttendanceData(response.data);
@@ -141,11 +147,32 @@ function AttendanceManagement() {
             setAttendanceDataToday(response.data);
     }
 
+    const fetchAttendanceDataByMonth = async (year, month) => {
+        const check = getFirstAndLastDayOfMonth(year, month);
+        const startDate = check.firstDay;
+        const endDate = check.lastDay;
+        const response = await getAttendanceHistoryByMonth(startDate, endDate);
+        if (!response) {
+            console.error(error, "Error");
+            return toast.error("Lấy dữ liệu thất bại!", {
+                autoClose: 2000,
+                closeOnClick: true,
+                pauseOnHover: false,
+            })}
+        setAttendanceDataByMonth(response.data);
+    };
+
     useEffect(() => {
         fetchDataEmployee();
         fetchAttendanceData();
         fetchAttendanceToday();
     }, []);
+
+    useEffect(() => {
+        fetchAttendanceDataByMonth(currentMonth.getFullYear(),(currentMonth.getMonth() + 1));
+        }, [currentMonth]);
+
+
     const handleCheckInOpen = () => setOpenCheckInDialog(true);
     const handleCheckInClose = () => setOpenCheckInDialog(false);
     const handleCheckOutOpen = () => setOpenCheckOutDialog(true);
@@ -156,7 +183,10 @@ function AttendanceManagement() {
     const handleOvertimeClose = () => setOpenOvertimeDialog(false);
 
     const handleCheckIn = async () => {
-        const response = await checkin();
+        const now = new Date();
+        const offset = now.getTimezoneOffset() * 60000;
+        const dateNow = new Date(now.getTime() - offset);
+        const response = await checkin(dateNow);
         console.log(response)
         if (!response.success){
             setOpenCheckInDialog(false);
@@ -173,7 +203,10 @@ function AttendanceManagement() {
     };
 
     const handleCheckOut = async () => {
-        const response = await checkout();
+        const now = new Date();
+        const offset = now.getTimezoneOffset() * 60000;
+        const dateNow = new Date(now.getTime() - offset);
+        const response = await checkout(dateNow);
         console.log(response)
         if (!response.success){
             setOpenCheckOutDialog(false);
@@ -515,20 +548,20 @@ function AttendanceManagement() {
                                         renderInput={(params) => <TextField {...params} helperText={null} />}
                                     />
                                 </Box>
-                                <Box sx={{ mb: 2 }}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Bộ phận</InputLabel>
-                                        <Select
-                                            value={departmentFilter}
-                                            onChange={(e) => setDepartmentFilter(e.target.value)}
-                                            label="Bộ phận"
-                                        >
-                                            {departments.map((dept) => (
-                                                <MenuItem key={dept} value={dept}>{dept}</MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                </Box>
+                                {/*<Box sx={{ mb: 2 }}>*/}
+                                {/*    <FormControl fullWidth>*/}
+                                {/*        <InputLabel>Bộ phận</InputLabel>*/}
+                                {/*        <Select*/}
+                                {/*            value={departmentFilter}*/}
+                                {/*            onChange={(e) => setDepartmentFilter(e.target.value)}*/}
+                                {/*            label="Bộ phận"*/}
+                                {/*        >*/}
+                                {/*            {departments.map((dept) => (*/}
+                                {/*                <MenuItem key={dept} value={dept}>{dept}</MenuItem>*/}
+                                {/*            ))}*/}
+                                {/*        </Select>*/}
+                                {/*    </FormControl>*/}
+                                {/*</Box>*/}
                                 <TableContainer component={Paper}>
                                     <Table>
                                         <TableHead>
@@ -541,26 +574,21 @@ function AttendanceManagement() {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {/*{filteredAttendance.sort((a, b) => new Date(b.date) - new Date(a.date)).map((row, index) => (*/}
-                                            {/*    <TableRow key={index}>*/}
-                                            {/*        <TableCell>{format(new Date(row.date), 'dd/MM/yyyy')}</TableCell>*/}
-                                            {/*        <TableCell>{row.checkIn || "--:--"}</TableCell>*/}
-                                            {/*        <TableCell>{row.checkOut || "--:--"}</TableCell>*/}
-                                            {/*        <TableCell>*/}
-                                            {/*            <Typography*/}
-                                            {/*                color={*/}
-                                            {/*                    row.status === "Đúng giờ" ? "primary" :*/}
-                                            {/*                        row.status === "Đi muộn" ? "error" :*/}
-                                            {/*                            row.status === "Nghỉ phép" ? "warning" :*/}
-                                            {/*                                row.status === "Làm thêm giờ" ? "success" : "default"*/}
-                                            {/*                }*/}
-                                            {/*            >*/}
-                                            {/*                {row.status}*/}
-                                            {/*            </Typography>*/}
-                                            {/*        </TableCell>*/}
-                                            {/*        <TableCell>{row.note}</TableCell>*/}
-                                            {/*    </TableRow>*/}
-                                            {/*))}*/}
+                                            {attendanceDataByMonth && attendanceDataByMonth.length > 0 ? (
+                                                attendanceDataByMonth.map((item, index) => (
+                                                    <TableRow key={index}>
+                                                        <TableCell>{item.name}</TableCell>
+                                                        <TableCell>{item.checkIn || "--:--"}</TableCell>
+                                                        <TableCell>{item.checkOut || "--:--"}</TableCell>
+                                                        <TableCell>{item.status}</TableCell>
+                                                        <TableCell>{item.note}</TableCell>
+                                                    </TableRow>
+                                                ))
+                                            ) : (
+                                                <TableRow>
+                                                    <TableCell colSpan={5}>Không có dữ liệu hôm nay</TableCell>
+                                                </TableRow>
+                                            )}
                                         </TableBody>
                                     </Table>
                                 </TableContainer>
