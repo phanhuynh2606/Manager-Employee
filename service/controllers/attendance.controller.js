@@ -4,15 +4,35 @@ const Department = require('../models/department');
 const Attendance = require('../models/attendance');
 const os = require('os');
 const moment = require('moment-timezone');
+const Leave = require('../models/leave');
 const configTimeWork = {
     workStartTime : { hour: 8, minute: 30 },
      morningStartTime : { hour: 8, minute: 30 },
      morningEndTime : { hour: 12, minute: 0 },
      afternoonStartTime : { hour: 13, minute: 30 },
      afternoonEndTime : { hour: 18, minute: 0 },
-     minWorkingHours : 8
+     minWorkingHours : 8,
 }
-
+const now = new Date();
+const offset = now.getTimezoneOffset() * 60000;
+const localDate = new Date(now.getTime() - offset);
+// Tạo các mốc thời gian quan trọng trong ngày
+const morningStart = new Date(moment().tz('Asia/Ho_Chi_Minh').set({
+    hour: configTimeWork.morningStartTime.hour,
+    minute: configTimeWork.morningStartTime.minute
+}).toDate().getTime() - offset);
+const morningEnd = new Date(moment().tz('Asia/Ho_Chi_Minh').set({
+    hour: configTimeWork.morningEndTime.hour,
+    minute: configTimeWork.morningEndTime.minute
+}).toDate().getTime() - offset);
+const afternoonStart = new Date(moment().tz('Asia/Ho_Chi_Minh').set({
+    hour: configTimeWork.afternoonStartTime.hour,
+    minute: configTimeWork.afternoonStartTime.minute
+}).toDate().getTime() - offset);
+const afternoonEnd = new Date(moment().tz('Asia/Ho_Chi_Minh').set({
+    hour: configTimeWork.afternoonEndTime.hour,
+    minute: configTimeWork.afternoonEndTime.minute
+}).toDate().getTime() - offset);
 
 const getLocalNetwork = () => {
     const interfaces = os.networkInterfaces();
@@ -26,18 +46,17 @@ const getLocalNetwork = () => {
     return '192.168.1.'; // Mặc định nếu không xác định được
 };
 const getInformation = async (req, res) => {
-    try {
         const user = req.user;
         if (!user) {
-            return res.status(404).json({ success: false, message: "Must be login!" });
+            return res.status(404).json({ success: false, message: "Bạn cần phải đăng nhập!" });
         }
-        console.log(new Date());
         const role = user.role;
         // const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.ip;;
         // const normalizedIp = ip.replace('::ffff:', '');
         // console.log(ip)
         // console.log(normalizedIp);
         let formatData;
+        const formatDate = `${localDate.getMonth() + 1}/${localDate.getFullYear()}`;
         switch (role) {
             case 'ADMIN':
                 const admin = await User.find({ role: 'EMPLOYEE' }, '-password' );
@@ -54,15 +73,16 @@ const getInformation = async (req, res) => {
                     ]);
                     const attendance = await Attendance.find({ employeeId: employee._id });
                     if (!attendance) {
-                        return res.status(404).json({ success: false, message: "Attendance not found!" });
+                        return res.status(404).json({ success: false, message: "Không tìm thấy bản ghi chấm công!" });
                     }
                     const totalWorkingHour = totalWorkingHours?.length > 0 ? totalWorkingHours[0].totalWorkingHours : 0;
                     const totalOvertimeHours = attendance.reduce((sum, record) => sum + (record.overtimeHours || 0), 0);
                     return {
+                        date: formatDate,
                         fullName: employee.fullName,
                         department: department.name,
                         position: employee.position,
-                        workingPoint: totalWorkingHour,
+                        workingDay: 22,
                         leaveBalance: 12,
                         leaveTaken: count,
                         overtime: totalOvertimeHours
@@ -72,60 +92,45 @@ const getInformation = async (req, res) => {
             case 'EMPLOYEE':
                 const employee = await User.findOne({ email: user.email }, '-password');
                 const employeeDetail = await Employee.findById({ _id: employee.employeeId }).populate('departmentId', 'name');
-                const attendanceEmploy = await Attendance.findOne({ employeeId: employeeDetail._id });
+                const attendanceEmploy = await Attendance.find({ employeeId: employeeDetail._id });
                 if (!attendanceEmploy) {
-                    return res.status(404).json({ success: false, message: "Attendance not found!" });
+                    return res.status(404).json({ success: false, message: "Không tìm thấy bản ghi chấm công!" });
                 }
-                const totalWorkingHours = await Attendance.aggregate([
-                    { $match: { employeeId: employeeDetail._id } },
-                    { $group: { _id: null, totalWorkingHours: { $sum: "$workingHours" } } }
-                ]);
-
-                const totalWorkingHour = totalWorkingHours?.length > 0 ? totalWorkingHours[0].totalWorkingHours : 0;
-                const totalOvertimeHoursEmp = attendanceEmploy.reduce((sum, record) => sum + (record.overtimeHours || 0), 0);
                 const count = await Attendance.countDocuments({ employeeId: employeeDetail._id, status: 'LATE' })
                 formatData = {
+                    date: formatDate,
                     fullName: employeeDetail.fullName,
                     department: employeeDetail.departmentId.name,
                     position: employeeDetail.position,
-                    workingPoint: totalWorkingHour,
+                    workingDay: 22,
                     leaveBalance: 12,
                     leaveTaken: count,
-                    overtime: totalOvertimeHoursEmp
+                    overtime: attendanceEmploy.overtimeHours
                 }
                 return res.status(200).json({ success: true, data: formatData });
             default:
-                return res.status(404).json({ success: false, message: "Role not register!" });
+                return res.status(404).json({ success: false, message: "Chức vụ này chưa được đăng kí!" });
         }
-    }catch (err) {
-        return res.status(500).json({ success: false, message: err.message });
-    }
 }
 
 const checkin = async (req, res) => {
-    try {
         const user = req.user;
         if (!user) {
-            return res.status(401).json({ success: false, message: "Must be logged in!" });
+            return res.status(401).json({ success: false, message: "Bạn cần phải đăng nhập !" });
         }
-
         // Lấy thông tin nhân viên
         const employee = await User.findById({ _id: user._id }, '-password');
         if (!employee || !employee.employeeId) {
-            return res.status(404).json({ success: false, message: "Employee not found!" });
+            return res.status(404).json({ success: false, message: "Không tìm thấy nhân viên !" });
         }
 
         const employeeDetail = await Employee.findById({ _id: employee.employeeId });
         if (!employeeDetail) {
-            return res.status(404).json({ success: false, message: "Employee details not found!" });
+            return res.status(404).json({ success: false, message: "Không tìm thấy thông tin của nhân viên !" });
         }
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
 
-        const todayStart = moment().tz('Asia/Ho_Chi_Minh').startOf('day').toDate();
-        // todayStart.setHours(0, 0, 0, 0);
-        const todayEnd = moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
-        // todayEnd.setHours(23, 59, 59, 999);
+        const todayStart = new Date(moment().tz('Asia/Ho_Chi_Minh').startOf('day').toDate().getTime() - offset);
+        const todayEnd = new Date(moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate().getTime() - offset);
 
         const attendance = await Attendance.findOne({
             employeeId: employeeDetail._id,
@@ -133,19 +138,18 @@ const checkin = async (req, res) => {
         });
 
         if (attendance) {
-            return res.status(400).json({ success: false, message: "You have already checked in today!" });
+            return res.status(400).json({ success: false, message: "Bạn đã điểm danh vào làm ngày hôm nay !" });
         }
-        // Lấy giờ hiện tại cho checkin
-        const now = moment().tz('Asia/Ho_Chi_Minh').toDate();
-
-        const expectedCheckInTime = moment().tz('Asia/Ho_Chi_Minh').set({
-            hour: configTimeWork.workStartTime.hour,
-            minute: configTimeWork.workStartTime.minute
-        }).toDate();
+        let expectedCheckInTime;
+        if (localDate > morningEnd) {
+            expectedCheckInTime = afternoonStart;
+        } else {
+            expectedCheckInTime = morningStart;
+        }
 
         // Tính số phút đi muộn
-        const lateMinutes = now > expectedCheckInTime ?
-            Math.floor((now - expectedCheckInTime) / (1000 * 60)) : 0;
+        const lateMinutes = localDate > expectedCheckInTime ?
+            Math.floor((localDate - expectedCheckInTime) / (1000 * 60)) : 0;
 
         // Xác định trạng thái
         const status = lateMinutes > 0 ? 'LATE' : 'PRESENT';
@@ -154,7 +158,7 @@ const checkin = async (req, res) => {
         const newAttendance = new Attendance({
             employeeId: employeeDetail._id,
             date: todayStart,
-            checkIn: now,
+            checkIn: localDate,
             status: status,
             lateMinutes: lateMinutes,
             note: req.body.note || ''
@@ -163,38 +167,34 @@ const checkin = async (req, res) => {
         await newAttendance.save();
         return res.status(200).json({
             success: true,
-            message: 'Check-in successful!',
+            message: 'Điểm danh vào làm thành công !',
             data: {
-                checkInTime: now,
+                checkInTime: localDate,
                 status: status,
                 lateMinutes: lateMinutes
             }
         });
-    } catch (err) {
-        return res.status(500).json({ success: false, message: err.message });
-    }
 }
 
 const checkout = async (req, res) => {
-    try {
         const user = req.user;
         if (!user) {
-            return res.status(401).json({ success: false, message: "Must be logged in!" });
+            return res.status(401).json({ success: false, message: "Bạn cần phải đăng nhập !" });
         }
 
         const employee = await User.findById(user._id, '-password');
         if (!employee || !employee.employeeId) {
-            return res.status(404).json({ success: false, message: "Employee not found!" });
+            return res.status(404).json({ success: false, message: "Không tìm thấy nhân viên !" });
         }
 
         const employeeDetail = await Employee.findById(employee.employeeId);
         if (!employeeDetail) {
-            return res.status(404).json({ success: false, message: "Employee details not found!" });
+            return res.status(404).json({ success: false, message: "Không tìm thấy thông tin của nhân viên !" });
         }
 
         // Lấy ngày hiện tại
-        const todayStart = moment().tz('Asia/Ho_Chi_Minh').startOf('day').toDate();
-        const todayEnd = moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
+        const todayStart = new Date(moment().tz('Asia/Ho_Chi_Minh').startOf('day').toDate().getTime() - offset);
+        const todayEnd = new Date(moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate().getTime() - offset);
 
         // Tìm bản ghi chấm công ngày hôm nay
         const attendance = await Attendance.findOne({
@@ -203,33 +203,15 @@ const checkout = async (req, res) => {
         });
 
         if (!attendance) {
-            return res.status(400).json({ success: false, message: "You have not checked in today!" });
+            return res.status(400).json({ success: false, message: "Bạn chưa điểm danh vào làm hôm nay!" });
         }
 
         if (attendance?.checkOut) {
-            return res.status(400).json({ success: false, message: "You have already checked out today!" });
+            return res.status(400).json({ success: false, message: "Bạn đã điểm danh ra về hôm nay!" });
         }
         // Lấy thời gian hiện tại để checkout
-        const now = moment().tz('Asia/Ho_Chi_Minh').toDate();
-        attendance.checkOut = now;
-
-        // Tạo các mốc thời gian quan trọng trong ngày
-        const morningStart = moment().tz('Asia/Ho_Chi_Minh').set({
-            hour: configTimeWork.morningStartTime.hour,
-            minute: configTimeWork.morningStartTime.minute
-        }).toDate();
-        const morningEnd = moment().tz('Asia/Ho_Chi_Minh').set({
-            hour: configTimeWork.morningEndTime.hour,
-            minute: configTimeWork.morningEndTime.minute
-        }).toDate();
-        const afternoonStart = moment().tz('Asia/Ho_Chi_Minh').set({
-            hour: configTimeWork.afternoonStartTime.hour,
-            minute: configTimeWork.afternoonStartTime.minute
-        }).toDate();
-        const afternoonEnd = moment().tz('Asia/Ho_Chi_Minh').set({
-            hour: configTimeWork.afternoonEndTime.hour,
-            minute: configTimeWork.afternoonEndTime.minute
-        }).toDate();
+        const timeCheckout = new Date();
+        attendance.checkOut = new Date(timeCheckout.getTime() - offset);
 
         // Tính giờ làm buổi sáng
         let morningHours = 0;
@@ -287,7 +269,7 @@ const checkout = async (req, res) => {
         await attendance.save();
 
         // Kiểm tra và ghi nhận phạt nếu về sớm
-        let message = "Check-out successful!";
+        let message = "Điểm danh ra về thành công!";
 
         if (overtimeHours > 0) {
             message += ` Overtime recorded: ${overtimeHours.toFixed(2)} hours.`;
@@ -302,34 +284,31 @@ const checkout = async (req, res) => {
                 afternoonHours: parseFloat(afternoonHours.toFixed(2)),
                 overtimeHours,
                 earlyLeaveMinutes,
-                performanceScore: workingRatio
+                performanceScore: workingRatio,
+                checkOutTime: attendance.checkOut
             }
         });
-    } catch (err) {
-        return res.status(500).json({ success: false, message: err.message });
-    }
 };
 
 const getAttendanceHistory = async (req, res) => {
-    try {
-        const user = req.body.user;
+        const user = req.user;
         if (!user) {
-            return res.status(401).json({ success: false, message: "Must be logged in!" });
+            return res.status(401).json({ success: false, message: "Bạn cần phải đăng nhập!" });
         }
 
-        const { startDate, endDate, employeeId } = req.body.data;
+        const { startDate, endDate } = req.body;
 
         // Xác định employeeId để truy vấn
         let targetEmployeeId;
 
         // Nếu là admin hoặc HR và có truyền employeeId, sử dụng employeeId đó
-        if ((user.role === 'ADMIN') && employeeId) {
-            targetEmployeeId = employeeId;
+        if ((user.role === 'ADMIN') && user.employeeId) {
+            targetEmployeeId = user.employeeId;
         } else {
             // Ngược lại, chỉ xem dữ liệu của bản thân
             const employee = await User.findById(user._id, '-password');
             if (!employee || !employee.employeeId) {
-                return res.status(404).json({ success: false, message: "Employee not found!" });
+                return res.status(404).json({ success: false, message: "Không tìm thấy nhân viên!" });
             }
             targetEmployeeId = employee.employeeId;
         }
@@ -339,12 +318,10 @@ const getAttendanceHistory = async (req, res) => {
 
         // Thêm điều kiện ngày nếu có
         if (startDate && endDate) {
-            const start = new Date(startDate);
-            start.setHours(0, 0, 0, 0);
-
-            const end = new Date(endDate);
-            end.setHours(23, 59, 59, 999);
-
+            const start = new Date(moment.tz(startDate, 'Asia/Ho_Chi_Minh').startOf('day').toDate().getTime() - offset);
+            console.log(start)
+            const end = new Date(moment.tz(endDate, 'Asia/Ho_Chi_Minh').startOf('day').toDate().getTime() - offset);
+            console.log(end)
             query.date = { $gte: start, $lte: end };
         }
 
@@ -353,7 +330,7 @@ const getAttendanceHistory = async (req, res) => {
             .sort({ date: -1 })
             .populate('employeeId', 'name departmentId position');
         if (!attendanceRecords){
-            return res.status(404).json({ success: false, message: "No attendance records found!" });
+            return res.status(404).json({ success: false, message: "Không tìm thấy bản ghi chấm công!" });
         }
         // Tính toán tổng kết
         const summary = {
@@ -371,18 +348,126 @@ const getAttendanceHistory = async (req, res) => {
 
         return res.status(200).json({
             success: true,
+            data: summary
+        });
+};
+
+const getAttendanceToday = async (req, res) => {
+        const user = req.user;
+        if (!user) {
+            return res.status(401).json({ success: false, message: "Bạn cần phải đăng nhập!" });
+        }
+
+        const employee = await User.findById(user._id, '-password');
+        if (!employee || !employee.employeeId) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy nhân viên!" });
+        }
+
+        const employeeDetail = await Employee.findById(employee.employeeId);
+        if (!employeeDetail) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy thông tin của nhân viên!" });
+        }
+        const todayStart = new Date(moment().tz('Asia/Ho_Chi_Minh').startOf('day').toDate().getTime() - offset);
+        const attendance = await Attendance.findOne({
+            employeeId: employeeDetail._id,
+            date: todayStart
+        });
+
+        if (!attendance) {
+            return res.status(200).json({
+                success: true,
+                data: {
+                    name: '',
+                    checkIn: "00:00:00",
+                    checkOut: "00:00:00",
+                    status: '',
+                    note: ''
+                }
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
             data: {
-                records: attendanceRecords,
-                summary
+                name: employeeDetail.fullName || '',
+                checkIn: attendance.checkIn || "00:00:00",
+                checkOut: attendance.checkOut || "00:00:00",
+                status: attendance.status || '',
+                note: attendance.note || ''
+            }
+        });
+}
+
+const requestLeave = async (req, res) => {
+    try {
+        const user = req.user;
+        if (!user) {
+            return res.status(401).json({ success: false, message: "Bạn cần phải đăng nhập!" });
+        }
+
+        const { startDate, endDate, reason } = req.body;
+        if (!startDate || !endDate || !reason) {
+            return res.status(400).json({ success: false, message: "Thiếu trường dữ liệu!" });
+        }
+        const parseStartDate = new Date(moment.tz(startDate, 'Asia/Ho_Chi_Minh').startOf('day').toDate().getTime() - offset);
+        const parseEndDate = new Date(moment.tz(endDate, 'Asia/Ho_Chi_Minh').startOf('day').toDate().getTime() - offset);
+        const employee = await User.findById(user._id, '-password');
+        if (!employee || !employee.employeeId) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy nhân viên!" });
+        }
+
+        const newLeaveRequest = new Leave({
+            employeeId: employee.employeeId,
+            startDate: parseStartDate,
+            endDate: parseEndDate,
+            reason,
+            status: 'Chờ duyệt'
+        });
+
+        await newLeaveRequest.save();
+
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        let currentDate = new Date(start);
+        const newAttendanceRecords = [];
+
+        while (currentDate <= end) {
+            const dateStr = format(currentDate, 'yyyy-MM-dd');
+            const existingAttendance = await Attendance.findOne({
+                employeeId: employee.employeeId,
+                date: { $gte: new Date(dateStr), $lte: new Date(dateStr + ' 23:59:59') }
+            });
+
+            if (!existingAttendance) {
+                newAttendanceRecords.push({
+                    employeeId: employee.employeeId,
+                    date: new Date(dateStr),
+                    status: 'Nghỉ phép',
+                    note: reason
+                });
+            }
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        if (newAttendanceRecords.length > 0) {
+            await Attendance.insertMany(newAttendanceRecords);
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Gửi đơn nghỉ phép thành công!',
+            data: {
+                id: newLeaveRequest._id,
+                startDate: format(newLeaveRequest.startDate, 'yyyy-MM-dd'),
+                endDate: format(newLeaveRequest.endDate, 'yyyy-MM-dd'),
+                reason: newLeaveRequest.reason,
+                status: newLeaveRequest.status
             }
         });
     } catch (err) {
-        console.error('Get attendance history error:', err);
         return res.status(500).json({ success: false, message: err.message });
     }
 };
-
-const requestLeave = {}
 
 const toDoLeave = {}
 
@@ -394,5 +479,6 @@ module.exports = {
     checkout,
     getAttendanceHistory,
     requestLeave,
+    getAttendanceToday,
     toDoLeave
 }
