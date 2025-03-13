@@ -16,18 +16,22 @@ const notificationSchema = new Schema({
       enum: ['SYSTEM', 'DEPARTMENT', 'PERSONAL'],
       required: true
     },
-    departmentId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Department'
-    },
-    recipientId: {
+    departmentId:[
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Department',
+      }
+    ],
+    recipientId: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Employee'
+      }
+    ],
+    readBy: [{
       type: Schema.Types.ObjectId,
       ref: 'Employee'
-    },
-    isRead: {
-      type: Boolean,
-      default: false
-    },
+    }],
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: 'User',
