@@ -26,7 +26,7 @@ const authLogin = async (req, res) => {
 
         const getEmployee = await Employee.findOne({userId: user._id});
 
-        let manager = "";
+        let manager = "STAFF";
         const getManager = await Department.findOne({managerId: getEmployee._id});
         if(getManager) {
             manager = "MANAGER";

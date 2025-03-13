@@ -47,7 +47,7 @@ export function SignIn() {
                 return navigate('/auth/first-time-password-change', { state: { email: result.email } });
             }
 
-            dispatch(setUser({ email: result.email, role: result.role }));
+            dispatch(setUser({ email: result.email, role: result.role,position: result.position }));
 
             toast.success(result.message, {
                 autoClose: 3000,
