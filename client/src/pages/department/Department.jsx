@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Table, Input, Button, Modal, Form, Space, Row, Col, Select, message, Avatar, Popconfirm } from "antd";
 import { assignManager, createDepartment, deleteDepartment, getDepartments, updateDepartment } from "@/apis/departments/departments";
 import { QuestionCircleOutlined } from "@ant-design/icons";
+import { useLocation } from "react-router-dom";
 const { Option } = Select;
 const DepartmentManagement = () => {
   const [departments, setDepartments] = useState([]);
@@ -13,6 +14,9 @@ const DepartmentManagement = () => {
   const [loadingData, setLoadingData] = useState(true);
   const [managerList, setManagerList] = useState([]);
 const [messageApi, contextHolder] = message.useMessage();
+const location = useLocation();
+  console.log(location)
+
   useEffect(() => {
     fetchDepartments();
   }, []);
