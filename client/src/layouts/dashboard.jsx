@@ -54,7 +54,6 @@ export function Dashboard() {
               layout === "dashboard" &&
               pages.map(({roles, path, element }) => {
                 if (roles?.includes(user.role)) {
-                  console.log(path, element);
                   return <Route path={path} element={element} />
                 }
               })

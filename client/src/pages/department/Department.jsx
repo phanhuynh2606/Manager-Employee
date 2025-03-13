@@ -13,9 +13,7 @@ const DepartmentManagement = () => {
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const [managerList, setManagerList] = useState([]);
-const [messageApi, contextHolder] = message.useMessage();
-const location = useLocation();
-  console.log(location)
+  const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     fetchDepartments();

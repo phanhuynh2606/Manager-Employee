@@ -9,15 +9,14 @@ import {
   BanknotesIcon,
   PowerIcon
 } from "@heroicons/react/24/solid";
-import { Home, Profile, Tables, Notifications } from "@/pages/dashboard";
+import { Home, Profile, Tables} from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
 import Department from "./pages/department/Department";
 import Employee from "./pages/employee/Employee";
 import ViewEmployee from "./pages/employee/ViewEmployee";
 import Salary from "./pages/salary/salary";
 import AttendanceManagement from "./pages/attendance/attendance";
-import useIsAdmin from "./utils/useIsAdmin";
-
+import Notifications from "./pages/notification/Notifications";
 
 
 const icon = {
@@ -33,7 +32,7 @@ export const routes = [
         name: "dashboard",
         path: "/home",
         element: <Home />,
-        roles: ["EMPLOYEE"],
+        roles: ["EMPLOYEE","ADMIN"],
       },
       {
         icon: <UserCircleIcon {...icon} />,
@@ -54,7 +53,7 @@ export const routes = [
         name: "notifications",
         path: "/notifications",
         element: <Notifications />,
-        roles: ["EMPLOYEE"],
+        roles: ["EMPLOYEE","ADMIN"],
       },
       {
         icon: <HomeModernIcon {...icon} />,
@@ -73,21 +72,21 @@ export const routes = [
       {
         path:'/employee/:employeeId',
         element: <ViewEmployee />,
-        roles: ["EMPLOYEE"],
+        roles: ["EMPLOYEE","ADMIN"],
       },
       {
             icon: <BanknotesIcon {...icon} />,
             name: "Salary",
             path:'/salaries',
             element: <Salary />,
-            roles: ["EMPLOYEE"],
+            roles: ["EMPLOYEE","ADMIN"],
       },
       {
             icon: <UserCircleIcon {...icon} />,
             name: "Attendance",
             path:'/attendance',
             element: <AttendanceManagement />,
-            roles: ["ADMIN"],
+            roles: ["EMPLOYEE","ADMIN"],
       },
       {
         icon: <PowerIcon {...icon} />,
