@@ -3,18 +3,43 @@ const Notification = require('../models/notification');
 // 📌 Tạo thông báo mới
 exports.createNotification = async (req, res) => {
   try {
-    const { title, content, type, departmentIds, recipientId } = req.body;
-    const newNotification = new Notification({
-      title,
-      content,
-      type,
-      departmentIds: departmentIds || [],
-      recipientId,
-      createdBy : req.user._id
+    const { title, content, type, departmentId, recipientId } = req.body;
+    if(!title || !content || !type) return res.status(400).json({ 
+      success: false,
+      message: 'Vui lòng nhập đầy đủ thông tin' 
     });
+    if(type === 'DEPARTMENT' && !departmentId){
+      return res.status(400).json({ 
+        success: false,
+        message: 'Vui lòng chọn phòng ban' 
+      });
+    } 
+    if(type === 'PERSONAL' && !recipientId){
+      return res.status(400).json({ 
+        success: false,
+        message: 'Vui lòng chọn người nhận'
+      });
+    }
+    if(type === 'DEPARTMENT' && departmentId.includes('ALL')){
+      departmentId = [];
+    }
+    console.log(req.body);
+    // if(departmentId.)
+    // const newNotification = new Notification({
+    //   title,
+    //   content,
+    //   type,
+    //   departmentIds: departmentIds || [],
+    //   recipientId,
+    //   createdBy : req.user._id
+    // });
 
-    await newNotification.save();
-    res.status(201).json(newNotification);
+    // await newNotification.save();
+    res.status(201).json({
+      success: true,
+      message: 'Tạo thông báo thành công',
+      // data: newNotification  
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
