@@ -150,9 +150,17 @@ export default function BaseSalaryStatisyic() {
         getMonthSalary();
     }, [check])
     const exportExcel = () => {
+        if(!selected) {
+            alert("Chưa chọn tháng hoặc quý")
+            return;
+        }
         const length = employee.length
+        console.log(employee)
+        let check =false;
         for (let i = 0; i < length; i++) {
             if (Object.keys(employee[i])[0] === selected) {
+                check=true;
+                console.log("Employee is ",employee)
                 const employees = employee[i][selected]
                 console.log(employees)
                 const data = employees.map((item, index) => ({
@@ -170,9 +178,13 @@ export default function BaseSalaryStatisyic() {
                         const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
                         const dataBlob = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
                 
-                        saveAs(dataBlob, `Employee_List ${selected}.xlsx`);
+                        saveAs(dataBlob, `Salary ${selected}.xlsx`);
             }
         }
+        if(!check) {
+            alert("Không có dữ liệu để xuất")
+        }
+        
     }
 
     return (

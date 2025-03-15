@@ -12,6 +12,7 @@ import { Home, Profile, Tables, Notifications } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
 import Department from "./pages/department/Department";
 import Statistic  from "./pages/statistic/statistic"
+import ActiveLog from "./pages/activelog/activelog";
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -55,6 +56,12 @@ export const routes = [
         name: "Statistic",
         path:'/statistic',
         element: <Statistic />,
+      },
+      {
+        icon: <ChartPieIcon {...icon} />,
+        name: "Active log",
+        path:'/activelog',
+        element: <ActiveLog />,
       }
     ],
   },

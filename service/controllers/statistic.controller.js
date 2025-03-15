@@ -5,25 +5,98 @@ const Salary = require("../models/salary")
 module.exports.statisticEmployee = async (req, res) => {
     try {
         const { department, position, sex } = req.body;
-        let find = {};
-        if (department && department.length > 0) {
-            find.departmentId = { $in: department };
+       
+        // if (department && department.length > 0) {
+        //     find.departmentId = { $in: department };
+        // }
+        // if (position && position.length > 0) {
+        //     find.position = { $in: position };
+        // }
+        // if (sex && sex.length > 0) {
+        //     find.gender = { $in: sex };
+        // }
+        // const totalEmployee = await Employee.countDocuments();
+        // const filterEmployee = Object.keys(find).length > 0 ? await Employee.countDocuments(find) : 0;
+
+        // const allFilterEmployee = Object.keys(find).length > 0 ? await Employee.find(find).populate("departmentId") : []
+        // res.json({
+        //     total: totalEmployee,
+        //     filter: filterEmployee,
+        //     list: allFilterEmployee
+        // })
+        const sum =  await Employee.countDocuments({});
+        if (position.length > 0) {
+            let find = {};
+            if (department && department.length > 0) {
+                find.departmentId = { $in: department };
+            }
+            if (sex && sex.length > 0) {
+                find.gender = { $in: sex };
+            }
+            const arr=[];
+            const arrList =[];
+            let remain =sum;
+            for(let i =0;i< position.length;i++){
+                const data = await Employee.countDocuments({...find,position:position[i]})
+                console.log("data is ",data)
+                remain=remain-data;
+                const dataList = await Employee.find({...find,position:position[i]}).populate("departmentId");
+                arrList.push(...dataList); 
+                arr.push(data);
+            }
+            return res.json({
+                data: arr,
+                remain:remain,
+                list:arrList
+            })
         }
-        if (position && position.length > 0) {
-            find.position = { $in: position };
+        if(department.length>0) {
+            let find = {};
+            if (sex && sex.length > 0) {
+                find.gender = { $in: sex };
+            }
+            const arr=[];
+            const arrList=[];
+            let remain=sum;
+            console.log(sum)
+            for(let i =0;i< department.length;i++){
+                const data = await Employee.countDocuments({...find,departmentId:department[i]})
+                const dataList = await Employee.find({...find,departmentId:department[i]}).populate("departmentId");
+                remain=remain-data;
+                arr.push(data);
+                arrList.push(...dataList); 
+            }
+            console.log("DP is : ",arr)
+            return res.json({
+                data: arr,
+                remain:remain,
+                list:arrList
+            })
         }
         if (sex && sex.length > 0) {
-            find.gender = { $in: sex };
+            let find = {};
+            const arr =[];
+            const arrList =[];
+            let remain =sum;
+            for(let i =0;i< sex.length;i++){
+                const data = await Employee.countDocuments({...find,gender:sex[i]})
+                const dataList = await Employee.find({...find,gender:sex[i]}).populate("departmentId")
+                remain = remain-data;
+                arrList.push(...dataList); 
+                arr.push(data);
+            }
+            return res.json({
+                data: arr,
+                remain:remain,
+                list: arrList
+            })
         }
-        const totalEmployee = await Employee.countDocuments();
-        const filterEmployee = Object.keys(find).length > 0 ? await Employee.countDocuments(find) : 0;
-
-        const allFilterEmployee = Object.keys(find).length > 0 ? await Employee.find(find).populate("departmentId") : []
         res.json({
-            total: totalEmployee,
-            filter: filterEmployee,
-            list: allFilterEmployee
+            data:[0],
+            remain:0,
+            list:[]
         })
+
     } catch (error) {
         console.log(error)
     }
@@ -92,7 +165,7 @@ module.exports.statisticSalary = async (req, res) => {
                 ]);
 
                 if (salary.length > 0) {
-                    allemployee.push({ [`Quý ${count}`]: salary[0].employees  });
+                    allemployee.push({ [`Quý ${count}`]: salary[0].employees });
                 }
 
                 arr.push(salary[0]?.totalAmount || 0);

@@ -45,20 +45,27 @@ export default function StatisticEmployee() {
     const [genderCheckBox, setGenderCheckBox] = React.useState([]);
     const [departmentCheckBox, setDepartmentCheckBox] = React.useState([]);
     const [positionCheckBox, setPositionCheckBox] = React.useState([]);
-
+    const [Dname,setDname] =React.useState([]);
     const chartConfig = {
         type: "pie",
-        width: 280,
-        height: 280,
-        series: [filter, total - filter],
+        width: 500,
+        height: 500,
+        series: [...Array.isArray(filter) ? filter : [], total],
         options: {
-            chart: { toolbar: { show: false } },
-            title: { show: "Biểu đồ thống kê nhân viên" },
+            chart: { toolbar: { show: true } },
+            title: { text: "Biểu đồ thống kê nhân viên" },
             dataLabels: { enabled: true },
-            colors: ["#020617", "#ff8f00", "#00897b", "#1e88e5", "#d81b60"],
-            legend: { show: false },
+            colors: [
+                "#020617", "#ff8f00", "#00897b", "#1e88e5", "#d81b60", 
+                "#f44336", "#e91e63", "#9c27b0", "#673ab7", "#3f51b5",
+                "#2196f3", "#03a9f4", "#00bcd4", "#009688", "#4caf50",
+                "#8bc34a", "#cddc39", "#ffeb3b", "#ffc107", "#ff5722"
+            ],
+            legend: { show: true },
+            labels: (positionCheckBox.length > 0 ? positionCheckBox : Dname.length > 0 ? Dname : genderCheckBox.length>0 ? genderCheckBox:[])
         },
     }
+    
     const getDataDepartment = async () => {
         try {
             const response = await instance.get("/departments")
@@ -69,13 +76,15 @@ export default function StatisticEmployee() {
     }
     const getDataEmployee = async () => {
         try {
+            const idDepartment = departmentCheckBox.map((item,index) => item._id)
             const respone = await instance.post("/statistic/employee", {
-                "department": departmentCheckBox,
+                "department": idDepartment,
                 "sex": genderCheckBox,
                 "position": positionCheckBox
             });
-            setTotal(respone.total)
-            setFilter(respone.filter)
+            console.log("List is" ,respone)
+            setTotal(respone.remain)
+            setFilter(respone.data)
             setList(respone.list)
         } catch (error) {
             console.log(error)
@@ -84,10 +93,16 @@ export default function StatisticEmployee() {
 
 
 
-    function checkBoxCheckDepartment(id) {
+    function checkBoxCheckDepartment(department) {
         setDepartmentCheckBox(prev => {
-            return prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id];
-        })
+            const exists = prev.some(item => item._id === department._id);
+            if (exists) {
+                return prev.filter(item => item._id !== department._id);
+            } else {
+                return [...prev, department];
+            }
+        });
+        console.log(list)
     }
     function checkBoxCheckSex(name) {
         setGenderCheckBox(prev => {
@@ -99,9 +114,15 @@ export default function StatisticEmployee() {
             return prev.includes(position) ? prev.filter((item) => item !== position) : [...prev, position]
         })
     }
+    function setName(departmentCheckBox) {
+        const dNameArr = departmentCheckBox.map((item,index) => item.name)
+        console.log(dNameArr)
+        setDname(dNameArr)
+    }
     React.useEffect(() => {
         getDataDepartment();
         getDataEmployee();
+        setName(departmentCheckBox)
     }, [genderCheckBox, departmentCheckBox, positionCheckBox])
 
     const exportToExcel = () => {
@@ -161,7 +182,7 @@ export default function StatisticEmployee() {
                     >
                         Xuất Excel
                     </button>
-                
+
                 </CardHeader>
 
 
@@ -194,8 +215,8 @@ export default function StatisticEmployee() {
                                             value={item._id}
                                             color="blue"
                                             className="h-4 w-4 border-gray-400 text-blue-500"
-                                            checked={departmentCheckBox.includes(item._id)}
-                                            onChange={() => checkBoxCheckDepartment(item._id)}
+                                            checked={departmentCheckBox.some(department => department._id === item._id)}
+                                            onChange={() => checkBoxCheckDepartment(item)}
                                         />
                                         {item.name}
                                     </label>

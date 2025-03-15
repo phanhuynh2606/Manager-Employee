@@ -38,7 +38,7 @@ export function Statistic() {
         <>
         <StatisticEmployee/>
             {/* Thống kê nhân viên */}
-            <div className="flex gap-100"></div>
+
         <BaseSalaryStatisyic/>    
         </>
     )
