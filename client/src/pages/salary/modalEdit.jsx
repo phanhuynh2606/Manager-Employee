@@ -7,21 +7,22 @@ import { updateSalary } from "@/apis/salaries/salaries";
 
 const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, fetchSalaries }) => {
     const [form] = Form.useForm();
-    console.log(editingSalary);
 
     const calculateTotalSalary = (formValues) => {
         const values = formValues || form.getFieldsValue();
 
-        const baseSalary = Number(values.baseSalary || 0);
+        const totalDaySalary = editingSalary.daySalary.reduce((sum, item) => sum + Number(item?.salary || 0), 0);        
         const allowances = values.allowances || [];
         const bonuses = values.bonuses || [];
-        const deductions = values.deductions || [];
+        const deductions = values.deductions || [];        
 
         const totalAllowances = allowances.reduce((sum, item) => sum + Number(item?.amount || 0), 0);
         const totalBonuses = bonuses.reduce((sum, item) => sum + Number(item?.amount || 0), 0);
         const totalDeductions = deductions.reduce((sum, item) => sum + Number(item?.amount || 0), 0);
 
-        return baseSalary + totalAllowances + totalBonuses - totalDeductions;
+        const total = totalDaySalary + totalAllowances + totalBonuses - totalDeductions;        
+
+        return total.toFixed(2);
     };
 
     useEffect(() => {
@@ -35,10 +36,10 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
 
             form.setFieldsValue(formData);
 
-            setTimeout(() => {
-                const totalSalary = calculateTotalSalary(formData);
-                form.setFieldsValue({ totalSalary });
-            }, 0);
+                setTimeout(() => {
+                    const totalSalary = calculateTotalSalary(formData);
+                    form.setFieldsValue({ totalSalary });
+                }, 0);
         }
     }, [editingSalary, form]);
 
@@ -61,6 +62,7 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                 baseSalary: values.baseSalary,
                 bonuses: values.bonuses,
                 deductions: values.deductions,
+                totalSalary: values.totalSalary,
                 note: values.note
             };
 
@@ -82,9 +84,13 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
             message.error({ content: "Update failed, please try again!", key: "salaryUpdate", duration: 2 });
         }
     };
-    const handleValuesChange = () => {
-        const totalSalary = calculateTotalSalary();
-        form.setFieldsValue({ totalSalary });
+    const handleValuesChange = (changedValues) => {
+        const totalSalary= editingSalary.daySalary.reduce((sum, item) => sum + Number(item?.salary || 0), 0);
+        const newFormValues = { ...form.getFieldsValue(), ...changedValues, totalSalary };
+        if ('allowances' in changedValues || 'bonuses' in changedValues || 'deductions' in changedValues) {
+            const totalSalary = calculateTotalSalary(newFormValues);
+            form.setFieldsValue({ totalSalary });
+        }
     };
 
     useEffect(() => {
@@ -129,7 +135,7 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                         </Form.Item>
                     </div>
                     <Form.Item name="baseSalary" label="Base Salary" rules={[{ required: true, message: "Please enter a base salary" }]}>
-                        <Input type="number" className="w-full" />
+                        <Input type="number" className="w-full" disabled />
                     </Form.Item>
                 </div>
 
