@@ -39,15 +39,16 @@ export function Sidenav({ brandImg, brandName, routes }) {
     try {
       const response = await logout();
 
-      if (response && response.response && response.response.data.success === false) {
-        return handleToast(response.response.data.message, 'error');
+      const errorResponse = response?.response?.data;
+      if (errorResponse?.success === false) {
+          return handleToast(errorResponse.message, 'error');
       }
-
-      if (response && response.success) {
-        dispatched(setLogout());
-        handleToast(response.message, 'success');
-        return navigate('/auth/sign-in');
-      }
+      
+      if (response?.success) {
+          dispatched(setLogout());
+          handleToast(response.message, 'success');
+          return navigate('/auth/sign-in');
+      }      
     } catch (e) {
       console.error(e, "Error");
       toast.error("Đăng xuất thất bại!", {

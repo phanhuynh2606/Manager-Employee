@@ -4,6 +4,7 @@ const employeeRoute = require('./employee.route');
 const attendanceRoute = require('./attendance.route');
 const salaryRoute = require('./salary.route');
 const notificationRoute = require('./notification.route');
+const backupRoute = require('./backup.route');
 const initRoutes = (app) => {
 
   app.get('/', (req, res) => {
@@ -16,6 +17,7 @@ const initRoutes = (app) => {
   app.use('/attendance', attendanceRoute);
   app.use('/salaries', salaryRoute)
   app.use('/notifications', notificationRoute);
+  app.use('/', backupRoute);
 }
 
 module.exports = initRoutes;

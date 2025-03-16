@@ -36,17 +36,21 @@ export function FirstTimeChangePassword() {
         try {
             const result = await firstTimeChangePassword(email, oldPassword, newPassword, newConfirmPassword);
 
-            if (result?.response?.data?.success === false || result?.success === false) {
-                handleError(result?.response?.data || result);
+            const errorResponse = result?.response?.data;
+            if (errorResponse?.success === false || result?.success === false) {
+                handleError(errorResponse || result);
+                return;
             }
-
-            toast.success(result.message, {
-                autoClose: 3000,
-                closeOnClick: true,
-                pauseOnHover: false,
-            });
-
-            return navigate('/auth/sign-in');
+            
+            if (result?.success) {
+                toast.success(result.message, {
+                    autoClose: 3000,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                });
+                
+                return navigate('/auth/sign-in');
+            }
         } catch (e) {
             console.error(e, "Error");
             toast.error("Thay đổi mật khẩu không thành công!", {

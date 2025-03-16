@@ -16,13 +16,13 @@ function isActiveUser(isActive, res) {
             return res.status(403).json({
                 success: false,
                 statusCode: 403,
-                message: "Your account has been locked!"
+                message: "Tài khoản của bạn đã bị khóa!"
             });
         case "3":
             return res.status(410).json({
                 success: false,
                 statusCode: 410,
-                message: "Your account has been deleted!"
+                message: "Tài khoản của bạn đã bị xóa!"
             });
     }
 }

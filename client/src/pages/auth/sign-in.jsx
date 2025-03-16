@@ -34,11 +34,13 @@ export function SignIn() {
         try {
             const result = await authLogin(email, password);
 
-            if (result?.response?.data?.success === false || result?.success === false) {
-                handleError(result?.response?.data || result);
+            const errorResponse = result?.response?.data;
+            if (errorResponse?.success === false || result?.success === false) {
+                handleError(errorResponse || result);
+                return;
             }
-
-            if (result.active === "0") {
+            
+            if (result?.active === "0") {
                 toast.warning("Bạn cần thay đổi mật khẩu của mình.", {
                     autoClose: 2000,
                     closeOnClick: true,
@@ -46,19 +48,21 @@ export function SignIn() {
                 });
                 return navigate('/auth/first-time-password-change', { state: { email: result.email } });
             }
-
-            dispatch(setUser({ email: result.email, role: result.role,position: result.position }));
-
-            toast.success(result.message, {
-                autoClose: 3000,
-                closeOnClick: true,
-                pauseOnHover: false,
-            });
-
-            if (result.role.toUpperCase() === "ADMIN") {
-                return navigate('/dashboard/home');
-            } else {
-                return navigate('/dashboard/employee');
+            
+            if (result?.success) {
+                toast.success(result.message, {
+                    autoClose: 3000,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                });
+            
+                dispatch(setUser({
+                    email: result.email,
+                    role: result.role,
+                    position: result.position
+                }));
+            
+                return navigate(result.role.toUpperCase() === "ADMIN" ? '/dashboard/home' : '/dashboard/employee');
             }
         } catch (e) {
             console.error(e, "Error");
