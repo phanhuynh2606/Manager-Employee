@@ -1,11 +1,11 @@
-const Employee = require('../models/employee');
+const Employee = require("../models/employee");
 const User = require('../models/user');
 const Department = require('../models/department');
 const Attendance = require('../models/attendance');
 const os = require('os');
 const moment = require('moment-timezone');
 const Leave = require('../models/leave');
-const { addSalary } = require('./salary.controller');
+const { addSalary } = require("./salary.controller");
 const configTimeWork = {
     workStartTime: { hour: 8, minute: 30 },
     morningStartTime: { hour: 8, minute: 30 },
@@ -51,67 +51,75 @@ const getInformation = async (req, res) => {
     if (!user) {
         return res.status(404).json({ success: false, message: "Bạn cần phải đăng nhập!" });
     }
-    const role = user.role;
+    if (user.role !== 'EMPLOYEE') {
+        return res.status(403).json({ success: false, message: "Bạn không có quyền truy cập vào dữ liệu này!" });
+    }
     // const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.ip;;
     // const normalizedIp = ip.replace('::ffff:', '');
     // console.log(ip)
     // console.log(normalizedIp);
     let formatData;
     const formatDate = `${localDate.getMonth() + 1}/${localDate.getFullYear()}`;
-    switch (role) {
-        case 'ADMIN':
-            const admin = await User.find({ role: 'EMPLOYEE' }, '-password');
-            const employeeIds = admin.map(user => user.employeeId);
-            const departmentId = employeeIds.map(employee => employee.departmentId);
-            const department = await Department.find({ _id: { $in: departmentId } });
-            const employees = await Employee.find({ _id: { $in: employeeIds } });
-
-            formatData = await Promise.all(employees.map(async (employee) => {
-                const count = await Attendance.countDocuments({ employeeId: employee._id, status: 'LATE' });
-                const totalWorkingHours = await Attendance.aggregate([
-                    { $match: { employeeId: employee._id } },
-                    { $group: { _id: null, totalWorkingHours: { $sum: "$workingHours" } } }
-                ]);
-                const attendance = await Attendance.find({ employeeId: employee._id });
-                if (!attendance) {
-                    return res.status(404).json({ success: false, message: "Không tìm thấy bản ghi chấm công!" });
-                }
-                const totalWorkingHour = totalWorkingHours?.length > 0 ? totalWorkingHours[0].totalWorkingHours : 0;
-                const totalOvertimeHours = attendance.reduce((sum, record) => sum + (record.overtimeHours || 0), 0);
-                return {
-                    date: formatDate,
-                    fullName: employee.fullName,
-                    department: department.name,
-                    position: employee.position,
-                    workingDay: 22,
-                    leaveBalance: 12,
-                    leaveTaken: count,
-                    overtime: totalOvertimeHours
-                };
-            }));
-            return res.status(200).json({ success: true, data: formatData });
-        case 'EMPLOYEE':
-            const employee = await User.findOne({ email: user.email }, '-password');
-            const employeeDetail = await Employee.findById({ _id: employee.employeeId }).populate('departmentId', 'name');
-            const attendanceEmploy = await Attendance.find({ employeeId: employeeDetail._id });
-            if (!attendanceEmploy) {
-                return res.status(404).json({ success: false, message: "Không tìm thấy bản ghi chấm công!" });
-            }
-            const count = await Attendance.countDocuments({ employeeId: employeeDetail._id, status: 'LATE' })
-            formatData = {
-                date: formatDate,
-                fullName: employeeDetail.fullName,
-                department: employeeDetail.departmentId.name,
-                position: employeeDetail.position,
-                workingDay: 22,
-                leaveBalance: 12,
-                leaveTaken: count,
-                overtime: attendanceEmploy.overtimeHours
-            }
-            return res.status(200).json({ success: true, data: formatData });
-        default:
-            return res.status(404).json({ success: false, message: "Chức vụ này chưa được đăng kí!" });
+    const employee = await User.findOne({ email: user.email }, '-password');
+    const employeeDetail = await Employee.findById({ _id: employee.employeeId }).populate('departmentId', 'name');
+    const attendanceEmploy = await Attendance.find({ employeeId: employeeDetail._id });
+    if (!attendanceEmploy) {
+        return res.status(404).json({ success: false, message: "Không tìm thấy bản ghi chấm công!" });
     }
+    const count = await Attendance.countDocuments({ employeeId: employeeDetail._id, status: 'LATE' })
+    formatData = {
+        date: formatDate,
+        fullName: employeeDetail.fullName,
+        department: employeeDetail.departmentId.name,
+        position: employeeDetail.position,
+        workingDay: 22,
+        leaveBalance: 12,
+        leaveTaken: count,
+        overtime: attendanceEmploy.overtimeHours
+    }
+    return res.status(200).json({ success: true, data: formatData });
+}
+
+const getAllAttendance = async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        return res.status(401).json({ success: false, message: "Bạn cần phải đăng nhập !" });
+    }
+    if (user.role !== 'ADMIN') {
+        return res.status(403).json({ success: false, message: "Bạn không có quyền truy cập !" });
+    }
+    const admin = await User.find({ role: 'EMPLOYEE' }, '-password');
+    const employeeIds = admin.map(user => user.employeeId);
+    const employees = await Employee.find({ _id: { $in: employeeIds } }).populate('departmentId', 'name');
+    let formatData;
+    const formatDate = `${localDate.getMonth() + 1}/${localDate.getFullYear()}`;
+    formatData = await Promise.all(employees.map(async (employee) => {
+        const countLate = await Attendance.countDocuments({ employeeId: employee._id, status: 'LATE' });
+        const countLeave = await Attendance.countDocuments({ employeeId: employee._id, status: 'LEAVE' });
+        const totalWorkingHours = await Attendance.aggregate([
+            { $match: { employeeId: employee._id } },
+            { $group: { _id: null, totalWorkingHours: { $sum: "$workingHours" } } }
+        ]);
+        const attendance = await Attendance.find({ employeeId: employee._id });
+        if (!attendance) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy bản ghi chấm công!" });
+        }
+        const totalWorkingHour = totalWorkingHours?.length > 0 ? totalWorkingHours[0].totalWorkingHours : 0;
+        const totalOvertimeHours = attendance.reduce((sum, record) => sum + (record.overtimeHours || 0), 0);
+        return {
+            date: formatDate,
+            fullName: employee.fullName,
+            department: employee.departmentId.name,
+            position: employee.position,
+            workingDay: 22,
+            leaveBalance: 12,
+            lateDays: countLate,
+            leaveTaken: countLeave,
+            overtime: totalOvertimeHours,
+            totalWorkingHours: totalWorkingHour
+        };
+    }));
+    return res.status(200).json({ success: true, data: formatData });
 }
 
 const checkin = async (req, res) => {
@@ -142,16 +150,18 @@ const checkin = async (req, res) => {
         return res.status(400).json({ success: false, message: "Bạn đã điểm danh vào làm ngày hôm nay !" });
     }
     const dateNow = req.body.date;
+    const parseDate = new Date(dateNow);
+    const formatDate = new Date(parseDate.getTime() - offset);
     let expectedCheckInTime;
-    if (dateNow > morningEnd) {
+    if (formatDate > morningEnd) {
         expectedCheckInTime = afternoonStart;
     } else {
         expectedCheckInTime = morningStart;
     }
 
     // Tính số phút đi muộn
-    const lateMinutes = dateNow > expectedCheckInTime ?
-        Math.floor((dateNow - expectedCheckInTime) / (1000 * 60)) : 0;
+    const lateMinutes = formatDate > expectedCheckInTime ?
+        Math.floor((formatDate - expectedCheckInTime) / (1000 * 60)) : 0;
 
     // Xác định trạng thái
     const status = lateMinutes > 0 ? 'LATE' : 'PRESENT';
@@ -160,7 +170,7 @@ const checkin = async (req, res) => {
     const newAttendance = new Attendance({
         employeeId: employeeDetail._id,
         date: todayStart,
-        checkIn: dateNow,
+        checkIn: formatDate,
         status: status,
         lateMinutes: lateMinutes,
         note: req.body.note || ''
@@ -171,7 +181,7 @@ const checkin = async (req, res) => {
         success: true,
         message: 'Điểm danh vào làm thành công !',
         data: {
-            checkInTime: dateNow,
+            checkInTime: formatDate,
             status: status,
             lateMinutes: lateMinutes
         }
@@ -212,8 +222,10 @@ const checkout = async (req, res) => {
         return res.status(400).json({ success: false, message: "Bạn đã điểm danh ra về hôm nay!" });
     }
     // Lấy thời gian hiện tại để checkout
-    const timeCheckout = req.body.date;
-    attendance.checkOut = timeCheckout;
+    const dateNow = req.body.date;
+    const parseDate = new Date(dateNow);
+    const formatDate = new Date(parseDate.getTime() - offset);
+    attendance.checkOut = formatDate;
 
     // Tính giờ làm buổi sáng
     let morningHours = 0;
@@ -404,7 +416,6 @@ const requestLeave = async (req, res) => {
         if (!user) {
             return res.status(401).json({ success: false, message: "Bạn cần phải đăng nhập!" });
         }
-
         const { startDate, endDate, reason } = req.body;
         if (!startDate || !endDate || !reason) {
             return res.status(400).json({ success: false, message: "Thiếu trường dữ liệu!" });
@@ -415,53 +426,25 @@ const requestLeave = async (req, res) => {
         if (!employee || !employee.employeeId) {
             return res.status(404).json({ success: false, message: "Không tìm thấy nhân viên!" });
         }
-
+        const leaveRequest = await Leave.findOne({ startDate: parseStartDate, endDate: parseEndDate, employeeId: employee.employeeId });
+        if (leaveRequest) {
+            return res.status(400).json({ success: false, message: "Đơn nghỉ phép đã tồn tại!" });
+        }
         const newLeaveRequest = new Leave({
             employeeId: employee.employeeId,
             startDate: parseStartDate,
             endDate: parseEndDate,
-            reason,
+            reason: reason,
             status: 'Chờ duyệt'
         });
 
         await newLeaveRequest.save();
-
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        let currentDate = new Date(start);
-        const newAttendanceRecords = [];
-
-        while (currentDate <= end) {
-            const dateStr = format(currentDate, 'yyyy-MM-dd');
-            const existingAttendance = await Attendance.findOne({
-                employeeId: employee.employeeId,
-                date: { $gte: new Date(dateStr), $lte: new Date(dateStr + ' 23:59:59') }
-            });
-
-            if (!existingAttendance) {
-                newAttendanceRecords.push({
-                    employeeId: employee.employeeId,
-                    date: new Date(dateStr),
-                    status: 'Nghỉ phép',
-                    note: reason
-                });
-            }
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-
-        if (newAttendanceRecords.length > 0) {
-            await Attendance.insertMany(newAttendanceRecords);
-        }
-
+        const diffDay = Math.floor((parseEndDate - parseStartDate) / (1000 * 60 * 60 * 24));
         return res.status(200).json({
             success: true,
             message: 'Gửi đơn nghỉ phép thành công!',
             data: {
-                id: newLeaveRequest._id,
-                startDate: format(newLeaveRequest.startDate, 'yyyy-MM-dd'),
-                endDate: format(newLeaveRequest.endDate, 'yyyy-MM-dd'),
-                reason: newLeaveRequest.reason,
-                status: newLeaveRequest.status
+                diffDay: diffDay
             }
         });
     } catch (err) {
@@ -510,7 +493,7 @@ const getAttendanceHistoryByMonth = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: {
-                name: '',
+                date: '0000-00-00',
                 checkIn: "00:00:00",
                 checkOut: "00:00:00",
                 status: '',
@@ -535,7 +518,87 @@ const getAttendanceHistoryByMonth = async (req, res) => {
     });
 };
 
-const toDoLeave = {}
+const getListLeave = async (req, res) => {
+    try {
+        const user = req.user;
+        if (!user) {
+            return res.status(401).json({ success: false, message: "Bạn cần phải đăng nhập!" });
+        }
+
+        const page = Math.max(1, Number(req.query.page) || 1);
+        const limit = Math.max(1, Number(req.query.limit) || 10);
+        const skip = (page - 1) * limit;
+
+        const [listLeave, totalLeaves] = await Promise.all([
+            Leave.find().skip(skip).limit(limit).populate('employeeId', 'fullName'),
+            Leave.countDocuments()
+        ]);
+
+        return res.status(200).json({
+            success: true,
+            data: listLeave,
+            totalPages: Math.ceil(totalLeaves / limit),
+            currentPage: page,
+            totalRecords: totalLeaves
+        });
+    } catch (err) {
+        return res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+
+const toDoLeave = async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        return res.status(401).json({ success: false, message: "Bạn cần phải đăng nhập!" });
+    }
+    const { leaveId, action } = req.body;
+    if (!leaveId || !action) {
+        return res.status(400).json({ success: false, message: "Thiếu trường dữ liệu!" });
+    }
+    const leave = await Leave.findById(leaveId);
+    if (!leave) {
+        return res.status(404).json({ success: false, message: "Không tìm thấy đơn nghỉ phép!" });
+    }
+    if (leave.status !== 'Chờ duyệt') {
+        return res.status(400).json({ success: false, message: "Đơn nghỉ phép đã được xử lý!" });
+    }
+    switch (action) {
+        case 'approve':
+            leave.status = 'Đã duyệt';
+            const newAttendance = new Attendance({
+                employeeId: leave.employeeId,
+                date: leave.startDate,
+                checkIn: leave.startDate,
+                status: "LEAVE",
+                workingHours: 0,
+                overtimeHours: 0,
+                morningHours: 0,
+                afternoonHours: 0,
+                breakHours: 1.5,
+                lateMinutes: 0,
+                earlyLeaveMinutes: 0,
+                note: " Performance score: 0" + (leave.reason ? `, Reason: ${leave.reason}` : ''),
+                checkOut: leave.startDate
+            });
+            await newAttendance.save();
+            break;
+        case 'reject':
+            leave.status = 'Từ chối';
+            break;
+        default:
+            return res.status(400).json({ success: false, message: "Hành động không hợp lệ!" });
+    }
+    const checkingLeave = await leave.save();
+    if (!checkingLeave) {
+        return res.status(500).json({ success: false, message: "Lỗi khi xử lý đơn nghỉ phép!" });
+    }
+
+    return res.status(200).json({
+        success: true,
+        message: `Đã ${action === 'approve' ? 'duyệt' : 'từ chối'} đơn nghỉ phép!`,
+    })
+}
 
 
 
@@ -547,5 +610,7 @@ module.exports = {
     requestLeave,
     getAttendanceToday,
     toDoLeave,
-    getAttendanceHistoryByMonth
+    getAttendanceHistoryByMonth,
+    getListLeave,
+    getAllAttendance
 }
