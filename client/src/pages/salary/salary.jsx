@@ -6,23 +6,22 @@ import {
 } from "@ant-design/icons";
 import { getSalaries } from "@/apis/salaries/salaries";
 import { columns } from "./column";
-import SalaryModal from "./modal";
 import SalaryModalEdit from "./modalEdit";
+import { useSelector } from "react-redux";
 
 function Salary() {
   const [salaries, setSalaries] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSalary, setEditingSalary] = useState(null);
   const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
   const [search, setSearch] = useState('');
   const [month, setMonth] = useState(null);
-  const [year, setYear] = useState(null);
-  const [status, setStatus] = useState(null);
+  const [year, setYear] = useState(null);   
+  const role = useSelector((state) => state?.auth?.user?.role);
 
   const fetchSalaries = async () => {
     try {
-      const res = await getSalaries({ search, month, year, status });
+      const res = await getSalaries({ search, month, year });
       console.log(res)
       if (res.success) {
         setLoadingData(false);
@@ -35,13 +34,9 @@ function Salary() {
     }
   };
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
   useEffect(() => {
     fetchSalaries();
-  }, [search, month, year, status]);
+  }, [search, month, year]);
 
   return (
     <div>
@@ -81,25 +76,9 @@ function Salary() {
               );
             })}
           </Select>
-          <Select
-            placeholder="Status"
-            value={status}
-            onChange={setStatus}
-            style={{ width: 150 }}
-            allowClear
-          >
-            <Select.Option value={null}>Select Status</Select.Option>
-            <Select.Option value="DRAFT">DRAFT</Select.Option>
-            <Select.Option value="APPROVED">APPROVED</Select.Option>
-            <Select.Option value="PAID">PAID</Select.Option>
-          </Select>
         </Space>
-        <Button type="primary" variant="solid" color="default" onClick={showModal}>
-          <PlusOutlined /> Add new salary
-        </Button>
       </div>
-      <Table dataSource={salaries} columns={columns(fetchSalaries, setEditingSalary, setIsModalOpenEdit)} className="mt-10" scroll={{ x: "max-content" }} />
-      <SalaryModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} fetchSalaries={fetchSalaries} />
+      <Table dataSource={salaries} columns={columns( setEditingSalary, setIsModalOpenEdit,role)} className="mt-10" scroll={{ x: "max-content" }} />
       <SalaryModalEdit editingSalary={editingSalary} isModalOpenEdit={isModalOpenEdit} setIsModalOpenEdit={setIsModalOpenEdit} fetchSalaries={fetchSalaries} />
     </div>
 

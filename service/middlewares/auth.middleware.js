@@ -3,7 +3,7 @@ const User = require("../models/user");
 
 const authenticate = async (req, res, next) => {
     try {
-        const {accessToken} = req.cookies;
+        const { accessToken } = req.cookies;
         if (!accessToken) {
             return res.status(401).json({
                 success: false,
@@ -60,4 +60,4 @@ const isAdmin = async (req, res, next) => {
         });
     }
 };
-module.exports = {authenticate, isAdmin};
+module.exports = { authenticate, isAdmin };
