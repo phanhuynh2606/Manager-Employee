@@ -54,13 +54,15 @@ import ReactApexChart from 'react-apexcharts';
 import * as XLSX from 'xlsx';
 import {
     checkin,
-    checkout,
+    checkout, getAllAttendance,
     getAttendanceHistory, getAttendanceHistoryByMonth,
     getAttendances,
-    getAttendanceToday
+    getAttendanceToday, getListLeave, requestLeave, toDoLeave
 } from "@/apis/attendances/attendances.js";
 import {toast} from "react-toastify";
 import moment from 'moment-timezone';
+import {Pagination} from "antd";
+import {useSelector} from "react-redux";
 
 const initialEmployees = [
     { id: 1, name: "Nguyễn Văn A", position: "Nhân viên", department: "Phòng Kỹ thuật" },
@@ -75,26 +77,32 @@ function AttendanceManagement() {
     const [tabValue, setTabValue] = useState(0);
     const [attendanceData, setAttendanceData] = useState();
     const [employeeData, setEmployeeData] = useState();
-    const [employees, setEmployees] = useState(initialEmployees);
+    const [employees, setEmployees] = useState();
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [openCheckInDialog, setOpenCheckInDialog] = useState(false);
     const [openCheckOutDialog, setOpenCheckOutDialog] = useState(false);
     const [openLeaveDialog, setOpenLeaveDialog] = useState(false);
     const [openOvertimeDialog, setOpenOvertimeDialog] = useState(false);
-    const [leaveData, setLeaveData] = useState({ startDate: null, endDate: null, reason: "", type: "Nghỉ phép năm" });
+    const [leaveData, setLeaveData] = useState({ startDate: null, endDate: null, reason: ""});
     const [overtimeData, setOvertimeData] = useState({ date: null, hours: "", reason: "" });
     const [currentMonth, setCurrentMonth] = useState(localDate);
     const [notification, setNotification] = useState({ open: false, message: "", severity: "success" });
     const [leaveRequests, setLeaveRequests] = useState([]);
-    const [departmentFilter, setDepartmentFilter] = useState("Tất cả");
-    const departments = ["Tất cả", "Phòng Kỹ thuật", "Phòng Kinh doanh"];
     const [attendanceDataToday, setAttendanceDataToday] = useState();
     const [attendanceDataByMonth, setAttendanceDataByMonth] = useState([]);
+    const [pagination, setPagination] = useState({
+        current: 1,
+        pageSize: 5,
+        total: 0,
+    });
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
     };
+    const user = useSelector((state) => state.auth.user);
+    const [role, setRole] = useState(user.role);
     const fetchDataEmployee = async () => {
         try {
+            console.log(user)
             const response = await getAttendances();
             if (!response) return;
             setEmployeeData(response.data);
@@ -162,15 +170,55 @@ function AttendanceManagement() {
         setAttendanceDataByMonth(response.data);
     };
 
-    useEffect(() => {
-        fetchDataEmployee();
-        fetchAttendanceData();
-        fetchAttendanceToday();
-    }, []);
+    const fetchListLeave = async (page, pageSize) => {
+            const response = await getListLeave(page, pageSize);
+            if (!response)
+                return toast.error("Lấy dữ liệu thất bại!", {
+                    autoClose: 2000,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                });
+            setLeaveRequests(response.data);
+            setPagination((prev) => ({
+                ...prev,
+                current: page,
+                pageSize,
+                total: response.totalRecords, // Cập nhật tổng số bản ghi từ API
+            }));
+
+    };
+
+    const fetchAllEmployees = async () => {
+        const response = await getAllAttendance();
+        if (!response)
+            return toast.error("Lấy dữ liệu thất bại!", {
+                autoClose: 2000,
+                closeOnClick: true,
+                pauseOnHover: false,
+            });
+        setEmployees(response.data);
+    }
+
+    const fetchdata = async () => {
+        try {
+            if (role === "ADMIN") {
+                await fetchListLeave(pagination.current, pagination.pageSize);
+                await fetchAllEmployees();
+            } else {
+                await fetchDataEmployee();
+                await fetchAttendanceData();
+                await fetchAttendanceToday();
+                await fetchAttendanceDataByMonth(currentMonth.getFullYear(), currentMonth.getMonth() + 1);
+            }
+        } catch (e) {
+            console.error("Lỗi khi fetch dữ liệu:", e);
+        }
+    };
 
     useEffect(() => {
-        fetchAttendanceDataByMonth(currentMonth.getFullYear(),(currentMonth.getMonth() + 1));
-        }, [currentMonth]);
+        fetchdata();
+    }, [role, currentMonth]);
+
 
 
     const handleCheckInOpen = () => setOpenCheckInDialog(true);
@@ -184,10 +232,7 @@ function AttendanceManagement() {
 
     const handleCheckIn = async () => {
         const now = new Date();
-        const offset = now.getTimezoneOffset() * 60000;
-        const dateNow = new Date(now.getTime() - offset);
-        const response = await checkin(dateNow);
-        console.log(response)
+        const response = await checkin(now);
         if (!response.success){
             setOpenCheckInDialog(false);
             return toast.error(response.response.data.message, {
@@ -204,10 +249,7 @@ function AttendanceManagement() {
 
     const handleCheckOut = async () => {
         const now = new Date();
-        const offset = now.getTimezoneOffset() * 60000;
-        const dateNow = new Date(now.getTime() - offset);
-        const response = await checkout(dateNow);
-        console.log(response)
+        const response = await checkout(now);
         if (!response.success){
             setOpenCheckOutDialog(false);
             return toast.error(response.response.data.message, {
@@ -222,35 +264,41 @@ function AttendanceManagement() {
         setNotification({ open: true, message: response.message + response.data.checkOutTime, severity: "success" });
     };
 
-    const handleLeaveSubmit = () => {
-        if (!leaveData.startDate || !leaveData.endDate || !leaveData.reason) {
+    const handleLeaveSubmit = async () => {
+        const startDate = new Date(leaveData.startDate);
+        const endDate = new Date(leaveData.endDate);
+        const reason = leaveData.reason;
+        if (!startDate || !endDate || !reason) {
             setNotification({ open: true, message: "Vui lòng điền đầy đủ thông tin", severity: "error" });
             return;
         }
-        const startDate = new Date(leaveData.startDate);
-        const endDate = new Date(leaveData.endDate);
-        const diffTime = Math.abs(endDate - startDate);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-
-        setEmployeeData({ ...employeeData, leaveTaken: employeeData.leaveTaken + diffDays });
-        setLeaveRequests([...leaveRequests, { id: Date.now(), ...leaveData, status: "Chờ duyệt" }]);
-
-        let currentDate = new Date(startDate);
-        const newAttendanceData = [...attendanceData];
-        while (currentDate <= endDate) {
-            const dateStr = format(currentDate, 'yyyy-MM-dd');
-            const existingIndex = attendanceData.findIndex(item => item.date === dateStr);
-            if (existingIndex !== -1) {
-                newAttendanceData[existingIndex] = { ...newAttendanceData[existingIndex], checkIn: "", checkOut: "", status: "Nghỉ phép", note: leaveData.reason };
-            } else {
-                newAttendanceData.push({ date: dateStr, checkIn: "", checkOut: "", status: "Nghỉ phép", note: leaveData.reason });
-            }
-            currentDate.setDate(currentDate.getDate() + 1);
+        if (startDate < currentMonth || endDate < currentMonth) {
+            setNotification({ open: true, message: "Không thể đăng ký nghỉ phép cho tháng trước", severity: "error" });
+            return;
         }
-        setAttendanceData(newAttendanceData);
+        if (startDate > endDate) {
+            setNotification({ open: true, message: "Ngày kết thúc phải sau ngày bắt đầu", severity: "error" });
+            return;
+        }
+        if (startDate.getTime() === endDate.getTime()) {
+            setNotification({ open: true, message: "Ngày bắt đầu và ngày kết thúc không thể trùng nhau", severity: "error" });
+            return;
+        }
+            const response = await requestLeave(startDate, endDate, reason);
+            if (!response.success) {
+                return toast.error(response.response.data.message, {
+                    autoClose: 2000,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                });
+            }
         setOpenLeaveDialog(false);
-        setLeaveData({ startDate: null, endDate: null, reason: "", type: "Nghỉ phép năm" });
-        setNotification({ open: true, message: `Đã đăng ký nghỉ phép thành công: ${diffDays} ngày`, severity: "success" });
+            await fetchListLeave(pagination.current, pagination.pageSize);
+        return toast.success(response.data.message, {
+            autoClose: 2000,
+            closeOnClick: true,
+            pauseOnHover: false,
+        });
     };
 
     const handleOvertimeSubmit = () => {
@@ -276,32 +324,6 @@ function AttendanceManagement() {
 
     const handleNotificationClose = () => setNotification({ ...notification, open: false });
 
-    // const getCurrentMonthAttendance = () => {
-    //     const year = currentMonth.getFullYear();
-    //     const month = currentMonth.getMonth();
-    //     return attendanceData.filter(item => {
-    //         const itemDate = new Date(item.date);
-    //         return itemDate.getFullYear() === year && itemDate.getMonth() === month;
-    //     });
-    // };
-
-    // const calculateMonthlyStats = () => {
-    //     const filteredData = getCurrentMonthAttendance();
-    //     const workDays = filteredData.filter(item => ["Đúng giờ", "Đi muộn", "Làm thêm giờ"].includes(item.status)).length;
-    //     const lateDays = filteredData.filter(item => item.status === "Đi muộn").length;
-    //     const leaveDays = filteredData.filter(item => item.status === "Nghỉ phép").length;
-    //     const overtimeDays = filteredData.filter(item => item.status === "Làm thêm giờ").length;
-    //     return { workDays, lateDays, leaveDays, overtimeDays };
-    // };
-
-    // const stats = calculateMonthlyStats();
-
-    // const todayAttendance = attendanceData.filter(row => row.date === format(new Date(), 'yyyy-MM-dd'));
-
-    // const filteredAttendance = getCurrentMonthAttendance().filter(
-    //     row => departmentFilter === "Tất cả" || employeeData.department === departmentFilter
-    // );
-
     const exportReport = () => {
         const ws = XLSX.utils.json_to_sheet(getCurrentMonthAttendance());
         const wb = XLSX.utils.book_new();
@@ -310,39 +332,6 @@ function AttendanceManagement() {
         setNotification({ open: true, message: "Báo cáo đã được xuất thành công", severity: "success" });
     };
 
-    const Charts = () => {
-        const barChartOptions = {
-            chart: { type: 'bar' },
-            series: [{ name: 'Ngày', data: [stats.workDays, stats.lateDays, stats.leaveDays, stats.overtimeDays] }],
-            xaxis: { categories: ['Làm việc', 'Đi muộn', 'Nghỉ phép', 'Làm thêm'] },
-        };
-        const pieChartOptions = {
-            chart: { type: 'pie' },
-            series: [stats.workDays, stats.lateDays, stats.leaveDays],
-            labels: ['Đúng giờ', 'Đi muộn', 'Nghỉ phép'],
-        };
-
-        return (
-            <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h6">Thống kê ngày làm việc</Typography>
-                            <ReactApexChart options={barChartOptions} series={barChartOptions.series} type="bar" height={350} />
-                        </CardContent>
-                    </Card>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h6">Tỷ lệ trạng thái</Typography>
-                            <ReactApexChart options={pieChartOptions} series={pieChartOptions.series} type="pie" height={350} />
-                        </CardContent>
-                    </Card>
-                </Grid>
-            </Grid>
-        );
-    };
 
     const EmployeeManagement = () => (
         <Box sx={{ p: 3 }}>
@@ -351,21 +340,33 @@ function AttendanceManagement() {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>ID</TableCell>
                             <TableCell>Tên</TableCell>
                             <TableCell>Chức vụ</TableCell>
                             <TableCell>Phòng ban</TableCell>
+                            <TableCell>Số ngày công</TableCell>
+                            <TableCell>Số ngày nghỉ phép</TableCell>
+                            <TableCell>Số ngày đi muộn</TableCell>
+                            <TableCell>Số giờ làm thêm</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {employees.map((emp) => (
-                            <TableRow key={emp.id}>
-                                <TableCell>{emp.id}</TableCell>
-                                <TableCell>{emp.name}</TableCell>
+                        {employees ? employees.map((emp) => (
+                            <TableRow key={emp._id}>
+                                <TableCell>{emp.fullName}</TableCell>
                                 <TableCell>{emp.position}</TableCell>
                                 <TableCell>{emp.department}</TableCell>
+                                <TableCell>{(emp.totalWorkingHours)/8}/{emp.workingDay}</TableCell>
+                                <TableCell>{emp.leaveTaken}/{emp.leaveBalance}</TableCell>
+                                <TableCell>{emp.lateDays}</TableCell>
+                                <TableCell>{emp.overtime}</TableCell>
                             </TableRow>
-                        ))}
+                        )) : (
+                            <TableRow>
+                                <TableCell colSpan={7} align="center">
+                                    Không có dữ liệu
+                                </TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -373,12 +374,29 @@ function AttendanceManagement() {
     );
 
     const LeaveApproval = () => {
-        const handleApprove = (id) => {
-            setLeaveRequests(leaveRequests.map(req => req.id === id ? { ...req, status: "Đã duyệt" } : req));
+        const handleApprove = async (id, action) => {
+            const response = await toDoLeave(id, action);
+            if (!response.success) {
+                return toast.error(response.response.data.message, {
+                    autoClose: 2000,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                });
+            }
+            await fetchListLeave(pagination.current, pagination.pageSize);
+            await fetchAllEmployees();
             setNotification({ open: true, message: "Đã duyệt đơn nghỉ", severity: "success" });
         };
-        const handleReject = (id) => {
-            setLeaveRequests(leaveRequests.map(req => req.id === id ? { ...req, status: "Từ chối" } : req));
+        const handleReject = async (id, action) => {
+            const response = await toDoLeave(id, action);
+            if (!response.success) {
+                return toast.error(response.response.data.message, {
+                    autoClose: 2000,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                });
+            }
+            await fetchListLeave(pagination.current, pagination.pageSize);
             setNotification({ open: true, message: "Đã từ chối đơn nghỉ", severity: "error" });
         };
 
@@ -389,7 +407,7 @@ function AttendanceManagement() {
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell>ID</TableCell>
+                                <TableCell>Nhân viên</TableCell>
                                 <TableCell>Ngày bắt đầu</TableCell>
                                 <TableCell>Ngày kết thúc</TableCell>
                                 <TableCell>Lý do</TableCell>
@@ -398,25 +416,39 @@ function AttendanceManagement() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {leaveRequests.map((req) => (
-                                <TableRow key={req.id}>
-                                    <TableCell>{req.id}</TableCell>
-                                    <TableCell>{format(new Date(req.startDate), 'dd/MM/yyyy')}</TableCell>
-                                    <TableCell>{format(new Date(req.endDate), 'dd/MM/yyyy')}</TableCell>
-                                    <TableCell>{req.reason}</TableCell>
-                                    <TableCell>{req.status}</TableCell>
-                                    <TableCell>
-                                        {req.status === "Chờ duyệt" && (
-                                            <>
-                                                <Button onClick={() => handleApprove(req.id)} color="primary">Duyệt</Button>
-                                                <Button onClick={() => handleReject(req.id)} color="secondary">Từ chối</Button>
-                                            </>
-                                        )}
+                            {leaveRequests.length > 0 ? (
+                                leaveRequests.map((req) => (
+                                    <TableRow key={req._id}>
+                                        <TableCell>{req.employeeId?.fullName}</TableCell>
+                                        <TableCell>{format(new Date(req.startDate), 'dd/MM/yyyy')}</TableCell>
+                                        <TableCell>{format(new Date(req.endDate), 'dd/MM/yyyy')}</TableCell>
+                                        <TableCell>{req.reason}</TableCell>
+                                        <TableCell>{req.status}</TableCell>
+                                        <TableCell>
+                                            {req.status === "Chờ duyệt" && (
+                                                <>
+                                                    <Button onClick={() => handleApprove(req._id, "approve")} color="primary">Duyệt</Button>
+                                                    <Button onClick={() => handleReject(req._id, "reject")} color="secondary">Từ chối</Button>
+                                                </>
+                                            )}
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={6} align="center">
+                                        Không có dữ liệu
                                     </TableCell>
                                 </TableRow>
-                            ))}
+                            )}
                         </TableBody>
                     </Table>
+                    <Pagination
+                        current={pagination.current}
+                        pageSize={pagination.pageSize}
+                        total={pagination.total}
+                        onChange={(page, pageSize) => fetchListLeave(page, pageSize)}
+                    />
                 </TableContainer>
             </Box>
         );
@@ -436,274 +468,176 @@ function AttendanceManagement() {
                         </IconButton>
                     </Toolbar>
                 </AppBar>
+                {role !== "ADMIN" ? (
+                    <Container maxWidth="lg" sx={{ mt: 4 }}>
+                        <Paper sx={{ width: '100%', mb: 4 }}>
+                            <Tabs value={tabValue} onChange={handleTabChange} indicatorColor="primary" textColor="primary" centered>
+                                <Tab icon={<AssignmentTurnedInIcon />} label="Chấm công" />
+                                <Tab icon={<EventNoteIcon />} label="Thông tin chấm công" />
+                            </Tabs>
 
-                <Container maxWidth="lg" sx={{ mt: 4 }}>
-                    <Paper sx={{ width: '100%', mb: 4 }}>
-                        <Tabs value={tabValue} onChange={handleTabChange} indicatorColor="primary" textColor="primary" centered>
-                            <Tab icon={<AssignmentTurnedInIcon />} label="Chấm công" />
-                            <Tab icon={<EventNoteIcon />} label="Thông tin chấm công" />
-                            <Tab icon={<AssessmentIcon />} label="Báo cáo" />
-                            <Tab icon={<People />} label="Quản lý nhân viên" />
-                            <Tab icon={<CheckCircle />} label="Phê duyệt đơn nghỉ" />
-                        </Tabs>
-
-                        {tabValue === 0 && (
-                            <Box sx={{ p: 3 }}>
-                                <Grid container spacing={3}>
-                                    <Grid item xs={12} md={4}>
-                                        <Card sx={{ mb: 2 }}>
-                                            <CardContent>
-                                                <Typography variant="h6" gutterBottom>Thông tin nhân viên</Typography>
-                                                <Divider sx={{ mb: 2 }} />
-                                                <Typography variant="body1"><strong>Họ và tên:</strong> {employeeData?.fullName}</Typography>
-                                                <Typography variant="body1"><strong>Chức vụ:</strong> {employeeData?.position}</Typography>
-                                                <Typography variant="body1"><strong>Phòng ban:</strong> {employeeData?.department}</Typography>
-                                            </CardContent>
-                                        </Card>
-                                        <Card>
-                                            <CardContent>
-                                                <Typography variant="h6" gutterBottom>Tổng quan tháng {currentMonth.getMonth() + 1}/{currentMonth.getFullYear()}</Typography>
-                                                <Divider sx={{ mb: 2 }} />
-                                                <Typography variant="body1"><strong>Số ngày công:</strong> {(attendanceData?.totalWorkingHours)/8}/{employeeData?.workingDay}</Typography>
-                                                <Typography variant="body1"><strong>Số ngày nghỉ phép:</strong> {attendanceData?.leaveDays}/{employeeData?.leaveBalance}</Typography>
-                                                <Typography variant="body1"><strong>Số ngày đi muộn:</strong> {attendanceData?.lateDays}</Typography>
-                                                <Typography variant="body1"><strong>Số giờ làm thêm:</strong> {attendanceData?.totalOvertimeHours}</Typography>
-                                            </CardContent>
-                                        </Card>
-                                    </Grid>
-                                    <Grid item xs={12} md={8}>
-                                        <Card>
-                                            <CardContent>
-                                                <Typography variant="h6" gutterBottom>Chấm công ngày {format(selectedDate, 'dd/MM/yyyy')}</Typography>
-                                                <Divider sx={{ mb: 2 }} />
-                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-                                                    <Button variant="contained" color="primary" startIcon={<AccessTimeIcon />} onClick={handleCheckInOpen}>
-                                                        Chấm công vào
-                                                    </Button>
-                                                    <Button variant="contained" color="secondary" startIcon={<ExitToAppIcon />} onClick={handleCheckOutOpen}>
-                                                        Chấm công ra
-                                                    </Button>
-                                                </Box>
-                                                <Divider sx={{ mb: 2 }} />
-                                                <Typography variant="h6" gutterBottom>Đăng ký nghỉ phép / Làm thêm giờ</Typography>
-                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-                                                    <Button variant="outlined" color="primary" startIcon={<CalendarTodayIcon />} onClick={handleLeaveOpen}>
-                                                        Đăng ký nghỉ phép
-                                                    </Button>
-                                                    <Button variant="outlined" color="secondary" startIcon={<AddIcon />} onClick={handleOvertimeOpen}>
-                                                        Đăng ký làm thêm giờ
-                                                    </Button>
-                                                </Box>
-                                            </CardContent>
-                                        </Card>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <Card>
-                                            <CardContent>
-                                                <Typography variant="h6" gutterBottom>Chấm công hôm nay ({format(new Date(), 'dd/MM/yyyy')})</Typography>
-                                                <TableContainer component={Paper}>
-                                                    <Table>
-                                                        <TableHead>
-                                                            <TableRow>
-                                                                <TableCell>Tên nhân viên</TableCell>
-                                                                <TableCell>Giờ vào</TableCell>
-                                                                <TableCell>Giờ ra</TableCell>
-                                                                <TableCell>Trạng thái</TableCell>
-                                                            </TableRow>
-                                                        </TableHead>
-                                                        <TableBody>
-                                                            {attendanceDataToday ? (
+                            {tabValue === 0 && (
+                                <Box sx={{ p: 3 }}>
+                                    <Grid container spacing={3}>
+                                        <Grid item xs={12} md={4}>
+                                            <Card sx={{ mb: 2 }}>
+                                                <CardContent>
+                                                    <Typography variant="h6" gutterBottom>Thông tin nhân viên</Typography>
+                                                    <Divider sx={{ mb: 2 }} />
+                                                    <Typography variant="body1"><strong>Họ và tên:</strong> {employeeData?.fullName}</Typography>
+                                                    <Typography variant="body1"><strong>Chức vụ:</strong> {employeeData?.position}</Typography>
+                                                    <Typography variant="body1"><strong>Phòng ban:</strong> {employeeData?.department}</Typography>
+                                                </CardContent>
+                                            </Card>
+                                            <Card>
+                                                <CardContent>
+                                                    <Typography variant="h6" gutterBottom>Tổng quan tháng {currentMonth.getMonth() + 1}/{currentMonth.getFullYear()}</Typography>
+                                                    <Divider sx={{ mb: 2 }} />
+                                                    <Typography variant="body1"><strong>Số ngày công:</strong> {(attendanceData?.totalWorkingHours)/8}/{employeeData?.workingDay}</Typography>
+                                                    <Typography variant="body1"><strong>Số ngày nghỉ phép:</strong> {attendanceData?.leaveDays}/{employeeData?.leaveBalance}</Typography>
+                                                    <Typography variant="body1"><strong>Số ngày đi muộn:</strong> {attendanceData?.lateDays}</Typography>
+                                                    <Typography variant="body1"><strong>Số giờ làm thêm:</strong> {attendanceData?.totalOvertimeHours}</Typography>
+                                                </CardContent>
+                                            </Card>
+                                        </Grid>
+                                        <Grid item xs={12} md={8}>
+                                            <Card>
+                                                <CardContent>
+                                                    <Typography variant="h6" gutterBottom>Chấm công ngày {format(selectedDate, 'dd/MM/yyyy')}</Typography>
+                                                    <Divider sx={{ mb: 2 }} />
+                                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+                                                        <Button variant="contained" color="primary" startIcon={<AccessTimeIcon />} onClick={handleCheckInOpen}>
+                                                            Chấm công vào
+                                                        </Button>
+                                                        <Button variant="contained" color="secondary" startIcon={<ExitToAppIcon />} onClick={handleCheckOutOpen}>
+                                                            Chấm công ra
+                                                        </Button>
+                                                    </Box>
+                                                    <Divider sx={{ mb: 2 }} />
+                                                    <Typography variant="h6" gutterBottom>Đăng ký nghỉ phép / Làm thêm giờ</Typography>
+                                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                                                        <Button variant="outlined" color="primary" startIcon={<CalendarTodayIcon />} onClick={handleLeaveOpen}>
+                                                            Đăng ký nghỉ phép
+                                                        </Button>
+                                                        {/*<Button variant="outlined" color="secondary" startIcon={<AddIcon />} onClick={handleOvertimeOpen}>*/}
+                                                        {/*    Đăng ký làm thêm giờ*/}
+                                                        {/*</Button>*/}
+                                                    </Box>
+                                                </CardContent>
+                                            </Card>
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Card>
+                                                <CardContent>
+                                                    <Typography variant="h6" gutterBottom>Chấm công hôm nay ({format(new Date(), 'dd/MM/yyyy')})</Typography>
+                                                    <TableContainer component={Paper}>
+                                                        <Table>
+                                                            <TableHead>
+                                                                <TableRow>
+                                                                    <TableCell>Tên nhân viên</TableCell>
+                                                                    <TableCell>Giờ vào</TableCell>
+                                                                    <TableCell>Giờ ra</TableCell>
+                                                                    <TableCell>Trạng thái</TableCell>
+                                                                </TableRow>
+                                                            </TableHead>
+                                                            <TableBody>
+                                                                {attendanceDataToday ? (
                                                                     <TableRow>
                                                                         <TableCell>{attendanceDataToday.name}</TableCell>
                                                                         <TableCell>{attendanceDataToday.checkIn || "--:--"}</TableCell>
                                                                         <TableCell>{attendanceDataToday.checkOut || "--:--"}</TableCell>
                                                                         <TableCell>{attendanceDataToday.status}</TableCell>
                                                                     </TableRow>
-                                                            ) : (
-                                                                <TableRow>
-                                                                    <TableCell colSpan={4}>Không có dữ liệu hôm nay</TableCell>
-                                                                </TableRow>
-                                                            )}
-                                                        </TableBody>
-                                                    </Table>
-                                                </TableContainer>
-                                            </CardContent>
-                                        </Card>
+                                                                ) : (
+                                                                    <TableRow>
+                                                                        <TableCell colSpan={4}>Không có dữ liệu hôm nay</TableCell>
+                                                                    </TableRow>
+                                                                )}
+                                                            </TableBody>
+                                                        </Table>
+                                                    </TableContainer>
+                                                </CardContent>
+                                            </Card>
+                                        </Grid>
                                     </Grid>
-                                </Grid>
-                            </Box>
-                        )}
-
-                        {tabValue === 1 && (
-                            <Box sx={{ p: 3 }}>
-                                <Typography variant="h6" gutterBottom>Lịch sử chấm công tháng {currentMonth.getMonth() + 1}/{currentMonth.getFullYear()}</Typography>
-                                <Box sx={{ mb: 2 }}>
-                                    <DatePicker
-                                        views={['year', 'month']}
-                                        label="Chọn tháng"
-                                        minDate={new Date('2020-01-01')}
-                                        maxDate={new Date('2030-12-31')}
-                                        value={currentMonth}
-                                        onChange={(newValue) => setCurrentMonth(newValue)}
-                                        renderInput={(params) => <TextField {...params} helperText={null} />}
-                                    />
                                 </Box>
-                                {/*<Box sx={{ mb: 2 }}>*/}
-                                {/*    <FormControl fullWidth>*/}
-                                {/*        <InputLabel>Bộ phận</InputLabel>*/}
-                                {/*        <Select*/}
-                                {/*            value={departmentFilter}*/}
-                                {/*            onChange={(e) => setDepartmentFilter(e.target.value)}*/}
-                                {/*            label="Bộ phận"*/}
-                                {/*        >*/}
-                                {/*            {departments.map((dept) => (*/}
-                                {/*                <MenuItem key={dept} value={dept}>{dept}</MenuItem>*/}
-                                {/*            ))}*/}
-                                {/*        </Select>*/}
-                                {/*    </FormControl>*/}
-                                {/*</Box>*/}
-                                <TableContainer component={Paper}>
-                                    <Table>
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>Ngày</TableCell>
-                                                <TableCell>Giờ vào</TableCell>
-                                                <TableCell>Giờ ra</TableCell>
-                                                <TableCell>Trạng thái</TableCell>
-                                                <TableCell>Ghi chú</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {attendanceDataByMonth && attendanceDataByMonth.length > 0 ? (
-                                                attendanceDataByMonth.map((item, index) => (
-                                                    <TableRow key={index}>
-                                                        <TableCell>{item.name}</TableCell>
-                                                        <TableCell>{item.checkIn || "--:--"}</TableCell>
-                                                        <TableCell>{item.checkOut || "--:--"}</TableCell>
-                                                        <TableCell>{item.status}</TableCell>
-                                                        <TableCell>{item.note}</TableCell>
-                                                    </TableRow>
-                                                ))
-                                            ) : (
+                            )}
+
+                            {tabValue === 1 && (
+                                <Box sx={{ p: 3 }}>
+                                    <Typography variant="h6" gutterBottom>Lịch sử chấm công tháng {currentMonth.getMonth() + 1}/{currentMonth.getFullYear()}</Typography>
+                                    <Box sx={{ mb: 2 }}>
+                                        <DatePicker
+                                            views={['year', 'month']}
+                                            label="Chọn tháng"
+                                            minDate={new Date('2020-01-01')}
+                                            maxDate={new Date('2030-12-31')}
+                                            value={currentMonth}
+                                            onChange={(newValue) => setCurrentMonth(newValue)}
+                                            renderInput={(params) => <TextField {...params} helperText={null} />}
+                                        />
+                                    </Box>
+                                    {/*<Box sx={{ mb: 2 }}>*/}
+                                    {/*    <FormControl fullWidth>*/}
+                                    {/*        <InputLabel>Bộ phận</InputLabel>*/}
+                                    {/*        <Select*/}
+                                    {/*            value={departmentFilter}*/}
+                                    {/*            onChange={(e) => setDepartmentFilter(e.target.value)}*/}
+                                    {/*            label="Bộ phận"*/}
+                                    {/*        >*/}
+                                    {/*            {departments.map((dept) => (*/}
+                                    {/*                <MenuItem key={dept} value={dept}>{dept}</MenuItem>*/}
+                                    {/*            ))}*/}
+                                    {/*        </Select>*/}
+                                    {/*    </FormControl>*/}
+                                    {/*</Box>*/}
+                                    <TableContainer component={Paper}>
+                                        <Table>
+                                            <TableHead>
                                                 <TableRow>
-                                                    <TableCell colSpan={5}>Không có dữ liệu hôm nay</TableCell>
+                                                    <TableCell>Ngày</TableCell>
+                                                    <TableCell>Giờ vào</TableCell>
+                                                    <TableCell>Giờ ra</TableCell>
+                                                    <TableCell>Trạng thái</TableCell>
+                                                    <TableCell>Ghi chú</TableCell>
                                                 </TableRow>
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                            </Box>
-                        )}
+                                            </TableHead>
+                                            <TableBody>
+                                                {attendanceDataByMonth && attendanceDataByMonth.length > 0 ? (
+                                                    attendanceDataByMonth.map((item, index) => (
+                                                        <TableRow key={index}>
+                                                            <TableCell>{item.date}</TableCell>
+                                                            <TableCell>{item.checkIn || "--:--"}</TableCell>
+                                                            <TableCell>{item.checkOut || "--:--"}</TableCell>
+                                                            <TableCell>{item.status}</TableCell>
+                                                            <TableCell>{item.note}</TableCell>
+                                                        </TableRow>
+                                                    ))
+                                                ) : (
+                                                    <TableRow>
+                                                        <TableCell colSpan={5}>Không có dữ liệu hôm nay</TableCell>
+                                                    </TableRow>
+                                                )}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </Box>
+                            )}
+                        </Paper>
+                    </Container>
+                ) : (
+                    <Container maxWidth="lg" sx={{ mt: 4 }}>
+                        <Paper sx={{ width: '100%', mb: 4 }}>
+                            <Tabs value={tabValue} onChange={handleTabChange} indicatorColor="primary" textColor="primary" centered>
+                                <Tab icon={<People />} label="Quản lý nhân viên" />
+                                <Tab icon={<CheckCircle />} label="Phê duyệt đơn nghỉ" />
+                            </Tabs>
+                            {tabValue === 0 && <EmployeeManagement />}
+                            {tabValue === 1 && <LeaveApproval />}
+                        </Paper>
+                    </Container>
+                )}
 
-                        {tabValue === 2 && (
-                            <Box sx={{ p: 3 }}>
-                                <Grid container spacing={3}>
-                                    <Grid item xs={12}>
-                                        <Typography variant="h6" gutterBottom>Báo cáo chấm công tháng {currentMonth.getMonth() + 1}/{currentMonth.getFullYear()}</Typography>
-                                        <Box sx={{ mb: 2 }}>
-                                            <DatePicker
-                                                views={['year', 'month']}
-                                                label="Chọn tháng"
-                                                minDate={new Date('2020-01-01')}
-                                                maxDate={new Date('2030-12-31')}
-                                                value={currentMonth}
-                                                onChange={(newValue) => setCurrentMonth(newValue)}
-                                                renderInput={(params) => <TextField {...params} helperText={null} />}
-                                            />
-                                        </Box>
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <Card>
-                                            <CardContent>
-                                                <Typography variant="h6" gutterBottom>Tổng quan</Typography>
-                                                <Divider sx={{ mb: 2 }} />
-                                                <TableContainer>
-                                                    <Table>
-                                                        <TableBody>
-                                                            <TableRow>
-                                                                <TableCell><strong>Tổng số ngày làm việc trong tháng</strong></TableCell>
-                                                                <TableCell align="right">{employeeData.workingDays}</TableCell>
-                                                            </TableRow>
-                                                            <TableRow>
-                                                                <TableCell><strong>Số ngày đã làm việc</strong></TableCell>
-                                                                <TableCell align="right">{stats.workDays}</TableCell>
-                                                            </TableRow>
-                                                            <TableRow>
-                                                                <TableCell><strong>Số ngày nghỉ phép</strong></TableCell>
-                                                                <TableCell align="right">{stats.leaveDays}</TableCell>
-                                                            </TableRow>
-                                                            <TableRow>
-                                                                <TableCell><strong>Số ngày đi muộn</strong></TableCell>
-                                                                <TableCell align="right">{stats.lateDays}</TableCell>
-                                                            </TableRow>
-                                                            <TableRow>
-                                                                <TableCell><strong>Số ngày làm thêm giờ</strong></TableCell>
-                                                                <TableCell align="right">{stats.overtimeDays}</TableCell>
-                                                            </TableRow>
-                                                        </TableBody>
-                                                    </Table>
-                                                </TableContainer>
-                                            </CardContent>
-                                        </Card>
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <Card>
-                                            <CardContent>
-                                                <Typography variant="h6" gutterBottom>Phép năm</Typography>
-                                                <Divider sx={{ mb: 2 }} />
-                                                <TableContainer>
-                                                    <Table>
-                                                        <TableBody>
-                                                            <TableRow>
-                                                                <TableCell><strong>Tổng số ngày phép năm</strong></TableCell>
-                                                                <TableCell align="right">{employeeData.leaveBalance}</TableCell>
-                                                            </TableRow>
-                                                            <TableRow>
-                                                                <TableCell><strong>Đã sử dụng</strong></TableCell>
-                                                                <TableCell align="right">{employeeData.leaveTaken}</TableCell>
-                                                            </TableRow>
-                                                            <TableRow>
-                                                                <TableCell><strong>Còn lại</strong></TableCell>
-                                                                <TableCell align="right">{employeeData.leaveBalance - employeeData.leaveTaken}</TableCell>
-                                                            </TableRow>
-                                                        </TableBody>
-                                                    </Table>
-                                                </TableContainer>
-                                            </CardContent>
-                                        </Card>
-                                        <Card sx={{ mt: 2 }}>
-                                            <CardContent>
-                                                <Typography variant="h6" gutterBottom>Làm thêm giờ</Typography>
-                                                <Divider sx={{ mb: 2 }} />
-                                                <TableContainer>
-                                                    <Table>
-                                                        <TableBody>
-                                                            <TableRow>
-                                                                <TableCell><strong>Tổng số giờ làm thêm</strong></TableCell>
-                                                                <TableCell align="right">{employeeData.overtime}</TableCell>
-                                                            </TableRow>
-                                                        </TableBody>
-                                                    </Table>
-                                                </TableContainer>
-                                            </CardContent>
-                                        </Card>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <Charts />
-                                        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
-                                            <Button variant="contained" color="primary" startIcon={<AssessmentIcon />} onClick={exportReport}>
-                                                Xuất báo cáo
-                                            </Button>
-                                        </Box>
-                                    </Grid>
-                                </Grid>
-                            </Box>
-                        )}
-
-                        {tabValue === 3 && <EmployeeManagement />}
-                        {tabValue === 4 && <LeaveApproval />}
-                    </Paper>
-                </Container>
             </Box>
 
             <Dialog open={openCheckInDialog} onClose={handleCheckInClose}>
