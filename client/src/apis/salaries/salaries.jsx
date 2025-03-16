@@ -1,15 +1,8 @@
 import axios from '../../configs/axiosCustomize';
 
-export const getSalaries = async ({search, month, year, status}) => {
+export const getSalaries = async () => {
     try {
-        const response = await axios.get('/salaries',{
-            params: {
-                search,
-                month,
-                year,
-                status
-            }
-        });
+        const response = await axios.get('/salaries');
         return response;
     } catch (error) {
         return error;
@@ -25,15 +18,6 @@ export const getSalary = async (id) => {
     }
 };
 
-export const createSalary = async (data) => {
-    try {
-        const response = await axios.post('/salaries', data);
-        return response;
-    } catch (error) {
-        return error;
-    }
-};
-
 export const updateSalary = async (id, data) => {
     try {
         const response = await axios.patch(`/salaries/${id}`, data);
@@ -43,29 +27,20 @@ export const updateSalary = async (id, data) => {
     }
 };
 
-export const deleteSalary = async (id) => {
+export const deleteSalary = async (id, salaryId) => {
     try {
-        const response = await axios.delete(`/salaries/${id}`);
-        return response;
+        const response = await axios.delete(`/salaries/${id}`, {
+            data: { salaryId }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Có lỗi xảy ra khi xóa");
+        }
+
+        return data;
     } catch (error) {
-        return error;
+        return { error: error.message };
     }
 };
-
-export const changeSalaryStatus = async (id, status) => {
-    try {
-        const response = await axios.patch(`/salaries/${id}/status`, { status });
-        return response;
-    } catch (error) {
-        return error;
-    }
-}
-
-export const getEmployeeSalary = async () => {
-    try {
-        const response = await axios.get('/employee');
-        return response;
-    } catch (error) {
-        return error;
-    }
-}
