@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Employee = require('../models/employee');
 const User = require('../models/user');
 const Department = require('../models/department');
-const { generatePassword, generateUsername } = require('../utils/generate');
+const { generatePassword, getUsernameFromEmail } = require('../utils/generate');
 const { sendEmail } = require('../utils/email');
 const { logActivity } = require('../utils/logger');
 
@@ -29,7 +29,7 @@ const createEmployee = async (req, res) => {
         const user = await User.findOne({ email });
         if (user) return res.status(400).json({ success: false, message: 'Email đã tồn tại trong hệ thống !' });
         const passwordRandom = generatePassword();
-        const userName = await generateUsername(fullName);
+        const userName = await getUsernameFromEmail(email);
         const newUser = await User.create({
             username: userName,
             password: passwordRandom,

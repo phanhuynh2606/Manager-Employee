@@ -22,6 +22,10 @@ const notificationSchema = new Schema({
         ref: 'Department',
       }
     ],
+    sendToAll: {
+      type: Boolean,
+      default: false
+    },  
     recipientId: [
       {
         type: Schema.Types.ObjectId,

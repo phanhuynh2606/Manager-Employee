@@ -25,7 +25,7 @@ const authenticate = async (req, res, next) => {
                 });
             }
 
-            const user = await User.findById(decoded.id).select("-password -__v ");
+            const user = await User.findById(decoded.id).select("-password -__v ").populate("employeeId", "fullName");
             if (!user) {
                 return res.status(404).json({
                     success: false,

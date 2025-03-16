@@ -46,8 +46,8 @@ export function SignIn() {
                 });
                 return navigate('/auth/first-time-password-change', { state: { email: result.email } });
             }
-
-            dispatch(setUser({ email: result.email, role: result.role,position: result.position }));
+            console.log(result, "Result");
+            dispatch(setUser({employeeId:result?.employeeId,departmentId: result?.departmentId, email: result.email, role: result.role,position: result.position }));
 
             toast.success(result.message, {
                 autoClose: 3000,

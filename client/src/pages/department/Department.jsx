@@ -34,36 +34,67 @@ const DepartmentManagement = () => {
     }
   };
 
- const handleAddEdit = async () => {
-  try {
-    const values = await form.validateFields();
+  const handleAddEdit = async () => {
+    try {
+      setLoading(true);
+      const values = await form.validateFields();
 
-    if (editingDepartment) {
-      const res = await updateDepartment(editingDepartment?._id, values);
-      if(res.success){
-        messageApi.success("Update department success");
-        setModalOpen(false);
-        form.resetFields();
-        fetchDepartments();
-      }else{
-        messageApi.error("Update department failed");
+      if (editingDepartment) {
+        // So sánh dữ liệu mới với dữ liệu hiện tại
+        const currentData = {
+          name: editingDepartment.name,
+          description: editingDepartment.description || "", // Đảm bảo không undefined
+          roomNumber: editingDepartment.roomNumber,
+          managerId: editingDepartment.managerId?._id || "", // Lấy _id của managerId nếu có
+        };
+
+        const newData = {
+          name: values.name,
+          description: values.description || "", // Đảm bảo không undefined
+          roomNumber: values.roomNumber,
+          managerId: values.managerId || "", // Nếu không chọn thì để rỗng
+        };
+
+        const isUnchanged =
+          currentData.name === newData.name &&
+          currentData.description === newData.description &&
+          currentData.roomNumber === newData.roomNumber &&
+          currentData.managerId === newData.managerId;
+
+        if (isUnchanged) {
+          messageApi.info("Không có thay đổi để cập nhật.");
+          setModalOpen(false);
+          setLoading(false);
+          return;
+        }
+
+        const res = await updateDepartment(editingDepartment._id, values);
+        if (res.success) {
+          messageApi.success("Cập nhật phòng ban thành công");
+          setModalOpen(false);
+          form.resetFields();
+          fetchDepartments();
+        } else {
+          messageApi.error("Cập nhật phòng ban thất bại");
+        }
+      } else {
+        const res = await createDepartment(values);
+        if (res.success) {
+          messageApi.success("Tạo phòng ban thành công");
+          setModalOpen(false);
+          form.resetFields();
+          fetchDepartments();
+        } else {
+          messageApi.error("Tạo phòng ban thất bại");
+        }
       }
-    } else {
-      const res = await createDepartment(values);
-      if(res.success){
-        messageApi.success("Create department success");
-        setModalOpen(false);
-        form.resetFields();
-        fetchDepartments();
-      }else{
-        messageApi.error("Create department failed");
-      }
+    } catch (error) {
+      console.error("Validation failed:", error);
+      messageApi.error("Xảy ra lỗi khi xử lý dữ liệu");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Validation failed:", error);
-  }
-};
-
+  };
 
   const handleDelete = async (id) => {
     try {
@@ -110,7 +141,9 @@ const DepartmentManagement = () => {
                 <Space>
                 {
                   record.managerId?.avatarUrl ? 
-                  <Avatar src={record.managerId?.avatarUrl} /> : 
+                  <img src={`http://localhost:4000${record.managerId?.avatarUrl}`} width={39} height={39} style={{borderRadius:'100%'}} 
+                    onError={(e) => { e.target.onerror = null; e.target.src = "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg" }}
+                  /> : 
                   <Avatar style={{ backgroundColor: ColorList[Math.floor(Math.random() * 4)], verticalAlign: "middle" }}>{record.managerId?.fullName.charAt(0)}</Avatar>
                 }
                   {record.managerId?.fullName}
@@ -171,6 +204,16 @@ const DepartmentManagement = () => {
                dropdownStyle={{ maxHeight: 400, overflow: "auto" }} // Tăng chiều cao dropdown
                dropdownAlign={{ offset: [0, 10] }} // Dịch chuyển dropdown
                popupMatchSelectWidth={false}
+               showSearch
+               filterOption={(input, option) => {
+                const manager = managerList.find((m) => m._id === option.value);
+                if (!manager) return false;
+                const searchText = input.toLowerCase();
+                return (
+                  manager.fullName?.toLowerCase().includes(searchText) ||
+                  manager.roler?.toLowerCase().includes(searchText)
+                );
+              }}
               >
                 {managerList.map(manager => (
                 <Option key={manager._id} value={manager._id}>

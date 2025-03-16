@@ -1,5 +1,8 @@
 const Department = require("../models/department");
 const Employee = require("../models/employee");
+const Notification = require("../models/notification");
+const { logActivity } = require("../utils/logger");
+const sendNotification = require("../utils/sendNotification");
 
 // Tạo phòng ban
 const createDepartment = async (req, res) => {
@@ -29,7 +32,22 @@ const createDepartment = async (req, res) => {
     const employee = await Employee.findById(managerId);
     if (employee) {
       employee.departmentId = department._id;
+      if(managerId){
+        const notification = await Notification.create({
+          title: "Thông báo",
+          content: `Bạn đã được bổ nhiệm làm trưởng phòng ${department.name}`,
+          recipientId: managerId,
+          createdBy: req.user._id,
+          type: "PERSONAL",
+        });
+        const notificationObject = notification.toObject();
+        notificationObject.createdBy = req.user?.employeeId?.fullName;
+        if(notification){
+          sendNotification(notification);
+        }
+      }
       await employee.save();
+      await logActivity(req, "Create new department", "DEPARTMENT", department._id, null, department);
     }
 
     return res.status(201).json({ success: true, data: department });
@@ -69,6 +87,10 @@ const getDepartmentById = async (req, res) => {
 const updateDepartment = async (req, res) => {
   try {
     const { managerId } = req.body;
+    const oldDepartment = await Department.findById(req.params.id);
+    if (!oldDepartment) {
+      return res.status(404).json({ success: false, message: "Department not found" });
+    }
     if(managerId){
       const departmentManager = await Department.findOne({
         managerId: managerId,
@@ -83,6 +105,20 @@ const updateDepartment = async (req, res) => {
       req.body,
       { new: true }
     );
+    if(managerId){
+      const notification = await Notification.create({
+        title: "Thông báo",
+        content: `Bạn đã được bổ nhiệm làm trưởng phòng ${department.name}`,
+        recipientId: managerId,
+        createdBy: req.user._id,
+        type: "PERSONAL",
+      });
+      const notificationObject = notification.toObject();
+      notificationObject.createdBy = req.user?.employeeId?.fullName;
+      if(notification){
+        sendNotification(notification);
+      }
+    }
     if (!department)
       return res
         .status(404)
@@ -91,6 +127,7 @@ const updateDepartment = async (req, res) => {
     if (employee) {
       employee.departmentId = department._id;
       await employee.save();
+      await logActivity(req, "Update department", "DEPARTMENT", department._id,oldDepartment , department);
     }
     return res.status(200).json({ success: true, data: department });
   } catch (error) {
