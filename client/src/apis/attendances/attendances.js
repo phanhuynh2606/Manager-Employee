@@ -63,3 +63,46 @@ export const getAttendanceHistoryByMonth = async (startDate, endDate) => {
         return e;
     }
 }
+
+export const requestLeave = async (startDate, endDate, reason) => {
+    try {
+        const response = await axios.post('/attendance/requestLeave', {
+            startDate: startDate,
+            endDate: endDate,
+            reason: reason
+        });
+        return response;
+    }catch (e) {
+        return e;
+    }
+}
+
+export const getListLeave = async (page, limit) => {
+    try {
+        const response = await axios.get('/attendance/getListLeave?page=' + page + '&limit=' + limit);
+        return response;
+    }catch (e) {
+        return e;
+    }
+}
+
+export const toDoLeave = async (leaveId, action) => {
+    try {
+        const response = await axios.post('/attendance/toDoLeave', {
+            leaveId: leaveId,
+            action: action
+        });
+        return response;
+    }catch (e) {
+        return e;
+    }
+}
+
+export const getAllAttendance = async () => {
+    try {
+        const response = await axios.get('/attendance/getAllAttendance');
+        return response;
+    }catch (e) {
+        return e;
+    }
+}
