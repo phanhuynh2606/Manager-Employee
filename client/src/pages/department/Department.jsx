@@ -141,7 +141,7 @@ const DepartmentManagement = () => {
                 <Space>
                 {
                   record.managerId?.avatarUrl ? 
-                  <img src={`http://localhost:4000${record.managerId?.avatarUrl}`} width={39} height={39} style={{borderRadius:'100%'}} 
+                  <img src={`${record.managerId?.avatarUrl}`} width={39} height={39} style={{borderRadius:'100%'}} 
                     onError={(e) => { e.target.onerror = null; e.target.src = "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg" }}
                   /> : 
                   <Avatar style={{ backgroundColor: ColorList[Math.floor(Math.random() * 4)], verticalAlign: "middle" }}>{record.managerId?.fullName.charAt(0)}</Avatar>
@@ -218,7 +218,7 @@ const DepartmentManagement = () => {
                 {managerList.map(manager => (
                 <Option key={manager._id} value={manager._id}>
                   <div className="flex items-center gap-2">
-                    <img src={`https://cdn-icons-png.flaticon.com/512/149/149071.png`} alt={manager.fullName} height={30} width={30} />
+                    <img src={manager?.avatarUrl} alt={manager.fullName} height={30} width={30} />
                     <span>{manager?.fullName} - {manager?.roler}</span>
                   </div>
                 </Option>
