@@ -429,7 +429,7 @@ const EmployeeDetail = () => {
             >
               <Avatar
                 size={150}
-                src={`http://localhost:4000/assets/images/${employee?.avatarUrl}`}
+                src={employee?.avatarUrl}
                 icon={<UserOutlined />}
               />
               <div

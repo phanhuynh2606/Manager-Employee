@@ -138,14 +138,26 @@ const filterEmployee = async (req, res) => {
             salaryMax,
             hireDateFrom,
             hireDateTo,
-            page,
-            limit
+            page = 1,
+            limit = 10
         } = req.query;
-        const filter = { isActive: true };
+        const userRequest = req.user;
+        const filter = { isActive: true }; 
+        if (userRequest.role === "EMPLOYEE") {
+            const employee = await Employee.findOne({userId: userRequest._id}); 
+            const managedDepartment = await Department.findOne({ managerId: employee._id });
+            if (!managedDepartment) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'You do not have permission to view employee list'
+                });
+            }
+            filter.departmentId = managedDepartment._id;
+        }
         if (name) {
             filter.fullName = { $regex: name, $options: 'i' };
         }
-        if (department) {
+        if (department && userRequest.role === "ADMIN") {
             filter.departmentId = department;
         }
         if (position) {
@@ -164,13 +176,16 @@ const filterEmployee = async (req, res) => {
             if (hireDateFrom) filter.hireDate.$gte = new Date(hireDateFrom);
             if (hireDateTo) filter.hireDate.$lte = new Date(hireDateTo);
         }
+
         const totalEmployees = await Employee.countDocuments(filter);
         const skip = (parseInt(page) - 1) * parseInt(limit);
+
         const employees = await Employee.find(filter)
             .populate('departmentId', 'name')
             .skip(skip)
             .limit(parseInt(limit))
             .sort({ fullName: 1 });
+
         res.json({
             success: true,
             data: employees,
@@ -274,14 +289,14 @@ const resetPassword = async (req, res) => {
 
 const changeAvatar = async (req, res) => {
     try { 
-        if (!req.file) {
+        if (!req.cloudinaryUrl) {
             return res.status(400).json({
                 success: false,
                 message: 'No file uploaded'
             });
         } 
         const employeeId = req.params.employeeId; 
-        const avatarUrl = req.file.filename;
+        const avatarUrl = req.cloudinaryUrl;
         const updatedEmployee = await Employee.findByIdAndUpdate(
             employeeId,
             { avatarUrl: avatarUrl },
