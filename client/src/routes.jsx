@@ -9,13 +9,14 @@ import {
   BanknotesIcon,
   PowerIcon
 } from "@heroicons/react/24/solid";
-import { Home, Profile, Tables} from "@/pages/dashboard";
+import { Home, Profile, Tables } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
 import Department from "./pages/department/Department";
 import Employee from "./pages/employee/Employee";
 import ViewEmployee from "./pages/employee/ViewEmployee";
 import Salary from "./pages/salary/salary";
 import AttendanceManagement from "./pages/attendance/attendance";
+import ViewSalaryDetail from "./pages/salary/viewSalaryDetail";
 import Notifications from "./pages/notification/Notifications";
 
 
@@ -32,7 +33,7 @@ export const routes = [
         name: "dashboard",
         path: "/home",
         element: <Home />,
-        roles: ["EMPLOYEE","ADMIN"],
+        roles: ["EMPLOYEE", "ADMIN"],
       },
       {
         icon: <UserCircleIcon {...icon} />,
@@ -53,46 +54,51 @@ export const routes = [
         name: "notifications",
         path: "/notifications",
         element: <Notifications />,
-        roles: ["EMPLOYEE","ADMIN"],
+        roles: ["EMPLOYEE", "ADMIN"],
       },
       {
         icon: <HomeModernIcon {...icon} />,
         name: "Departments",
-        path:'/departments',
+        path: '/departments',
         element: <Department />,
         roles: ["ADMIN"],
       },
       {
         icon: <UserCircleIcon {...icon} />,
         name: "Employees",
-        path:'/employee',
-        element: <Employee /> ,
-        roles: ["ADMIN","EMPLOYEE"],
-      } ,
+        path: '/employee',
+        element: <Employee />,
+        roles: ["ADMIN", "EMPLOYEE"],
+      },
       {
-        path:'/employee/:employeeId',
+        path: '/employee/:employeeId',
         element: <ViewEmployee />,
-        roles: ["EMPLOYEE","ADMIN"],
+        roles: ["EMPLOYEE", "ADMIN"],
       },
       {
-            icon: <BanknotesIcon {...icon} />,
-            name: "Salary",
-            path:'/salaries',
-            element: <Salary />,
-            roles: ["EMPLOYEE","ADMIN"],
+        icon: <BanknotesIcon {...icon} />,
+        name: "Salary",
+        path: '/salaries',
+        element: <Salary />,
+        roles: ["EMPLOYEE", "ADMIN"],
       },
       {
-            icon: <UserCircleIcon {...icon} />,
-            name: "Attendance",
-            path:'/attendance',
-            element: <AttendanceManagement />,
-            roles: ["EMPLOYEE","ADMIN"],
+        path: '/salaries/:salaryId',
+        element: <ViewSalaryDetail />,
+        roles: ["EMPLOYEE", "ADMIN"],
+      },
+      {
+        icon: <UserCircleIcon {...icon} />,
+        name: "Attendance",
+        path: '/attendance',
+        element: <AttendanceManagement />,
+        roles: ["EMPLOYEE", "ADMIN"],
       },
       {
         icon: <PowerIcon {...icon} />,
         name: "Logout",
         path: "/logout",
-        roles: ["EMPLOYEE","ADMIN"],
+        roles: ["EMPLOYEE", "ADMIN"],
       }
     ],
   },

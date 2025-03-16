@@ -1,75 +1,11 @@
-import { changeSalaryStatus, deleteSalary, getSalary } from "@/apis/salaries/salaries";
-import { DeleteOutlined, EditOutlined, MoreOutlined, SwapOutlined } from "@ant-design/icons";
-import { Dropdown, Tag, Tooltip } from "antd";
-import { notification } from "antd";
+import { getSalary } from "@/apis/salaries/salaries";
+import { EditOutlined, MoreOutlined, ReadOutlined, UserOutlined } from "@ant-design/icons";
+import { Avatar, Dropdown, Tag, Tooltip } from "antd";
+import { Link } from "react-router-dom";
 
-const handleChangeStatus = async (id, status, fetchSalaries) => {
-    try {
-        const res = await changeSalaryStatus(id, status);
-        console.log(res);
-        
 
-        if (res.error) {
-            return notification.error({
-                message: "Error updating status",
-                description: res.error || "Có lỗi xảy ra, vui lòng thử lại!",
-                placement: "topRight",
-            });
-        }
 
-            notification.success({
-            message: "Success updating status",
-            description: res.message || "Updated status successfully!",
-            placement: "topRight",
-        });
-        fetchSalaries();
-
-        return res;
-    } catch (error) {
-        console.error("Failed to fetch salaries", error);
-
-        notification.error({
-            message: "Lỗi hệ thống",
-            description:
-                error.response?.data?.message || "Đã xảy ra lỗi, vui lòng thử lại!",
-            placement: "topRight",
-        });
-    }
-};
-
-const handleDelete = async (id, fetchSalaries) => {
-    try {
-        const res = await deleteSalary(id);        
-
-        if (res.error) {
-            return notification.error({
-                message: "Error removing salary",
-                description: res.error || "Có lỗi xảy ra, vui lòng thử lại!",
-                placement: "topRight",
-            });
-        }
-
-            notification.success({
-            message: "Success updating salary",
-            description: res.message || "Removed salary successfully!",
-            placement: "topRight",
-        });
-        fetchSalaries();
-
-        return res;
-    } catch (error) {
-        console.error("Failed to fetch salaries", error);
-
-        notification.error({
-            message: "Lỗi hệ thống",
-            description:
-                error.response?.data?.message || "Đã xảy ra lỗi, vui lòng thử lại!",
-            placement: "topRight",
-        });
-    }
-}
-
-export const columns = (fetchSalaries, setEditingSalary, setIsModalOpenEdit) => [
+export const columns = (setEditingSalary, setIsModalOpenEdit, role) => [
     {
         title: "Actions",
         key: "action",
@@ -82,6 +18,15 @@ export const columns = (fetchSalaries, setEditingSalary, setIsModalOpenEdit) => 
                     items: [
                         {
                             key: "1",
+                            label: (
+                                <Link className="flex items-center gap-2 w-full" to={`/dashboard/salaries/${id}`}>
+                                    < ReadOutlined />
+                                    <span className="font-semibold">View Details</span>
+                                </Link>
+                            ),
+                        },
+                        role === "ADMIN" && {
+                            key: "2",
                             label: (
                                 <div className="flex items-center gap-2 w-full" onClick={async () => {
                                     try {
@@ -96,37 +41,14 @@ export const columns = (fetchSalaries, setEditingSalary, setIsModalOpenEdit) => 
                                     <EditOutlined />
                                     <span
                                         className="font-semibold cursor-pointer"
-                                        
+
                                     >
                                         Edit
                                     </span>
                                 </div>
                             ),
-                            
-                        },
-                        {
-                            key: "2",
-                            label: (
-                                <div className="flex items-center gap-2 text-red-500 w-full" onClick={() => handleDelete(id, fetchSalaries)}>
-                                    <DeleteOutlined />
-                                    <span className="font-semibold">Delete</span>
-                                </div>
-                            ),
-                        },
-                        {
-                            key: "3",
-                            label: (
-                                <div className="flex items-center gap-2">
-                                    <SwapOutlined />
-                                    <span className="font-semibold">Change Status</span>
-                                </div>
-                            ),
-                            children: ["DRAFT", "APPROVED", "PAID"].map((status, index) => ({
-                                key: `${index + 4}`,
-                                value: status,
-                                label: <span className="font-semibold" onClick={() => handleChangeStatus(id, status, fetchSalaries)}>{status}</span>,
-                            })),
-                        },
+
+                        }
                     ],
                 }}
                 trigger={["click"]}
@@ -141,14 +63,14 @@ export const columns = (fetchSalaries, setEditingSalary, setIsModalOpenEdit) => 
         key: "employeeId",
         render: (value) => (
             <div className="flex items-center gap-3">
-                <img
-                    src="https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&auto=format&fit=crop&w=76&q=80"
-                    className="h-10 w-10 rounded-full object-cover"
-                    alt="Employee"
+                <Avatar
+                    src={`http://localhost:4000/assets/images/${value?.employeeId?.avatarUrl}`}
+                    icon={<UserOutlined />}
+                    size="large"
                 />
                 <div className="flex flex-col gap-1">
                     <span className="font-semibold">{value.fullName}</span>
-                    <Tag color="blue">{value.position}</Tag>
+                    <Tag color="blue" className="w-fit">{value.position}</Tag>
                 </div>
             </div>
         ),
@@ -170,7 +92,7 @@ export const columns = (fetchSalaries, setEditingSalary, setIsModalOpenEdit) => 
         dataIndex: "baseSalary",
         key: "baseSalary",
         align: "right",
-        render: (value) => `${value.toLocaleString()}`,
+        render: (value) => `${value.toLocaleString()}đ`,
     },
     {
         title: "Allowances",
@@ -182,7 +104,7 @@ export const columns = (fetchSalaries, setEditingSalary, setIsModalOpenEdit) => 
                     {allowances.map((a, index) => (
                         <div key={index} className="flex justify-between">
                             <span className="font-medium">{a.name}</span>
-                            <span className="text-blue-600">{a.amount}</span>
+                            <span className="text-blue-600">{a.amount.toLocaleString()}đ</span>
                         </div>
                     ))}
                 </div>
@@ -200,7 +122,7 @@ export const columns = (fetchSalaries, setEditingSalary, setIsModalOpenEdit) => 
                     {bonuses.map((b, index) => (
                         <div key={index} className="flex justify-between">
                             <span className="font-medium">{b.name}</span>
-                            <span className="text-green-600">{b.amount}</span>
+                            <span className="text-green-600">{b.amount.toLocaleString()}đ</span>
                         </div>
                     ))}
                 </div>
@@ -218,7 +140,7 @@ export const columns = (fetchSalaries, setEditingSalary, setIsModalOpenEdit) => 
                     {deductions.map((d, index) => (
                         <div key={index} className="flex justify-between text-red-600">
                             <span className="font-medium">{d.name}</span>
-                            <span>- {d.amount}</span>
+                            <span>- {d.amount.toLocaleString()}đ</span>
                         </div>
                     ))}
                 </div>
@@ -247,41 +169,5 @@ export const columns = (fetchSalaries, setEditingSalary, setIsModalOpenEdit) => 
             ) : (
                 "-"
             ),
-    },
-    {
-        title: "Created By",
-        dataIndex: "createdBy",
-        key: "createdBy",
-        render: (value) => (
-            <div className="flex items-center gap-3">
-                <img
-                    src="https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&auto=format&fit=crop&w=76&q=80"
-                    className="h-10 w-10 rounded-full object-cover"
-                    alt="Employee"
-                />
-                <div className="flex flex-col gap-1">
-                    <span className="font-semibold">{value.email}</span>
-                    <Tag color="blue" className="w-fit">{value.role}</Tag>
-                </div>
-            </div>
-        ),
-    },
-    {
-        title: "Status",
-        dataIndex: "status",
-        key: "status",
-        align: "center",
-        render: (status) => {
-            const statusColors = {
-                PAID: "green",
-                APPROVED: "blue",
-                DRAFT: "gray",
-            };
-            return (
-                <Tag color={statusColors[status] || "default"} className="text-base font-medium">
-                    {status}
-                </Tag>
-            );
-        },
-    },
+    }
 ];

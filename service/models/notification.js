@@ -39,8 +39,6 @@ const notificationSchema = new Schema({
     }
   }, {
     timestamps: true,
-    // Chỉ cần createdAt, không cần updatedAt
-    updatedAt: false
   });
 
 module.exports = mongoose.model('notification', notificationSchema);
