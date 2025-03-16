@@ -1,8 +1,10 @@
 import axios from '../../configs/axiosCustomize';
 
-export const getSalaries = async () => {
+export const getSalaries = async ({ search, month, year }) => {
     try {
-        const response = await axios.get('/salaries');
+        const response = await axios.get('/salaries', {
+            params: { search, month, year }
+        });
         return response;
     } catch (error) {
         return error;

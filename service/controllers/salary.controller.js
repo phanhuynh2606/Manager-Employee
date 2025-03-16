@@ -94,15 +94,33 @@ const getSalary = async (req, res) => {
     try {
         let salaries;
 
-        if (req.user.role === 'ADMIN') {
-            salaries = await Salary.find().populate('employeeId');
-        } else {
-            const employee = await User.findById(req.user._id);
-            salaries = await Salary.find({ employeeId: employee.employeeId }).populate('employeeId');
+        const { search, month, year } = req.query;
+
+        let filter = {};
+        if (month) {
+            filter.month = month;
+        }
+        if (year) {
+            filter.year = year;
         }
 
-        if (!salaries || salaries.length === 0) {
-            return res.status(404).json({ success: false, message: 'Không tìm thấy bảng lương' });
+        if (req.user.role === 'ADMIN') {
+            salaries = await Salary.find(filter).populate('employeeId');
+            if (search) {
+                let query = search.trim().toLowerCase();
+                salaries = salaries.filter(salary =>
+                    String(salary.employeeId?.fullName || "").toLowerCase().includes(query)
+                );
+            }
+        } else {
+            const employee = await User.findById(req.user._id);
+            salaries = await Salary.find({ employeeId: employee.employeeId }, filter).populate('employeeId');
+            if (search) {
+                let query = search.trim().toLowerCase();
+                salaries = salaries.filter(salary =>
+                    String(salary.employeeId?.fullName || "").toLowerCase().includes(query)
+                );
+            }
         }
 
         return res.status(200).json({ success: true, data: salaries });

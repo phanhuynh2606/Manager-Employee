@@ -6,7 +6,6 @@ import {
 } from "@ant-design/icons";
 import { getSalaries } from "@/apis/salaries/salaries";
 import { columns } from "./column";
-import SalaryModal from "./modal";
 import SalaryModalEdit from "./modalEdit";
 import { useSelector } from "react-redux";
 
@@ -22,7 +21,7 @@ function Salary() {
 
   const fetchSalaries = async () => {
     try {
-      const res = await getSalaries();
+      const res = await getSalaries({ search, month, year });
       console.log(res)
       if (res.success) {
         setLoadingData(false);
