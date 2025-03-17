@@ -40,10 +40,14 @@ const createDepartment = async (req, res) => {
           createdBy: req.user._id,
           type: "PERSONAL",
         });
+        const userSend = await User.findById(notification.createdBy).populate('employeeId',"fullName avatarUrl" )
         const notificationObject = notification.toObject();
-        notificationObject.createdBy = req.user?.employeeId?.fullName;
+        notificationObject.createdBy = {
+          fullName: userSend.employeeId.fullName,
+          avatarUrl: userSend.employeeId.avatarUrl
+        };
         if(notification){
-          sendNotification(notification);
+          sendNotification(notificationObject);
         }
       }
       await employee.save();
