@@ -279,7 +279,7 @@ const checkout = async (req, res) => {
     const workingRatio = parseFloat((totalWorkingHours / configTimeWork.minWorkingHours).toFixed(2));
     attendance.note += ` Performance score: ${workingRatio}`;
 
-    await addSalary(employeeDetail._id, totalWorkingHours, overtimeHours, earlyLeaveMinutes);
+    await addSalary(employeeDetail._id, totalWorkingHours, overtimeHours, earlyLeaveMinutes, attendance.checkOut, attendance.checkIn);
 
     // Lưu thông tin chấm công
     await attendance.save();

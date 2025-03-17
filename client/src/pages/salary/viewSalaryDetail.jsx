@@ -14,7 +14,8 @@ import {
     Row,
     Col,
     Statistic,
-    notification
+    notification,
+    Modal
 } from 'antd';
 import {
     ArrowLeftOutlined,
@@ -59,29 +60,8 @@ function ViewSalaryDetail() {
     const handleDelete = async (id, salaryId) => {
         try {
             const res = await deleteSalary(id, salaryId);   
-    
-            if (!res || typeof res !== "object") {
-                throw new Error("Dữ liệu phản hồi không hợp lệ");
-            }
-    
-            if (res.error) {
-                notification.error({
-                    message: "Không thành công",
-                    description: res.error,
-                    placement: "topRight",
-                });
-                return;
-            }
-    
-            if (res.message) {
-                notification.success({
-                    message: "Thành công",
-                    description: res.message,
-                    placement: "topRight",
-                });
-            }
-    
             fetchSalaryData();
+            return res;
         } catch (error) {
             console.error("Failed to delete salary", error);
     
@@ -93,14 +73,12 @@ function ViewSalaryDetail() {
         }
     };
     
-
-
     const daySalaryColumns = [
         {
             title: 'Ngày',
             dataIndex: 'day',
             key: 'day',
-            render: (day) => `${day}/03/2025`,
+            render: (day) => `${day}/${salary.month}/${salary.year}`,
         },
         {
             title: 'Giờ làm việc',
@@ -116,13 +94,17 @@ function ViewSalaryDetail() {
             title: 'Thời gian bắt đầu',
             dataIndex: 'periodStart',
             key: 'periodStart',
-            render: (time) => moment(time).format('HH:mm:ss'),
+            render: (time) => {
+                return time.split('T')[1].split('.')[0];
+            },
         },
         {
             title: 'Thời gian kết thúc',
             dataIndex: 'periodEnd',
             key: 'periodEnd',
-            render: (time) => moment(time).format('HH:mm:ss'),
+            render: (time) => {
+                return time.split('T')[1].split('.')[0];
+            },
         },
         {
             title: 'Lương ngày',
@@ -131,13 +113,23 @@ function ViewSalaryDetail() {
             render: (salary) => formatVND(salary),
         },
         role === 'ADMIN' ? {
-            title: 'Hanh động',
+            title: 'Hành động',
             dataIndex: '_id',
             key: '_id',
             render: (id) => (
                 <Space>
-                    <div className='flex items-center gap-2 w-full' onClick={() => handleDelete(salaryId, id)}>
-                        <DeleteFilled /> Xóa</div>
+                    <div className='flex items-center gap-2 w-full cursor-pointer'  onClick={() => {
+                        Modal.confirm({
+                            title: 'Xác nhận',
+                            content: `Bạn có chắc chắn muốn xóa ngày lương ${salary.day}/${salary.month}/${salary.year}?`,
+                            okText: 'Đồng ý',
+                            cancelText: 'Hủy',
+                            okType: 'danger',
+                            onOk: () => handleDelete(salaryId, id),
+                        });
+                    }}>
+                        <DeleteFilled /> Xóa
+                    </div>
                 </Space>
             ),
         } : false
