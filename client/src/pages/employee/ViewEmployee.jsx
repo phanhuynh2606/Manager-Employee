@@ -45,7 +45,7 @@ import dayjs from "dayjs";
 import { getEmployeeDetail, getEmployeePosition } from "@/apis/employees/employee";
 import { getDepartments } from "@/apis/departments/departments";
 import { RestoreOutlined } from "@mui/icons-material";
-
+import { useSelector } from "react-redux";
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
 
@@ -63,7 +63,8 @@ const EmployeeDetail = () => {
   const [avatarModalVisible, setAvatarModalVisible] = useState(false);
   const [fileList, setFileList] = useState([]);
   const [messageApi, contextHolder] = message.useMessage();
-
+  const user = useSelector((state) => state?.auth?.user);
+  
   useEffect(() => {
     fetchEmployeeData();
     fetchSelectData();
@@ -376,9 +377,8 @@ const EmployeeDetail = () => {
 
   return (
     <div className="p-6">
-      {contextHolder}
-
-      {/* Navigation and actions */}
+      {contextHolder} 
+      {(user.role === "ADMIN" || user.position === "MANAGER") &&
       <Row gutter={16} className="mb-4">
         <Col span={12}>
           <Button
@@ -390,9 +390,13 @@ const EmployeeDetail = () => {
         </Col>
         <Col span={12} style={{ textAlign: "right" }}>
           <Space>
+            {(user?.position === "MANAGER" || user.role === "ADMIN")&&
             <Button style={{ backgroundColor: "orange" }} icon={<RestoreOutlined />} onClick={() => setResetModalVisible(true)}>
               Reset Password
             </Button>
+            }
+            { user.role === "ADMIN" &&
+            <>
             <Button icon={<EditOutlined />} onClick={handleEdit}>
               Edit
             </Button>
@@ -404,9 +408,12 @@ const EmployeeDetail = () => {
             >
               Delete
             </Button>
+            </>
+            }
           </Space>
         </Col>
       </Row>
+      }
 
       {/* Employee profile card */}
       <Card bordered={false} className="mb-4">
@@ -537,7 +544,7 @@ const EmployeeDetail = () => {
       </Card>
 
       {/* Tabs for additional information */}
-      <Card>
+      {/* <Card>
         <Tabs defaultActiveKey="attendance">
           <TabPane tab="Attendance History" key="attendance">
             <Table
@@ -557,7 +564,7 @@ const EmployeeDetail = () => {
             <p>Payroll history content will be displayed here.</p>
           </TabPane>
         </Tabs>
-      </Card>
+      </Card> */}
       <Modal
         title="Confirm Delete"
         open={deleteModalVisible}

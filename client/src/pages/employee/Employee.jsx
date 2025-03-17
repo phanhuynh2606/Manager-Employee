@@ -18,7 +18,7 @@ import {
   message,
   InputNumber
 } from "antd";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate  } from 'react-router-dom';
 import axios from '../../configs/axiosCustomize';
 import { SearchOutlined, FilterOutlined, UserOutlined, ClearOutlined, UserAddOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -41,10 +41,10 @@ const EmployeeManagement = () => {
     current: 1,
     pageSize: 10,
     total: 0,
-  });
-  const [viewEmployee, setViewEmployee] = useState(true);
+  }); 
   const [form] = useForm();
-  const role = useSelector((state) => state?.auth?.user?.role);
+  const user = useSelector((state) => state?.auth?.user);
+  const navigate = useNavigate();
   const [filters, setFilters] = useState({
     name: "",
     department: "",
@@ -52,12 +52,15 @@ const EmployeeManagement = () => {
     gender: "",
     salaryRange: [0, 50000000],
     hireDate: [],
-  });
-
+  }); 
   useEffect(() => {
+    if (user?.position === "STAFF" && user?.role === "EMPLOYEE") {  
+      navigate(`/dashboard/employee/${user.employeeId}`);
+      return;
+    }
     fetchDepartments();
     fetchPositions();
-  }, []);
+  }, [user, navigate]);
 
   useEffect(() => {
     fetchEmployees(filters);
@@ -86,7 +89,7 @@ const EmployeeManagement = () => {
         params.append("hireDateTo", queryFilters.hireDate[1].format("YYYY-MM-DD"));
       }
       params.append('page', pagination.current);
-      params.append('limit', pagination.pageSize);
+      params.append('limit', pagination.pageSize); 
       const response = await getEmployees(params.toString());
       if (response.success) {
         setEmployees(response.data);
@@ -95,17 +98,9 @@ const EmployeeManagement = () => {
           current: response.pagination.page,
           pageSize: response.pagination.limit,
           total: response.pagination.total,
-        });
-        setViewEmployee(true);
+        }); 
       } else {
-        if (response.status == 403) {
-          setViewEmployee(false);
-          setEmployees([]);
-          messageApi.error("Bạn không có quyền xem danh sách nhân viên !");
-        }
-        else {
-          messageApi.error("Failed to fetch employees");
-        }
+        messageApi.error("Failed to fetch employees");
       }
     } catch (error) {
       console.error("Failed to fetch employees:", error);
@@ -262,14 +257,9 @@ const EmployeeManagement = () => {
       ),
     },
   ]
- 
-  const customLocale = {
-    emptyText: viewEmployee ? 'No Data' : (
-      <div className="flex justify-center items-center py-8">
-        <p className="text-red-500 text-base font-medium">Bạn không có quyền xem danh sách nhân viên</p>
-      </div>
-    )
-  }; 
+  if (user?.position === "EMPLOYEE") {
+    return null;
+  }
   return (
     <div className="p-6">
       {contextHolder}
@@ -325,7 +315,7 @@ const EmployeeManagement = () => {
               </Button>
             )}
         </Space>
-        {role == "ADMIN" &&
+        {user?.role === "ADMIN" &&
           <Button icon={<UserAddOutlined />} onClick={() => setAddModalVisible(true)}>
             Add Employee
           </Button>
@@ -345,8 +335,7 @@ const EmployeeManagement = () => {
           pageSizeOptions: ['10', '20', '50'],
           showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
         }}
-        onChange={handlePagination}
-        locale={customLocale}
+        onChange={handlePagination} 
       />
 
       <Drawer
