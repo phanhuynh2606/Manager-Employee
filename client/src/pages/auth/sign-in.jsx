@@ -57,6 +57,8 @@ export function SignIn() {
                 });
             
                 dispatch(setUser({
+                    employeeId:result?.employeeId,
+                    departmentId: result?.departmentId,
                     email: result.email,
                     role: result.role,
                     position: result.position
