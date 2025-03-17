@@ -7,13 +7,17 @@ const moment = require('moment-timezone');
 //thêm bảng lương
 const WORKING_DAYS_PER_MONTH = 22;
 const WORKING_HOURS_PER_DAY = 8;
-const addSalary = async (employeeId, workingHours, overtimeHours, earlyLeaveMinutes) => {
+const now = new Date();
+
+const addSalary = async (employeeId, workingHours, overtimeHours, earlyLeaveMinutes, checkout, checkIn) => {
     try {
         const currentDate = moment().tz('Asia/Ho_Chi_Minh').toDate();
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth() + 1;
         const date = currentDate.getDate();
         const lastDayOfMonth = moment().tz('Asia/Ho_Chi_Minh').endOf('month').toDate();
+        console.log('11111', checkIn),
+            console.log('222', checkout)
 
         const employee = await Employee.findById(employeeId);
         if (!employee || !employee.baseSalary) {
@@ -67,8 +71,8 @@ const addSalary = async (employeeId, workingHours, overtimeHours, earlyLeaveMinu
                 day: date,
                 overTimeHours: overtimeHours,
                 workingHours: workingHours,
-                periodStart: currentDate,
-                periodEnd: currentDate,
+                periodStart: checkIn,
+                periodEnd: checkout,
                 salary: totalSalary
             });
         }
