@@ -16,8 +16,7 @@ import {
   Slider,
   Divider,
   message,
-  InputNumber,
-  Switch
+  InputNumber
 } from "antd";
 import { Link } from 'react-router-dom';
 import axios from '../../configs/axiosCustomize';
@@ -26,6 +25,7 @@ import dayjs from "dayjs";
 import { getDepartments } from "@/apis/departments/departments";
 import { getEmployees, getEmployeePosition } from "@/apis/employees/employee";
 import { useForm } from "antd/es/form/Form";
+import { useSelector } from 'react-redux';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
@@ -42,8 +42,9 @@ const EmployeeManagement = () => {
     pageSize: 10,
     total: 0,
   });
+  const [viewEmployee, setViewEmployee] = useState(true);
   const [form] = useForm();
-
+  const role = useSelector((state) => state?.auth?.user?.role);
   const [filters, setFilters] = useState({
     name: "",
     department: "",
@@ -54,7 +55,6 @@ const EmployeeManagement = () => {
   });
 
   useEffect(() => {
-    fetchEmployees();
     fetchDepartments();
     fetchPositions();
   }, []);
@@ -96,8 +96,16 @@ const EmployeeManagement = () => {
           pageSize: response.pagination.limit,
           total: response.pagination.total,
         });
+        setViewEmployee(true);
       } else {
-        messageApi.error("Failed to fetch employees");
+        if (response.status == 403) {
+          setViewEmployee(false);
+          setEmployees([]);
+          messageApi.error("Bạn không có quyền xem danh sách nhân viên !");
+        }
+        else {
+          messageApi.error("Failed to fetch employees");
+        }
       }
     } catch (error) {
       console.error("Failed to fetch employees:", error);
@@ -127,14 +135,14 @@ const EmployeeManagement = () => {
     } catch (error) {
       console.error("Failed to fetch positions:", error);
     }
-  }; 
+  };
   const handleAdd = async () => {
     try {
       setLoading(true);
       const dataForm = await form.validateFields();
       const response = await axios.post(`/employee/create`, dataForm);
       if (response.success) {
-        setAddModalVisible(false);   
+        setAddModalVisible(false);
         form.resetFields();
         setTimeout(() => {
           messageApi.success(response.message);
@@ -196,7 +204,7 @@ const EmployeeManagement = () => {
       render: (_, record) => (
         <Space>
           <Avatar
-            src={`http://localhost:4000/assets/images/${record.avatarUrl}`}
+            src={record.avatarUrl}
             icon={<UserOutlined />}
             size="large"
           />
@@ -253,12 +261,18 @@ const EmployeeManagement = () => {
         </Space>
       ),
     },
-  ];
-
+  ]
+ 
+  const customLocale = {
+    emptyText: viewEmployee ? 'No Data' : (
+      <div className="flex justify-center items-center py-8">
+        <p className="text-red-500 text-base font-medium">Bạn không có quyền xem danh sách nhân viên</p>
+      </div>
+    )
+  }; 
   return (
     <div className="p-6">
       {contextHolder}
-      {/* Top section with search and filter */}
       <div className="mb-4 flex justify-between items-center">
         <Space>
           <Input
@@ -268,8 +282,7 @@ const EmployeeManagement = () => {
             onChange={(e) => handleFilterChange("name", e.target.value)}
             style={{ width: 250 }}
             allowClear
-          />
-
+          /> 
           <Select
             placeholder="Department"
             value={filters.department}
@@ -312,9 +325,11 @@ const EmployeeManagement = () => {
               </Button>
             )}
         </Space>
-        <Button icon={<UserAddOutlined />} onClick={() => setAddModalVisible(true)}>
-          Add Employee
-        </Button>
+        {role == "ADMIN" &&
+          <Button icon={<UserAddOutlined />} onClick={() => setAddModalVisible(true)}>
+            Add Employee
+          </Button>
+        }
       </div>
 
       <Table
@@ -331,7 +346,9 @@ const EmployeeManagement = () => {
           showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
         }}
         onChange={handlePagination}
+        locale={customLocale}
       />
+
       <Drawer
         title="Advanced Filters"
         placement="right"

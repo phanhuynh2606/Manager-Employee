@@ -15,7 +15,6 @@ export function Dashboard() {
   const [controller, dispatch] = useMaterialTailwindController();
   const { sidenavType } = controller;
   const {user} = useSelector(state => state.auth);
-    const location = useLocation();
 
   // Kiểm tra xem route hiện tại có hợp lệ và user có quyền truy cập không
   const hasAccess = routes.some(({ layout, pages }) =>

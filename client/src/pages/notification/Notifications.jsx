@@ -1,50 +1,92 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Card, Button, Radio, Typography, message, Modal, Form, Input, Select, TreeSelect } from 'antd';
-import { createNotification, getNotifications } from '@/apis/notifications/notifications.api';
+import { Card, Button, Typography, message, Modal, Form, Input, Select, TreeSelect, Pagination, Skeleton, DatePicker, Space, notification } from 'antd';
+import { createNotification, getNotifications, updatemarkAsRead } from '@/apis/notifications/notifications.api';
 import { useSelector } from 'react-redux';
 import { assignManager, getDepartments } from '@/apis/departments/departments';
 import buildTreeSelect from '@/utils/buildTreeSelect';
+import dayjs from 'dayjs';
+import { Filter } from './Filter';
+import socket from '@/utils/socket';
 const { Title, Text } = Typography;
 const { Option } = Select;
+
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
   const [filter, setFilter] = useState('ALL');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm(); // Giả định ID nhân viên
-  const { role } = useSelector((state) => state.auth.user);
+  const { user } = useSelector((state) => state.auth);
   const [departments, setDepartments] = useState([]);
   const [selectedType, setSelectedType] = useState('SYSTEM');
   const [loadingData, setLoadingData] = useState(false);
   const [treeData, setTreeData] = useState([]);
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
-
-  const fetchNotifications = async () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalNotifications, setTotalNotifications] = useState(0);
+  const [loadingNotifications, setLoadingNotifications] = useState(false);
+  const [selectedTypeSelect, setSelectedTypeSelect] = useState('ALL');
+  const [dateRange, setDateRange] = useState([]);
+  const pageSize = 10;
+  const {employeeId} = useSelector((state) => state.auth.user);
+  
+  
+  const fetchNotifications = async (page = 1) => {
     try {
-      const res = await getNotifications();
-      setNotifications(res.data);
+      setLoadingNotifications(true);
+      const startDate = dateRange.length ? dayjs(dateRange[0]).format('YYYY-MM-DD') : '';
+      const endDate = dateRange.length ? dayjs(dateRange[1]).format('YYYY-MM-DD') : '';
+      const res = await getNotifications(page, pageSize, filter, selectedTypeSelect, startDate, endDate);
+      if (res.success) {
+        setNotifications(res.data);
+        setTotalNotifications(
+          filter === 'ALL'
+            ? res.totalNotifications
+            : filter === 'READ'
+            ? res.readNotifications
+            : res.unreadNotifications
+        );
+      }
     } catch (error) {
       console.error('Error fetching notifications:', error);
+    } finally {
+      setLoadingNotifications(false);
     }
   };
+  useEffect(() => {
+    fetchNotifications();
+  }, [filter, selectedTypeSelect, dateRange]);
 
+  // Tích hợp Socket.IO để nhận real-time
+  useEffect(() => {
+    if (!employeeId) return;
+
+    // Lắng nghe sự kiện newNotification
+    const handleNewNotification = (newNotification) => {
+      setNotifications((prev) => [newNotification, ...prev]);
+      setTotalNotifications((prev) => prev + 1);
+    };
+
+    socket.on("newNotification", handleNewNotification);
+
+    // Cleanup
+    return () => {
+      console.log("Cleaning up socket listeners in Notifications");
+      socket.off("newNotification", handleNewNotification);
+    };
+  }, []);
   const markAsRead = async (id) => {
     try {
-      await axios.post(`http://localhost:5000/notifications/${id}/read`, { employeeId });
-      message.success('Đã đánh dấu là đã đọc');
+      const res = await updatemarkAsRead(id);
+      if(res.success){
+        message.success('Đã đánh dấu là đã đọc');
+      }else{
+        message.error(res.message);
+      }
       fetchNotifications();
     } catch (error) {
       console.error('Error marking notification as read:', error);
     }
   };
 
-  const filteredNotifications = notifications?.filter((n) => {
-    if (filter === 'READ') return n.readBy.includes(employeeId);
-    if (filter === 'UNREAD') return !n.readBy.includes(employeeId);
-    return true;
-  });
   const handleCreateNotification = async () => {
     const res = await getDepartments();
     console.log(res);
@@ -57,9 +99,9 @@ export default function Notifications() {
     try {
       const values = await form.validateFields();
       const res = await createNotification(values);
-      if(res.success){
+      if (res.success) {
         message.success('Tạo thông báo thành công!');
-      }else{
+      } else {
         message.error(res.message);
       }
       form.resetFields();
@@ -72,7 +114,6 @@ export default function Notifications() {
   };
 
   const handleCancel = () => {
-
     setIsModalVisible(false);
   };
   const handleTypeChange = async (value) => {
@@ -102,34 +143,80 @@ export default function Notifications() {
       form.setFieldsValue({ departmentId: ['ALL'] });
     }
   };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    fetchNotifications(page);
+  };
+
   return (
     <div className="mx-auto p-3">
       <Title level={2} className="mb-4">Thông báo</Title>
 
       <div className='flex justify-between align-center pr-10'>
         <div className="mb-4">
-          <Radio.Group value={filter} onChange={(e) => setFilter(e.target.value)}>
-            <Radio.Button value="ALL">Tất cả</Radio.Button>
-            <Radio.Button value="READ">Đã đọc</Radio.Button>
-            <Radio.Button value="UNREAD">Chưa đọc</Radio.Button>
-          </Radio.Group>
+          <Filter filter={filter} setFilter={setFilter}
+            selectedType={selectedTypeSelect} setSelectedType={setSelectedTypeSelect}
+            dateRange={dateRange} setDateRange={setDateRange}
+          />
         </div>
-        {role === 'ADMIN' && (
+        {user?.role === 'ADMIN' && (
           <Button type="primary" onClick={handleCreateNotification} className="bg-blue-500">Tạo thông báo</Button>
         )}
       </div>
-      <div className="space-y-4">
-        {filteredNotifications?.map((notification) => (
-          <Card key={notification._id} className={`shadow-md ${notification.readBy.includes(employeeId) ? 'bg-gray-100' : 'bg-white'}`}>
-            <Title level={4}>{notification.title}</Title>
-            <Text>{notification.content}</Text>
-            {!notification.readBy.includes(employeeId) && (
-              <Button type="link" onClick={() => markAsRead(notification._id)} className="mt-2 text-blue-500">
-                Đánh dấu là đã đọc
-              </Button>
-            )}
-          </Card>
-        ))}
+      <div>
+        <div className="space-y-2">
+          {/* Danh sách thông báo */}
+          {loadingNotifications ? (
+             <Skeleton active />
+          ) :<>
+              {notifications.length === 0 && (
+                <Text type="secondary" className='text-[20px]'>Chưa có thông báo nào {filter==='ALL'?'':(filter==='READ'?"đã đọc":"chưa dọc")}</Text>
+              )}
+              {notifications?.map((notification) => {
+                const isRead = notification.readBy.includes(employeeId);
+                return (
+                  <Card
+                    key={notification._id}
+                    className={`shadow-md ${isRead ? 'bg-gray-100 border-l-4' : 'bg-blue-100 border-l-4 border-blue-500'}`}
+                  >
+                    <div className="flex justify-between items-center">
+                      <Title level={4} className="mb-1">{notification.title}</Title>
+                      <Text className="text-gray-500 text-[16px]">{dayjs(notification.createdAt).format('DD/MM/YYYY HH:mm')}</Text>
+                    </div>
+                    <Text className="block mb-1">{notification.content}</Text>
+                    <div className="flex justify-between items-center">
+                      <Text type="secondary">
+                        <strong>Loại:</strong> {notification.type === 'SYSTEM' ? 'Hệ thống' : notification.type === 'DEPARTMENT' ? 'Phòng ban' : 'Cá nhân'}
+                      </Text>
+                      <Text type="secondary">
+                        <strong>Người gửi:</strong> {notification?.createdBy || 'Không rõ'}
+                      </Text>
+                    </div>
+                    {!isRead && (
+                      <Button
+                        onClick={() => markAsRead(notification._id)}
+                        className="mt-2 text-blue-500 border-none"
+                      >
+                        Đánh dấu là đã đọc
+                      </Button>
+                    )}
+                  </Card>
+                );
+              })}
+          </>}
+        </div>
+        {/* Phân trang */}
+        {totalNotifications > 0 && (
+            <div className="flex justify-center mt-4">
+            <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={totalNotifications}
+              onChange={handlePageChange}
+            />
+          </div>
+        )}
       </div>
       {/* Modal Tạo Thông Báo */}
       <Modal title="Tạo Thông Báo" open={isModalVisible} onOk={handleOk} onCancel={handleCancel} okText="Gửi" cancelText="Hủy"

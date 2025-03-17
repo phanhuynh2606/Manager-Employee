@@ -62,10 +62,11 @@ const authLogin = async (req, res) => {
             ...cookieOptions,
             maxAge: 30 * 24 * 60 * 60 * 1000
         });
-
         res.status(200).json({
             success: true,
             message: "Đăng nhập thành công!",
+            employeeId: user.employeeId,
+            departmentId: getEmployee.departmentId,
             email: user.email,
             role: user.role,
             active: user.isActive,
@@ -220,6 +221,7 @@ const getProfile = (req, res) => {
         res.status(200).json({
             success: true,
             result: {
+                id: req.user.id,
                 username
             }
         });

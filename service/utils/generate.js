@@ -25,4 +25,16 @@ const generateUsername = async (fullName) => {
   const baseUsername = firstNameInitial + otherInitials;  
   return baseUsername + (count + 1);
 };
-module.exports = { generatePassword, generateUsername};
+const getUsernameFromEmail = async(email) => {
+  if (!email || typeof email !== 'string') {
+    throw new Error('Invalid email');
+  }
+  const username = email.split('@')[0];
+  const employee = await employee.find({ username });
+  if (employee.length === 0) {
+    return username;
+  }else{
+    return username + employee.length
+  }
+};
+module.exports = { generatePassword, generateUsername,getUsernameFromEmail};

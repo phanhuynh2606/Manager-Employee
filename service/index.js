@@ -7,6 +7,9 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const app = express();
 const port = process.env.PORT || 9000;
+const http = require('http');
+const { initSocket } = require('./config/socket');
+const server = http.createServer(app);
 app.use(cors(
   {
     origin: 'http://localhost:5173',
@@ -15,6 +18,8 @@ app.use(cors(
     allowedHeaders: ['Content-Type', 'Authorization'],
   }
 ));
+
+initSocket(server);
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
@@ -24,6 +29,6 @@ app.use('/assets/images', express.static(path.join(__dirname, 'assets/images')))
 connectDB();
 initRoutes(app);
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
