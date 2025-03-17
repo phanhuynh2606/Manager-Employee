@@ -6,7 +6,9 @@ const auth = require('../middlewares/auth.middleware');
 
 router.use(auth.authenticate);
 router.get('/', notificationController.getNotifications);
+router.put('/multi-read', notificationController.multiMarkAsRead);
 router.put('/:id/read', notificationController.markAsRead);
+router.delete('/', notificationController.deleteNotifications);
 
 router.use(auth.isAdmin)
 router.post('/', notificationController.createNotification);

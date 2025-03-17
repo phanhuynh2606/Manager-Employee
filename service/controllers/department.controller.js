@@ -116,7 +116,7 @@ const updateDepartment = async (req, res) => {
       const notificationObject = notification.toObject();
       notificationObject.createdBy = req.user?.employeeId?.fullName;
       if(notification){
-        sendNotification(notification);
+        sendNotification(notificationObject);
       }
     }
     if (!department)

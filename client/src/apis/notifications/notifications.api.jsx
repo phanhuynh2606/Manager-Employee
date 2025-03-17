@@ -23,3 +23,11 @@ export const updatemarkAsRead = async (id) => {
   const res = await axios.put(`/notifications/${id}/read`);
   return res;
 }
+export const updateMultimarkAsUnRead = async (ids) => {
+  const res = await axios.put(`/notifications/multi-read`, {ids});
+  return res;
+}
+export const apiDeleteNotifications = async (ids) => {
+  const res = await axios.delete(`/notifications`, {data: {ids}});
+  return res;
+}

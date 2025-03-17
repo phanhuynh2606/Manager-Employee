@@ -39,9 +39,13 @@ const createNotification = async (req, res) => {
     });
 
     await newNotification.save();
-    const userSend = await User.findById(newNotification.createdBy).populate('employeeId',"fullName" )
+    const userSend = await User.findById(newNotification.createdBy).populate('employeeId',"fullName avatarUrl" )
     const notificationObj = newNotification.toObject();
-    notificationObj.createdBy = userSend.employeeId.fullName;
+    notificationObj.createdBy = {
+      fullName: userSend.employeeId.fullName,
+      avatarUrl: userSend.employeeId.avatarUrl
+    };
+    console.log(notificationObj);
     sendNotification(notificationObj);
     res.status(201).json({
       success: true,
@@ -138,7 +142,10 @@ const getNotifications = async (req, res) => {
                 type: 1,
                 readBy: 1,
                 createdAt: 1,
-                createdBy: '$createdBy.employee.fullName'
+                createdBy:{
+                  fullName: '$createdBy.employee.fullName',
+                  avatarUrl: '$createdBy.employee.avatarUrl'
+                }
               }
             }
           ]
@@ -169,6 +176,7 @@ const getNotifications = async (req, res) => {
 
 //  Đánh dấu thông báo đã đọc
 const markAsRead = async (req, res) => {
+  console.log("run update read");
   try {
     const { id } = req.params;
     const employeeId = req.user?.employeeId;
@@ -192,4 +200,51 @@ const markAsRead = async (req, res) => {
   }
 };
 
-module.exports = { createNotification, getNotifications, markAsRead };
+const multiMarkAsRead = async (req, res) => {
+  console.log("Run update multi read");
+  try {
+    const { ids } = req.body;
+    const employeeId = req.user?.employeeId;
+    const notifications = await Notification.find({ _id: { $in: ids } });
+    if (!notifications) return res.status(404).json({ message: 'Không tìm thấy thông báo' });
+
+    notifications.forEach(async notification => {
+      if (!notification.readBy.includes(employeeId)) {
+        notification.readBy.push(employeeId);
+        await notification.save();
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Đánh dấu là đã đọc'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+}
+
+const deleteNotifications = async (req, res) => {
+  try {
+    const { ids } = req.body;
+    const notifications = await Notification.deleteMany({ _id: { $in: ids } });
+    if (!notifications) return res.status(404).json({ message: 'Không tìm thấy thông báo' });
+
+    res.status(200).json({
+      success: true,
+      message: 'Xóa thông báo thành công'
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+
+}
+
+module.exports = { createNotification, getNotifications, markAsRead, multiMarkAsRead, deleteNotifications };

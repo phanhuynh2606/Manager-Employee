@@ -31,6 +31,7 @@ const NotificaionNavbar = () => {
   const [numberOfUnread, setNumberOfUnread] = useState(0);
   const navigate = useNavigate();
   const [threshold, setThreshold] = React.useState(3);
+  const notificationSound = useRef(null);
   const [api, contextHolder] = notification.useNotification({
     stack: {
           threshold,
@@ -40,7 +41,7 @@ const NotificaionNavbar = () => {
     api.open({
       message: 'Bạn có thông báo mới!',
       description: `${title}!`,
-      duration: 1000,
+      duration: 30,
       placement: 'topRight',
       showProgress: true,
     });
@@ -52,6 +53,7 @@ const NotificaionNavbar = () => {
     setLoading(true);
     try {
       const response = await getNotifications(pageNum, pageSize, "UNREAD");
+      console.log(response.data);
       if (response.success) {
         const newNotifications = response.data;
         setNumberOfUnread(response.unreadNotifications);
@@ -96,6 +98,9 @@ const NotificaionNavbar = () => {
 
     socket.on("newNotification", (newNotification) => {
       console.log("New notification received:", newNotification);
+      if (notificationSound.current) {
+        notificationSound.current.play().catch((error) => console.warn("Audio play failed:", error));
+      }
       openNotification(newNotification.title);
       setNotifications((prev) => [newNotification, ...prev]);
       setNumberOfUnread((prev) => prev + 1); // Tăng số lượng chưa đọc
@@ -128,6 +133,7 @@ const NotificaionNavbar = () => {
 
   return (
     <Menu>
+      <audio ref={notificationSound} src="/audio/notification.wav" />
       {contextHolder}
       <MenuHandler>
         <IconButton variant="text" color="blue-gray" className="relative">
@@ -150,10 +156,14 @@ const NotificaionNavbar = () => {
               onClick={() => navigate(`./notifications`)}
             >
               <Avatar
-                src="https://static.vecteezy.com/system/resources/previews/009/170/419/non_2x/a-unique-design-icon-of-employee-management-vector.jpg"
+                src={notification.createdBy?.avatarUrl}
                 alt="notification"
                 size="sm"
                 variant="circular"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "https://static.vecteezy.com/system/resources/previews/009/170/419/non_2x/a-unique-design-icon-of-employee-management-vector.jpg";
+                }}
               />
               <div>
                 <Typography
