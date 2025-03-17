@@ -7,7 +7,7 @@ const authenticate = async (req, res, next) => {
         if (!accessToken) {
             return res.status(401).json({
                 success: false,
-                message: "Không được phép"
+                message: "Không có quyền truy cập!"
             });
         }
 
@@ -16,12 +16,12 @@ const authenticate = async (req, res, next) => {
                 if (err.name === "TokenExpiredError") {
                     return res.status(401).json({
                         success: false,
-                        message: "Token đã hết hạn"
+                        message: "Phiên đăng nhập hết hạn!"
                     });
                 }
                 return res.status(401).json({
                     success: false,
-                    message: "Không được phép"
+                    message: "Không có quyền truy cập!"
                 });
             }
 
@@ -50,13 +50,13 @@ const isAdmin = async (req, res, next) => {
         } else {
             return res.status(401).json({
                 success: false,
-                message: "Unauthorized",
+                message: "Không có quyền truy cập",
             });
         }
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: e.message || "Internal Server Error",
+            message: "Lỗi máy chủ nội bộ",
         });
     }
 };
