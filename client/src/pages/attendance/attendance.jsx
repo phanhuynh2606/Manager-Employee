@@ -102,7 +102,6 @@ function AttendanceManagement() {
     const [role, setRole] = useState(user.role);
     const fetchDataEmployee = async () => {
         try {
-            console.log(user)
             const response = await getAttendances();
             if (!response) return;
             setEmployeeData(response.data);
@@ -280,13 +279,13 @@ function AttendanceManagement() {
             setNotification({ open: true, message: "Ngày kết thúc phải sau ngày bắt đầu", severity: "error" });
             return;
         }
-        if (startDate.getTime() === endDate.getTime()) {
-            setNotification({ open: true, message: "Ngày bắt đầu và ngày kết thúc không thể trùng nhau", severity: "error" });
+        if (attendanceData?.leaveDays > 12) {
+            setNotification({ open: true, message: "Số ngày nghỉ phép không được vượt quá 12 ngày", severity: "error" });
             return;
         }
             const response = await requestLeave(startDate, endDate, reason);
             if (!response.success) {
-                return toast.error(response.response.data.message, {
+                return toast.error(response?.response.data.message, {
                     autoClose: 2000,
                     closeOnClick: true,
                     pauseOnHover: false,
@@ -294,7 +293,7 @@ function AttendanceManagement() {
             }
         setOpenLeaveDialog(false);
             await fetchListLeave(pagination.current, pagination.pageSize);
-        return toast.success(response.data.message, {
+        return toast.success(response.message, {
             autoClose: 2000,
             closeOnClick: true,
             pauseOnHover: false,
@@ -494,7 +493,7 @@ function AttendanceManagement() {
                                                     <Typography variant="h6" gutterBottom>Tổng quan tháng {currentMonth.getMonth() + 1}/{currentMonth.getFullYear()}</Typography>
                                                     <Divider sx={{ mb: 2 }} />
                                                     <Typography variant="body1"><strong>Số ngày công:</strong> {(attendanceData?.totalWorkingHours)/8}/{employeeData?.workingDay}</Typography>
-                                                    <Typography variant="body1"><strong>Số ngày nghỉ phép:</strong> {attendanceData?.leaveDays}/{employeeData?.leaveBalance}</Typography>
+                                                    <Typography variant="body1"><strong>Số ngày nghỉ phép trong năm:</strong> {attendanceData?.leaveDays}/{employeeData?.leaveBalance}</Typography>
                                                     <Typography variant="body1"><strong>Số ngày đi muộn:</strong> {attendanceData?.lateDays}</Typography>
                                                     <Typography variant="body1"><strong>Số giờ làm thêm:</strong> {attendanceData?.totalOvertimeHours}</Typography>
                                                 </CardContent>
