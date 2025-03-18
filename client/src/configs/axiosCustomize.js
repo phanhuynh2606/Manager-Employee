@@ -1,36 +1,37 @@
-// Add a request interceptor
-import axios from 'axios';
+import axios from "axios";
+import { refreshToken } from "@/apis/auth/auth.js";
+
 const instance = axios.create({
-  baseURL: 'http://localhost:4000'
+    baseURL: "http://localhost:4000",
+    withCredentials: true,
 });
 
-
-instance.interceptors.request.use(function (config) {
-    // Do something before request is sent
-    return config;
-  }, function (error) {
-    // Do something with request error
-    return Promise.reject(error);
-  });
-
-// Add a response interceptor
-instance.interceptors.response.use(function (response) {
-    // Any status code that lie within the range of 2xx cause this function to trigger
-    // Do something with response data
-    if(response && response.data){
-         return response.data;
+instance.interceptors.response.use(
+    (response) => response.data,
+    (error) => {
+        if (error.response?.status === 500) {
+            console.warn("Server error:", error.response.data);
+        }
+        return Promise.reject(error);
     }
-    return response;
-  }, function (error) {
-    // Any status codes that falls outside the range of 2xx cause this function to trigger
-    // Do something with response error
-    if(error.response && error.response.status === 500){
-         // Optionally log the error or handle specific 400 scenarios
-         console.warn("Server returned status 400 with data:", error.response.data);
-         // Return the response data instead of rejecting it
-         return Promise.resolve(error.response.data);
+);
+
+instance.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+            try {
+                const result = await refreshToken();
+                return instance(originalRequest);
+            } catch (refreshError) {
+                console.error("Interceptor: Refresh token failed ❌", refreshError);
+                window.location = "/auth/sign-in";
+            }
+        }
+        return Promise.reject(error);
     }
-    return error.response.data;
-  });
+);
 
 export default instance;

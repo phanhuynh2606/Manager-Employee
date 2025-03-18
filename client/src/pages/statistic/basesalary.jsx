@@ -37,7 +37,18 @@ import Chart from "react-apexcharts"
 import instance from "../../configs/axiosCustomize"
 
 
+    
+const getFullYear = () =>{
+    const year = new Date().getFullYear();
+    const arr = [];
+    for (let i =2020; i <= year;i++) {
+        arr.push(i)
+    }
+    return arr;
+}
 export default function BaseSalaryStatisyic() {
+    const [year,setYear] = React.useState(getFullYear)
+    const [selectedYear,setSelectedYear] = React.useState(year.includes(new Date().getFullYear()) ? new Date().getFullYear() : year[0]);
     const [salary, setSalary] = React.useState([]);
     const [check, setCheck] = React.useState(true)
     const [employee, setEmployee] = React.useState([]);
@@ -133,12 +144,16 @@ export default function BaseSalaryStatisyic() {
             },
         },
     };
-    console.log(selected)
+    
+
+   console.log(selectedYear)
 
     const getMonthSalary = async () => {
+          
         try {
             const respone = await instance.post("/statistic/salary", {
-                check: check
+                check: check,
+                year: selectedYear
             });
             setSalary(respone.salary);
             setEmployee(respone.employee)
@@ -148,86 +163,136 @@ export default function BaseSalaryStatisyic() {
     }
     React.useEffect(() => {
         getMonthSalary();
-    }, [check])
+    }, [check,selectedYear])
+    
     const exportExcel = () => {
-        if(!selected) {
+        if (!selected) {
             alert("Chưa chọn tháng hoặc quý")
             return;
         }
         const length = employee.length
         console.log(employee)
-        let check =false;
+        let check = false;
         for (let i = 0; i < length; i++) {
             if (Object.keys(employee[i])[0] === selected) {
-                check=true;
-                console.log("Employee is ",employee)
+                check = true;
+                console.log("Employee is ", employee)
                 const employees = employee[i][selected]
                 console.log(employees)
-                const data = employees.map((item, index) => ({
+                const data = employees.map((item, index) => { 
+                    const currency = item.baseSalary;
+                    const currencyFormat = currency.toLocaleString("vi-VN",{style:"currency",currency : "VND"})
+
+                    return (
+                    {
                     "STT": index + 1,
                     "Mã nhân viên": item._id,
                     "Full Name": item.employeeData[0].fullName,
                     "Phone number": item.employeeData[0].phoneNumber,
                     "Position": item.employeeData[0].position,
-                    "Base salary" : item.baseSalary
-                }));
+                    "Base salary":currencyFormat
+                })});
                 const worksheet = XLSX.utils.json_to_sheet(data);
-                        const workbook = XLSX.utils.book_new();
-                        XLSX.utils.book_append_sheet(workbook, worksheet, "Salary");
-                
-                        const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-                        const dataBlob = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-                
-                        saveAs(dataBlob, `Salary ${selected}.xlsx`);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Salary");
+
+                const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+                const dataBlob = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+
+                saveAs(dataBlob, `Salary ${selected} ${selectedYear} .xlsx`);
             }
         }
-        if(!check) {
+        if (!check) {
             alert("Không có dữ liệu để xuất")
         }
-        
-    }
 
+    }
+    console.log("Selected Year", selectedYear)
     return (
         <>
-
-            <Card>
-                <div className="flex gap-10">
-                    <Radio name="type" onChange={() => setCheck(true)} label="Tháng" defaultChecked />
-                    <Radio name="type" onChange={() => setCheck(false)} label="Quý" />
-                </div>
-                <div className="w-72">
-                    <Select label="Select"
-                        value={selected}
-                        onChange={(value) =>{
-                          setSelected(value)} }>
-                        {categories.map((item, index) => {
-                            return <Option key={index} value={item} >{item}</Option>
-                        })}
-                    </Select>
-                </div>
-
+            <Card className="p-4 shadow-md">
                 <CardHeader
                     floated={false}
                     shadow={false}
                     color="transparent"
-                    className="flex flex-col gap-4 rounded-none md:flex-row md:items-center"
+                    className="flex flex-col md:flex-row justify-between items-center mb-4 pb-2 border-b"
                 >
-                    <Typography variant="h6" color="blue-gray">
-                        Thống kê lương
-                    </Typography>
-
-                    <div className="w-max rounded-lg bg-gray-900 p-5 text-white">
-                        <Square3Stack3DIcon className="h-6 w-6" />
+                    <div className="flex items-center gap-4">
+                        <div className="rounded-lg bg-blue-500 p-3 text-white">
+                            <Square3Stack3DIcon className="h-6 w-6" />
+                        </div>
+                        <Typography variant="h5" color="blue-gray">
+                            Thống kê lương
+                        </Typography>
                     </div>
+
                     <button
                         onClick={exportExcel}
-                        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors mt-4 md:mt-0"
                     >
                         Xuất Excel
                     </button>
                 </CardHeader>
-                <CardBody className="px-2 pb-0">
-                    <Chart {...chartConfigSalary} />
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div>
+                        <Typography variant="small" color="blue-gray" className="font-medium mb-2">
+                            Chọn kiểu thống kê
+                        </Typography>
+                        <div className="flex gap-6">
+                            <Radio
+                                name="type"
+                                onChange={() => setCheck(true)}
+                                label="Tháng"
+                                defaultChecked
+                                color="blue"
+                            />
+                            <Radio
+                                name="type"
+                                onChange={() => setCheck(false)}
+                                label="Quý"
+                                color="blue"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <Typography variant="small" color="blue-gray" className="font-medium mb-2">
+                            {check ? "Chọn tháng" : "Chọn quý"}
+                        </Typography>
+                        <Select
+                            label={check ? "Tháng" : "Quý"}
+                            value={selected}
+                            onChange={(value) => setSelected(value)}
+                            className="w-full"
+                        >
+                            {categories.map((item, index) => (
+                                <Option key={index} value={item}>{item}</Option>
+                            ))}
+                        </Select>
+                    </div>
+
+                    <div>
+                        <Typography variant="small" color="blue-gray" className="font-medium mb-2">
+                            Chọn năm
+                        </Typography>
+                        <Select
+                            label="Năm"
+                            value={selectedYear}
+                            onChange={(value) => setSelectedYear(value)}
+                            className="w-full"
+                        >
+                            {year.map((year) => (
+                                <Option key={year} value={year}>{year}</Option>
+                            ))}
+                        </Select>
+                    </div>
+                </div>
+
+                <CardBody className="p-0">
+                    <div className="border rounded-lg p-2 bg-gray-50">
+                        <Chart {...chartConfigSalary} />
+                    </div>
                 </CardBody>
             </Card>
         </>

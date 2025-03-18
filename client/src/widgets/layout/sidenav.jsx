@@ -8,21 +8,61 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import { useMaterialTailwindController, setOpenSidenav } from "@/context";
+import { toast } from "react-toastify";
+import { logout } from "@/apis/auth/auth.js";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from 'react-router-dom';
+import { setLogout } from "@/redux/slice/auth/auth.slice.js";
 
 export function Sidenav({ brandImg, brandName, routes }) {
   const [controller, dispatch] = useMaterialTailwindController();
   const { sidenavColor, sidenavType, openSidenav } = controller;
+  const {user} = useSelector(state => state.auth);
   const sidenavTypes = {
     dark: "bg-gradient-to-br from-gray-800 to-gray-900",
     white: "bg-white shadow-sm",
     transparent: "bg-transparent",
   };
+  const dispatched = useDispatch();
+  const navigate = useNavigate();
+
+  const handleToast = (message, type) => {
+    const toastMethod = type === 'error' ? toast.error : toast.success;
+    toastMethod(message, {
+      autoClose: 2000,
+      closeOnClick: true,
+      pauseOnHover: false,
+    });
+  };
+
+  const handleLogout = async () => {
+    try {
+      const response = await logout();
+
+      const errorResponse = response?.response?.data;
+      if (errorResponse?.success === false) {
+          return handleToast(errorResponse.message, 'error');
+      }
+      
+      if (response?.success) {
+          dispatched(setLogout());
+          handleToast(response.message, 'success');
+          return navigate('/auth/sign-in');
+      }      
+    } catch (e) {
+      console.error(e, "Error");
+      toast.error("Đăng xuất thất bại!", {
+        autoClose: 2000,
+        closeOnClick: true,
+        pauseOnHover: false,
+      });
+    }
+  }
 
   return (
     <aside
-      className={`${sidenavTypes[sidenavType]} ${
-        openSidenav ? "translate-x-0" : "-translate-x-80"
-      } fixed inset-0 z-50 my-4 ml-4 h-[calc(100vh-32px)] w-72 rounded-xl transition-transform duration-300 xl:translate-x-0 border border-blue-gray-100`}
+      className={`${sidenavTypes[sidenavType]} ${openSidenav ? "translate-x-0" : "-translate-x-80"
+        } overflow-auto fixed inset-0 z-50 my-4 ml-4 h-[calc(100vh-32px)] w-72 rounded-xl transition-transform duration-300 xl:translate-x-0 border border-blue-gray-100`}
     >
       <div
         className={`relative`}
@@ -49,7 +89,7 @@ export function Sidenav({ brandImg, brandName, routes }) {
         
       </div>
       <div className="m-4">
-        {routes.map(({ layout, title, pages }, key) => (
+        {routes.filter(router => router.layout !== "auth").map(({ layout, title, pages }, key) => (
           <ul key={key} className="mb-4 flex flex-col gap-1">
             {title && (
               <li className="mx-3.5 mt-4 mb-2">
@@ -62,9 +102,17 @@ export function Sidenav({ brandImg, brandName, routes }) {
                 </Typography>
               </li>
             )}
-            {pages.map(({ icon, name, path }) => (
-              <li key={name}>
-                <NavLink to={`/${layout}${path}`}>
+            {pages.filter(page => page.name && (!page.roles || page.roles.includes(user.role))).map(({ icon, name, path }, index) => (
+              <li key={index}>
+                <NavLink
+                  to={`/${layout}${path}`}
+                  onClick={e => {
+                    if (name === "Logout") {
+                      e.preventDefault();
+                      handleLogout();
+                    }
+                  }}
+                >
                   {({ isActive }) => (
                     <Button
                       variant={isActive ? "gradient" : "text"}
@@ -72,8 +120,8 @@ export function Sidenav({ brandImg, brandName, routes }) {
                         isActive
                           ? sidenavColor
                           : sidenavType === "dark"
-                          ? "white"
-                          : "gray"
+                            ? "white"
+                            : "gray"
                       }
                       className="flex items-center gap-4 px-4 capitalize"
                       fullWidth
@@ -83,13 +131,18 @@ export function Sidenav({ brandImg, brandName, routes }) {
                         color="inherit"
                         className="font-medium capitalize"
                       >
-                        {name}
+                        {name === "Logout" ? (
+                          <span>Logout</span>
+                        ) : (
+                          name
+                        )}
                       </Typography>
                     </Button>
                   )}
                 </NavLink>
               </li>
             ))}
+
           </ul>
         ))}
       </div>

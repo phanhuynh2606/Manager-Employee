@@ -16,18 +16,26 @@ const notificationSchema = new Schema({
       enum: ['SYSTEM', 'DEPARTMENT', 'PERSONAL'],
       required: true
     },
-    departmentId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Department'
-    },
-    recipientId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Employee'
-    },
-    isRead: {
+    departmentId:[
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Department',
+      }
+    ],
+    sendToAll: {
       type: Boolean,
       default: false
-    },
+    },  
+    recipientId: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Employee'
+      }
+    ],
+    readBy: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Employee'
+    }],
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -35,8 +43,6 @@ const notificationSchema = new Schema({
     }
   }, {
     timestamps: true,
-    // Chỉ cần createdAt, không cần updatedAt
-    updatedAt: false
   });
 
 module.exports = mongoose.model('notification', notificationSchema);

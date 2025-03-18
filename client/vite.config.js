@@ -6,4 +6,7 @@ export default defineConfig({
   resolve: {
     alias: [{ find: "@", replacement: "/src" }],
   },
+  optimizeDeps: {
+    include: ['date-fns', '@mui/x-date-pickers'],
+  },
 });

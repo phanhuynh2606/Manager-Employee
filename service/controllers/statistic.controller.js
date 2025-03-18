@@ -1,102 +1,65 @@
 const Employee = require("../models/employee");
 const Department = require("../models/department")
 const Salary = require("../models/salary")
+const mongoose = require("mongoose")
 //[POST] /statistic/employee
 module.exports.statisticEmployee = async (req, res) => {
     try {
-        const { department, position, sex } = req.body;
-       
-        // if (department && department.length > 0) {
-        //     find.departmentId = { $in: department };
-        // }
-        // if (position && position.length > 0) {
-        //     find.position = { $in: position };
-        // }
-        // if (sex && sex.length > 0) {
-        //     find.gender = { $in: sex };
-        // }
-        // const totalEmployee = await Employee.countDocuments();
-        // const filterEmployee = Object.keys(find).length > 0 ? await Employee.countDocuments(find) : 0;
+        const { department, position } = req.body;
+        console.log("Department is", department)
 
-        // const allFilterEmployee = Object.keys(find).length > 0 ? await Employee.find(find).populate("departmentId") : []
-        // res.json({
-        //     total: totalEmployee,
-        //     filter: filterEmployee,
-        //     list: allFilterEmployee
-        // })
-        const sum =  await Employee.countDocuments({});
-        if (position.length > 0) {
-            let find = {};
-            if (department && department.length > 0) {
-                find.departmentId = { $in: department };
-            }
-            if (sex && sex.length > 0) {
-                find.gender = { $in: sex };
-            }
-            const arr=[];
-            const arrList =[];
-            let remain =sum;
-            for(let i =0;i< position.length;i++){
-                const data = await Employee.countDocuments({...find,position:position[i]})
-                console.log("data is ",data)
-                remain=remain-data;
-                const dataList = await Employee.find({...find,position:position[i]}).populate("departmentId");
-                arrList.push(...dataList); 
-                arr.push(data);
-            }
-            return res.json({
-                data: arr,
-                remain:remain,
-                list:arrList
-            })
+        let find = {};
+        if (department && department.length > 0) {
+            find.departmentId = { $in: department.map((id, index) => new mongoose.Types.ObjectId(id)) }
         }
-        if(department.length>0) {
-            let find = {};
-            if (sex && sex.length > 0) {
-                find.gender = { $in: sex };
-            }
-            const arr=[];
-            const arrList=[];
-            let remain=sum;
-            console.log(sum)
-            for(let i =0;i< department.length;i++){
-                const data = await Employee.countDocuments({...find,departmentId:department[i]})
-                const dataList = await Employee.find({...find,departmentId:department[i]}).populate("departmentId");
-                remain=remain-data;
-                arr.push(data);
-                arrList.push(...dataList); 
-            }
-            console.log("DP is : ",arr)
-            return res.json({
-                data: arr,
-                remain:remain,
-                list:arrList
-            })
+        if (position && position.length > 0) {
+            find.position = { $in: position }
         }
-        if (sex && sex.length > 0) {
-            let find = {};
-            const arr =[];
-            const arrList =[];
-            let remain =sum;
-            for(let i =0;i< sex.length;i++){
-                const data = await Employee.countDocuments({...find,gender:sex[i]})
-                const dataList = await Employee.find({...find,gender:sex[i]}).populate("departmentId")
-                remain = remain-data;
-                arrList.push(...dataList); 
-                arr.push(data);
+        const totalEmployee = await Employee.countDocuments(find);
+        const totalMale = await Employee.countDocuments({ ...find, gender: "MALE" });
+        const totalFeMale = await Employee.countDocuments({ ...find, gender: "FEMALE" });
+        const hireDateStats = await Employee.aggregate([
+            {
+                $match: find
+            },
+            {
+                $addFields: {
+                    yearsOfExperience: {
+                        $subtract: [{ $year: "$$NOW" }, { $year: "$hireDate" }]
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        category: {
+                            $switch: {
+                                branches: [
+                                    { case: { $lt: ["$yearsOfExperience", 1] }, then: "Dưới 1 năm" },
+                                    { case: { $lt: ["$yearsOfExperience", 3] }, then: "1 - 3 năm" },
+                                    { case: { $lt: ["$yearsOfExperience", 5] }, then: "3 - 5 năm" },
+
+                                ],
+                                default: "Trên 5 năm"
+                            }
+                        }
+                    },
+                    count: { $sum: 1 }
+                }
             }
-            return res.json({
-                data: arr,
-                remain:remain,
-                list: arrList
-            })
-        }
-        res.json({
-            data:[0],
-            remain:0,
-            list:[]
+        ]);
+
+        const seniority = hireDateStats.map((item, index) => {
+            return { category: item._id.category, number: item.count }
         })
-
+        const listEmployee = await Employee.find(find).populate("departmentId");
+        res.status(200).json({
+            total: totalEmployee,
+            totalMale: totalMale,
+            totalFeMale: totalFeMale,
+            seniority: seniority,
+            listEmployee: listEmployee
+        })
     } catch (error) {
         console.log(error)
     }
@@ -106,13 +69,16 @@ module.exports.statisticEmployee = async (req, res) => {
 module.exports.statisticSalary = async (req, res) => {
     try {
         const check = req.body.check === true
+        const find ={};
+        if(req.body.year) 
+            find.year = req.body.year
         if (check) {
             console.log(123)
             let arr = [];
             const allemployee = []
             for (let i = 1; i <= 12; i++) {
                 const salary = await Salary.aggregate([
-                    { $match: { month: { $in: [i] } } },
+                    { $match: { month: { $in: [i] } ,...find} },
                     {
                         $lookup: {
                             from: "employees",
@@ -146,7 +112,7 @@ module.exports.statisticSalary = async (req, res) => {
                 count++;
 
                 const salary = await Salary.aggregate([
-                    { $match: { month: { $in: [i, i + 1, i + 2] } } },
+                    { $match: { month: { $in: [i, i + 1, i + 2] },...find }},
                     {
                         $lookup: {
                             from: "employees",
