@@ -136,6 +136,7 @@ const EmployeeManagement = () => {
       setLoading(true);
       const dataForm = await form.validateFields();
       const response = await axios.post(`/employee/create`, dataForm);
+      console.log(response)
       if (response.success) {
         setAddModalVisible(false);
         form.resetFields();
@@ -459,7 +460,7 @@ const EmployeeManagement = () => {
                 rules={[
                   { required: true, message: "Please enter phone number" },
                   {
-                    pattern: /^[0-9+\-\s]+$/,
+                    pattern: /^(\+84|84|0)([3|5|7|8|9])([0-9]{8})$/,
                     message: "Please enter a valid phone number",
                   },
                 ]}
@@ -546,7 +547,8 @@ const EmployeeManagement = () => {
                 rules={[
                   { required: true, message: "Please select hire date" },
                 ]}
-              >
+                initialValue={dayjs()}  
+                >
                 <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
               </Form.Item>
             </Col>

@@ -1,13 +1,28 @@
 const mongoose = require("mongoose");
 const employee = require("../models/employee");
 const generatePassword = () => {
-  const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
+  const numberChars = "0123456789";
+  const specialChar = "@"; 
   let password = "";
-  for (let i = 0; i < 8; i++) {
-    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  password += uppercaseChars.charAt(Math.floor(Math.random() * uppercaseChars.length));
+  password += lowercaseChars.charAt(Math.floor(Math.random() * lowercaseChars.length));
+  password += numberChars.charAt(Math.floor(Math.random() * numberChars.length)); 
+  password += specialChar; 
+  const allChars = uppercaseChars + lowercaseChars + numberChars;
+  for (let i = 0; i < 4; i++) {
+    password += allChars.charAt(Math.floor(Math.random() * allChars.length));
+  } 
+  return shuffleString(password);
+}; 
+const shuffleString = (str) => {
+  const array = str.split('');
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];  
   }
-  return password;
+  return array.join('');
 };
 const generateUsername = async (fullName) => {
   const nameParts = fullName.split(" "); 
