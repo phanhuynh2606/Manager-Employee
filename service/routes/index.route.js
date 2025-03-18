@@ -1,6 +1,7 @@
 const departmentRoute = require('./department.route');
 const authRoute = require('./auth.route');
 const employeeRoute = require('./employee.route');
+const adminRoute = require('./administration.route');
 const attendanceRoute = require('./attendance.route');
 const salaryRoute = require('./salary.route');
 const notificationRoute = require('./notification.route');
@@ -14,6 +15,7 @@ const initRoutes = (app) => {
   app.use('/departments', departmentRoute);
   app.use('/auth', authRoute);
   app.use('/employee', employeeRoute);
+  app.use('/admin', adminRoute);
   app.use('/attendance', attendanceRoute);
   app.use('/salaries', salaryRoute)
   app.use('/notifications', notificationRoute);
