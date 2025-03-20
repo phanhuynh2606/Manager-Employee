@@ -43,7 +43,7 @@ function Salary() {
       <div className="flex justify-between items-center mt-5">
         <Space className="mt-4">
           <Space.Compact size="middle" style={{ width: "400px" }}>
-            <Input addonBefore={<SearchOutlined />} placeholder="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Input addonBefore={<SearchOutlined />} placeholder="Tìm kiếm" value={search} onChange={(e) => setSearch(e.target.value)} />
           </Space.Compact>
           <Select
             placeholder="Month"
@@ -52,7 +52,7 @@ function Salary() {
             style={{ width: 120 }}
             allowClear
           >
-            <Select.Option value={null}>Select Month</Select.Option>
+            <Select.Option value={null}>Chọn Tháng</Select.Option>
             {Array.from({ length: 12 }, (_, i) => (
               <Select.Option key={i + 1} value={i + 1}>
                 {i + 1}
@@ -66,7 +66,7 @@ function Salary() {
             style={{ width: 120 }}
             allowClear
           >
-            <Select.Option value={null}>Select Year</Select.Option>
+            <Select.Option value={null}>Chọn Năm</Select.Option>
             {Array.from({ length: 5 }, (_, i) => {
               const currentYear = new Date().getFullYear();
               return (
