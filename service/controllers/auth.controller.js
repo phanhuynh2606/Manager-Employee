@@ -135,10 +135,19 @@ const firstTimeChangePassword = async (req, res) => {
     try {
         const {email, oldPassword, newPassword, newConfirmPassword} = req.body;
 
-        if (!oldPassword || !newPassword || !newConfirmPassword) {
+        if (!oldPassword.trim() || !newPassword.trim() || !newConfirmPassword.trim()) {
             return res.status(400).json({
                 success: false,
                 message: "Vui lòng điền đầy đủ các trường!"
+            });
+        }
+
+        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/;
+
+        if (!passwordRegex.test(newPassword)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Mật khẩu phải có ít nhất 6 ký tự, 1 chữ in hoa, 1 số và 1 ký tự đặc biệt.'
             });
         }
 

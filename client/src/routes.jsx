@@ -8,7 +8,8 @@ import {
   HomeModernIcon,
   ChartPieIcon,
   BanknotesIcon,
-  PowerIcon
+  PowerIcon,
+  KeyIcon
 } from "@heroicons/react/24/solid";
 import { GrUserAdmin } from "react-icons/gr";
 import { LuMapPinCheckInside } from "react-icons/lu";
@@ -26,6 +27,7 @@ import ViewSalaryDetail from "./pages/salary/viewSalaryDetail";
 import Notifications from "./pages/notification/Notifications";
 import AdminManagement from "./pages/administration/Administration";
 import AdminDetail from "./pages/administration/AdminView";
+import FirstTimeChangePassword from "./pages/auth/first-time-password-change";
 
 
 const icon = {
@@ -145,6 +147,12 @@ export const routes = [
         name: "sign up",
         path: "/sign-up",
         element: <SignUp />,
+      },
+      {
+        icon: <KeyIcon {...icon} />,
+        name: "first time password change",
+        path: "/first-time-password-change",
+        element: <FirstTimeChangePassword />,
       },
     ],
   },

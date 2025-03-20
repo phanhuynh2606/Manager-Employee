@@ -19,6 +19,7 @@ import {
     ClockIcon,
     CreditCardIcon,
     Bars3Icon,
+    ArrowPathIcon,
 } from "@heroicons/react/24/solid";
 import {
     useMaterialTailwindController,
@@ -30,6 +31,7 @@ import { toast } from "react-toastify";
 import { getProfile } from "@/apis/auth/auth.js";
 import { useNavigate } from 'react-router-dom';
 import NotificaionNavbar from "./NotificaionNavbar";
+import useIsAdmin from "@/utils/useIsAdmin";
 
 export function DashboardNavbar() {
     const [controller, dispatch] = useMaterialTailwindController();
@@ -37,6 +39,7 @@ export function DashboardNavbar() {
     const { pathname } = useLocation();
     const [layout, page] = pathname.split("/").filter((el) => el !== "");
     const navigate = useNavigate();
+    const isAdmin = useIsAdmin();
     const [userName, setUserName] = useState("");
 
     useEffect(() => {
@@ -60,6 +63,14 @@ export function DashboardNavbar() {
 
         GET_PROFILE();
     }, [navigate]);
+
+    const handleBackups = () => {
+        console.log("Backups");
+    }
+
+    const handleRestores = () => {
+        console.log("Restores");
+    }
 
     return (
         <Navbar
@@ -99,9 +110,14 @@ export function DashboardNavbar() {
                     </Typography>
                 </div>
                 <div className="flex items-center">
-                    <div className="mr-auto md:mr-4 md:w-56">
-                        <Input label="Search" />
-                    </div>
+                    {
+                        isAdmin && (
+                        <div className="mr-auto md:mr-4 md:w-56 flex gap-2">
+                            <Button color="blue" className="flex items-center gap-2" onClick={handleBackups}>Sao lưu dữ liệu</Button>
+                            <Button color="green" className="flex items-center gap-2" onClick={handleRestores}>Phục hồi dữ liệu</Button>
+                        </div>
+                        )
+                    }
                     <IconButton
                         variant="text"
                         color="blue-gray"

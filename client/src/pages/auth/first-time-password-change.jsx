@@ -5,7 +5,7 @@ import {
     Button,
     Typography,
 } from "@material-tailwind/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from 'react-toastify';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -15,15 +15,22 @@ import { firstTimeChangePassword } from "@/apis/auth/auth.js";
 export function FirstTimeChangePassword() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { email } = location.state
+    const { state } = useLocation();
+    const email = state?.email; 
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [newConfirmPassword, setNewConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    useEffect(() => {
+        if (!email) {
+            navigate('/auth/sign-in');
+        }
+    }, [email, navigate]);
+
     const handleError = (response) => {
-        const message = response?.data?.message || response?.message || 'Something went wrong';
+        const message = response?.data?.message || response?.message || 'Có lỗi xảy ra!';
         toast.error(message, {
             autoClose: 2000,
             closeOnClick: true,
