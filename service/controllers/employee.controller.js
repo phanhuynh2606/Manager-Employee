@@ -162,7 +162,7 @@ const getEmployee = async (req, res) => {
     const employees = await Employee.find()
       .populate("departmentId")
       .populate("userId")
-      .populate("departmentId");
+      .populate("position");
     if (!employees)
       return res
         .status(404)
@@ -189,8 +189,13 @@ const filterEmployee = async (req, res) => {
       page = 1,
       limit = 10,
     } = req.query;
-    const userRequest = req.user;
-    const filter = { isActive: true };
+    const userRequest = req.user; 
+    const nonAdminUsers = await User.find({ role: { $ne: "ADMIN" } }).select('_id');
+    const nonAdminUserIds = nonAdminUsers.map(user => user._id); 
+    const filter = { 
+      isActive: true,
+      userId: { $in: nonAdminUserIds }
+    };
     if (userRequest.role === "EMPLOYEE") {
       const employee = await Employee.findOne({ userId: userRequest._id });
       const managedDepartment = await Department.findOne({
