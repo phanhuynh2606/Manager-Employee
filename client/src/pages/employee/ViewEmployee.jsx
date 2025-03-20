@@ -38,7 +38,7 @@ import {
   CameraOutlined,
   PlusOutlined,
   InfoCircleOutlined,
-  CloseOutlined 
+  CloseOutlined
 } from "@ant-design/icons";
 import axios from '../../configs/axiosCustomize';
 import dayjs from "dayjs";
@@ -48,6 +48,7 @@ import { RestoreOutlined } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
+const { Option } = Select;
 
 const EmployeeDetail = () => {
   const { employeeId } = useParams();
@@ -64,7 +65,7 @@ const EmployeeDetail = () => {
   const [fileList, setFileList] = useState([]);
   const [messageApi, contextHolder] = message.useMessage();
   const user = useSelector((state) => state?.auth?.user);
-  
+
   useEffect(() => {
     fetchEmployeeData();
     fetchSelectData();
@@ -77,11 +78,11 @@ const EmployeeDetail = () => {
       if (response.success) {
         setEmployee(response.data);
       } else {
-        messageApi.error("Failed to fetch employee data");
+        messageApi.error("Lỗi tải dữ liệu nhân viên");
       }
     } catch (error) {
       console.error("Failed to fetch employee data:", error);
-      messageApi.error("Failed to fetch employee data");
+      messageApi.error("Lỗi tải dữ liệu nhân viên");
     } finally {
       setLoading(false);
     }
@@ -95,10 +96,10 @@ const EmployeeDetail = () => {
         setDepartments(departmentData.data);
         setPosition(positionData.data);
       } else {
-        messageApi.error("Failed to fetch department data");
+        messageApi.error("Lỗi tải dữ liệu phòng ban");
       }
     } catch (error) {
-      messageApi.error("Failed to fetch department data");
+      messageApi.error("Lỗi tải dữ liệu phòng ban");
     } finally {
       setLoading(false);
     }
@@ -138,11 +139,11 @@ const EmployeeDetail = () => {
       }
     } catch (error) {
       console.error("Failed to fetch employee data:", error);
-      messageApi.error("Failed to fetch employee data");
+      messageApi.error("Lỗi cập nhật dữ liệu nhân viên");
     }
   };
 
-  const handleResetPassword = async () => { 
+  const handleResetPassword = async () => {
     try {
       const response = await axios.post('/employee/reset-password', { employeeId });
       if (response.success) {
@@ -153,12 +154,12 @@ const EmployeeDetail = () => {
       }
       else {
         messageApi.error(response.message);
-      }  
-      setResetModalVisible(false); 
-    } catch (error) { 
+      }
+      setResetModalVisible(false);
+    } catch (error) {
       console.error("Failed to fetch employee data:", error);
-      messageApi.error("Failed to fetch employee data");
-    }  
+      messageApi.error("Lỗi khôi phục mật khẩu");
+    }
   };
   const handleDelete = async () => {
     try {
@@ -174,12 +175,12 @@ const EmployeeDetail = () => {
       setDeleteModalVisible(false);
     } catch (error) {
       console.error("Failed to delete employee:", error);
-      messageApi.error("Failed to delete employee");
-    } 
+      messageApi.error("Lỗi xóa nhân viên");
+    }
   };
   const handleAvatarUpload = async () => {
     if (!fileList.length) {
-      return messageApi.error('Please select an image to upload');
+      return messageApi.error('Vui lòng chọn ảnh để tải lên');
     }
     setLoading(true);
     const formData = new FormData();
@@ -189,20 +190,20 @@ const EmployeeDetail = () => {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-      }); 
+      });
       if (response.success) {
         setAvatarModalVisible(false);
         setFileList([]);
         await fetchEmployeeData();
         setTimeout(() => {
           messageApi.success(response.message);
-        }, 200);  
+        }, 200);
       } else {
-        messageApi.error(response.message || 'Failed to update avatar');
+        messageApi.error(response.message || 'Lỗi cập nhật ảnh đại diện');
       }
     } catch (error) {
       console.error('Failed to upload avatar:', error);
-      messageApi.error('Failed to upload avatar');
+      messageApi.error('Lỗi tải ảnh đại diện');
     } finally {
       setLoading(false);
     }
@@ -211,28 +212,28 @@ const EmployeeDetail = () => {
 
   const attendanceColumns = [
     {
-      title: "Date",
+      title: "Ngày",
       dataIndex: "date",
       key: "date",
       render: (date) => formatDate(date),
     },
     {
-      title: "Check In",
+      title: "Giờ vào",
       dataIndex: "checkIn",
       key: "checkIn",
     },
     {
-      title: "Check Out",
+      title: "Giờ ra",
       dataIndex: "checkOut",
       key: "checkOut",
     },
     {
-      title: "Work Hours",
+      title: "Số giờ làm",
       dataIndex: "workHours",
       key: "workHours",
     },
     {
-      title: "Status",
+      title: "Trạng thái",
       dataIndex: "status",
       key: "status",
       render: (status) => {
@@ -245,7 +246,16 @@ const EmployeeDetail = () => {
                 ? "red"
                 : "default";
 
-        return <Tag color={color}>{status}</Tag>;
+        let text =
+          status === "PRESENT"
+            ? "Có mặt"
+            : status === "LATE"
+              ? "Đi muộn"
+              : status === "ABSENT"
+                ? "Vắng mặt"
+                : status;
+
+        return <Tag color={color}>{text}</Tag>;
       },
     },
   ];
@@ -253,7 +263,7 @@ const EmployeeDetail = () => {
   // Leave history columns
   const leaveColumns = [
     {
-      title: "Type",
+      title: "Loại",
       dataIndex: "type",
       key: "type",
       render: (type) => {
@@ -266,33 +276,42 @@ const EmployeeDetail = () => {
                 ? "orange"
                 : "default";
 
-        return <Tag color={color}>{type}</Tag>;
+        let text =
+          type === "ANNUAL"
+            ? "Nghỉ phép năm"
+            : type === "SICK"
+              ? "Nghỉ ốm"
+              : type === "UNPAID"
+                ? "Nghỉ không lương"
+                : type;
+
+        return <Tag color={color}>{text}</Tag>;
       },
     },
     {
-      title: "From",
+      title: "Từ ngày",
       dataIndex: "fromDate",
       key: "fromDate",
       render: (date) => formatDate(date),
     },
     {
-      title: "To",
+      title: "Đến ngày",
       dataIndex: "toDate",
       key: "toDate",
       render: (date) => formatDate(date),
     },
     {
-      title: "Days",
+      title: "Số ngày",
       dataIndex: "days",
       key: "days",
     },
     {
-      title: "Reason",
+      title: "Lý do",
       dataIndex: "reason",
       key: "reason",
     },
     {
-      title: "Status",
+      title: "Trạng thái",
       dataIndex: "status",
       key: "status",
       render: (status) => {
@@ -305,7 +324,16 @@ const EmployeeDetail = () => {
                 ? "red"
                 : "default";
 
-        return <Tag color={color}>{status}</Tag>;
+        let text =
+          status === "APPROVED"
+            ? "Đã duyệt"
+            : status === "PENDING"
+              ? "Đang chờ"
+              : status === "REJECTED"
+                ? "Từ chối"
+                : status;
+
+        return <Tag color={color}>{text}</Tag>;
       },
     },
   ];
@@ -377,42 +405,42 @@ const EmployeeDetail = () => {
 
   return (
     <div className="p-6">
-      {contextHolder} 
+      {contextHolder}
       {(user.role === "ADMIN" || user.position === "MANAGER") &&
-      <Row gutter={16} className="mb-4">
-        <Col span={12}>
-          <Button
-            icon={<ArrowLeftOutlined />}
-            onClick={() => navigate("/dashboard/employee")}
-          >
-            Back to Employees
-          </Button>
-        </Col>
-        <Col span={12} style={{ textAlign: "right" }}>
-          <Space>
-            {(user?.position === "MANAGER" || user.role === "ADMIN")&&
-            <Button style={{ backgroundColor: "orange" }} icon={<RestoreOutlined />} onClick={() => setResetModalVisible(true)}>
-              Reset Password
-            </Button>
-            }
-            { user.role === "ADMIN" &&
-            <>
-            <Button icon={<EditOutlined />} onClick={handleEdit}>
-              Edit
-            </Button>
+        <Row gutter={16} className="mb-4">
+          <Col span={12}>
             <Button
-              type="primary"
-              danger
-              icon={<DeleteOutlined />}
-              onClick={() => setDeleteModalVisible(true)}
+              icon={<ArrowLeftOutlined />}
+              onClick={() => navigate("/dashboard/employee")}
             >
-              Delete
+              Quay lại danh sách
             </Button>
-            </>
-            }
-          </Space>
-        </Col>
-      </Row>
+          </Col>
+          <Col span={12} style={{ textAlign: "right" }}>
+            <Space>
+              {(user?.position === "MANAGER" || user.role === "ADMIN") &&
+                <Button style={{ backgroundColor: "orange" }} icon={<RestoreOutlined />} onClick={() => setResetModalVisible(true)}>
+                  Khôi phục mật khẩu
+                </Button>
+              }
+              {user.role === "ADMIN" &&
+                <>
+                  <Button icon={<EditOutlined />} onClick={handleEdit}>
+                    Chỉnh sửa
+                  </Button>
+                  <Button
+                    type="primary"
+                    danger
+                    icon={<DeleteOutlined />}
+                    onClick={() => setDeleteModalVisible(true)}
+                  >
+                    Xóa
+                  </Button>
+                </>
+              }
+            </Space>
+          </Col>
+        </Row>
       }
 
       {/* Employee profile card */}
@@ -432,7 +460,7 @@ const EmployeeDetail = () => {
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.querySelector('.avatar-hover-button').style.opacity = 0;
-              }} 
+              }}
             >
               <Avatar
                 size={150}
@@ -466,54 +494,54 @@ const EmployeeDetail = () => {
               <Text type="secondary">{employee?.position}</Text>
               <div className="mt-2">
                 <Tag color="blue">
-                  {employee?.departmentId?.name || "No Department"}
+                  {employee?.departmentId?.name || "Chưa có phòng ban"}
                 </Tag>
               </div>
             </div>
           </Col>
           <Col span={18}>
-            <Descriptions title="Information Details" bordered column={2}>
-              <Descriptions.Item label="Fullname">
+            <Descriptions title="Thông tin chi tiết" bordered column={2}>
+              <Descriptions.Item label="Họ tên">
                 {employee?.fullName}
               </Descriptions.Item>
-              <Descriptions.Item label="Date of Birth">
+              <Descriptions.Item label="Ngày sinh">
                 <CalendarOutlined className="mr-1" />{" "}
                 {formatDate(employee?.dateOfBirth)}
               </Descriptions.Item>
-              <Descriptions.Item label="Gender">
+              <Descriptions.Item label="Giới tính">
                 {employee?.gender === "MALE"
-                  ? "Male"
+                  ? "Nam"
                   : employee?.gender === "FEMALE"
-                    ? "Female"
-                    : "Other"}
+                    ? "Nữ"
+                    : "Khác"}
               </Descriptions.Item>
-              <Descriptions.Item label="Phone Number">
+              <Descriptions.Item label="Số điện thoại">
                 <PhoneOutlined className="mr-1" /> {employee?.phoneNumber}
               </Descriptions.Item>
               <Descriptions.Item label="Email">
                 <MailOutlined className="mr-1" />{" "}
                 {employee?.userId?.email || "N/A"}
               </Descriptions.Item>
-              <Descriptions.Item label="Address">
+              <Descriptions.Item label="Địa chỉ">
                 <EnvironmentOutlined className="mr-1" /> {employee?.address}
               </Descriptions.Item>
-              <Descriptions.Item label="Base Salary">
+              <Descriptions.Item label="Lương cơ bản">
                 <DollarOutlined className="mr-1" />{" "}
                 {formatSalary(employee?.baseSalary)}
               </Descriptions.Item>
-              <Descriptions.Item label="Hire Date">
+              <Descriptions.Item label="Ngày vào làm">
                 <CalendarOutlined className="mr-1" />{" "}
                 {formatDate(employee?.hireDate)}
               </Descriptions.Item>
             </Descriptions>
-            <Divider orientation="left">Leave Balance</Divider>
+            <Divider orientation="left">Số ngày nghỉ còn lại</Divider>
             <Row gutter={16}>
               <Col span={8}>
                 <Card size="small">
                   <Statistic
-                    title="Annual Leave"
+                    title="Nghỉ phép năm"
                     value={employee?.leaveBalance?.annual || 0}
-                    suffix="days"
+                    suffix="ngày"
                     valueStyle={{ color: "#1890ff" }}
                   />
                 </Card>
@@ -521,9 +549,9 @@ const EmployeeDetail = () => {
               <Col span={8}>
                 <Card size="small">
                   <Statistic
-                    title="Sick Leave"
+                    title="Nghỉ ốm"
                     value={employee?.leaveBalance?.sick || 0}
-                    suffix="days"
+                    suffix="ngày"
                     valueStyle={{ color: "#faad14" }}
                   />
                 </Card>
@@ -531,9 +559,9 @@ const EmployeeDetail = () => {
               <Col span={8}>
                 <Card size="small">
                   <Statistic
-                    title="Unpaid Leave"
+                    title="Nghỉ không lương"
                     value={employee?.leaveBalance?.unpaid || 0}
-                    suffix="days"
+                    suffix="ngày"
                     valueStyle={{ color: "#ff4d4f" }}
                   />
                 </Card>
@@ -546,54 +574,54 @@ const EmployeeDetail = () => {
       {/* Tabs for additional information */}
       {/* <Card>
         <Tabs defaultActiveKey="attendance">
-          <TabPane tab="Attendance History" key="attendance">
+          <TabPane tab="Lịch sử chấm công" key="attendance">
             <Table
               columns={attendanceColumns}
               dataSource={attendanceData}
               pagination={{ pageSize: 10 }}
             />
           </TabPane>
-          <TabPane tab="Leave History" key="leave">
+          <TabPane tab="Lịch sử nghỉ phép" key="leave">
             <Table
               columns={leaveColumns}
               dataSource={leaveData}
               pagination={{ pageSize: 10 }}
             />
           </TabPane>
-          <TabPane tab="Payroll History" key="payroll">
-            <p>Payroll history content will be displayed here.</p>
+          <TabPane tab="Lịch sử lương" key="payroll">
+            <p>Thông tin lịch sử lương sẽ được hiển thị ở đây.</p>
           </TabPane>
         </Tabs>
       </Card> */}
       <Modal
-        title="Confirm Delete"
+        title="Xác nhận xóa"
         open={deleteModalVisible}
         onOk={handleDelete}
         onCancel={() => setDeleteModalVisible(false)}
-        okText="Delete"
-        cancelText="Cancel"
+        okText="Xóa"
+        cancelText="Hủy"
         okButtonProps={{ danger: true }}
       >
         <p>Bạn có chắc chắn muốn xóa tài khoản {employee?.fullName} không ?</p>
       </Modal>
       <Modal
-        title="Confirm Reset Passowrd"
+        title="Xác nhận khôi phục mật khẩu"
         open={resetModalVisible}
         onOk={handleResetPassword}
         onCancel={() => setResetModalVisible(false)}
-        okText="Reset"
-        cancelText="Cancel"
+        okText="Khôi phục"
+        cancelText="Hủy"
         okButtonProps={{ danger: true }}
       >
-        <p>Bạn có chắc chắn muốn Reset password tài khoản {employee?.fullName} không ?</p>
+        <p>Bạn có chắc chắn muốn khôi phục mật khẩu tài khoản {employee?.fullName} không ?</p>
       </Modal>
       {/* Update Employee Modal */}
       <Modal
-        title="Update Employee"
+        title="Cập nhật nhân viên"
         open={updateModalVisible}
         onCancel={() => setUpdateModalVisible(false)}
         onOk={handleUpdate}
-        okText="Update"
+        okText="Cập nhật"
         okButtonProps={{ style: { backgroundColor: "#1890ff" } }}
         confirmLoading={loading}
         width={800}
@@ -601,7 +629,7 @@ const EmployeeDetail = () => {
       >
         {loading ? (
           <div style={{ textAlign: "center", padding: "20px" }}>
-            <Spin tip="Loading employee data..." />
+            <Spin tip="Đang tải dữ liệu nhân viên..." />
           </div>
         ) : (
           <Form
@@ -612,20 +640,20 @@ const EmployeeDetail = () => {
               <Col span={12}>
                 <Form.Item
                   name="fullName"
-                  label="Full Name"
+                  label="Họ tên"
                   rules={[
-                    { required: true, message: "Please enter full name" },
+                    { required: true, message: "Vui lòng nhập họ tên" },
                   ]}
                 >
-                  <Input placeholder="Enter full name" />
+                  <Input placeholder="Nhập họ tên" />
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item
                   name="dateOfBirth"
-                  label="Date of Birth"
+                  label="Ngày sinh"
                   rules={[
-                    { required: true, message: "Please select date of birth" },
+                    { required: true, message: "Vui lòng chọn ngày sinh" },
                   ]}
                 >
                   <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
@@ -636,51 +664,51 @@ const EmployeeDetail = () => {
               <Col span={12}>
                 <Form.Item
                   name="gender"
-                  label="Gender"
-                  rules={[{ required: true, message: "Please select gender" }]}
+                  label="Giới tính"
+                  rules={[{ required: true, message: "Vui lòng chọn giới tính" }]}
                 >
-                  <Select placeholder="Select gender">
-                    <Option value="MALE">Male</Option>
-                    <Option value="FEMALE">Female</Option>
-                    <Option value="OTHER">Other</Option>
+                  <Select placeholder="Chọn giới tính">
+                    <Option value="MALE">Nam</Option>
+                    <Option value="FEMALE">Nữ</Option>
+                    <Option value="OTHER">Khác</Option>
                   </Select>
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item
                   name="phoneNumber"
-                  label="Phone Number"
+                  label="Số điện thoại"
                   rules={[
-                    { required: true, message: "Please enter phone number" },
+                    { required: true, message: "Vui lòng nhập số điện thoại" },
                     {
                       pattern: /^[0-9+\-\s]+$/,
-                      message: "Please enter a valid phone number",
+                      message: "Vui lòng nhập số điện thoại hợp lệ",
                     },
                   ]}
                 >
-                  <Input placeholder="Enter phone number" />
+                  <Input placeholder="Nhập số điện thoại" />
                 </Form.Item>
               </Col>
             </Row>
 
             <Form.Item
               name="address"
-              label="Address"
-              rules={[{ required: true, message: "Please enter address" }]}
+              label="Địa chỉ"
+              rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
             >
-              <Input.TextArea placeholder="Enter address" rows={2} />
+              <Input.TextArea placeholder="Nhập địa chỉ" rows={2} />
             </Form.Item>
 
             <Row gutter={16}>
               <Col span={12}>
                 <Form.Item
                   name="departmentId"
-                  label="Department"
+                  label="Phòng ban"
                   rules={[
-                    { required: true, message: "Please select department" },
+                    { required: true, message: "Vui lòng chọn phòng ban" },
                   ]}
                 >
-                  <Select placeholder="Select department">
+                  <Select placeholder="Chọn phòng ban">
                     {departments.map((dept) => (
                       <Option key={dept._id} value={dept._id}>
                         {dept.name}
@@ -692,10 +720,10 @@ const EmployeeDetail = () => {
               <Col span={12}>
                 <Form.Item
                   name="position"
-                  label="Position"
-                  rules={[{ required: true, message: "Please enter position" }]}
+                  label="Vị trí"
+                  rules={[{ required: true, message: "Vui lòng nhập vị trí" }]}
                 >
-                  <Select placeholder="Select position">
+                  <Select placeholder="Chọn vị trí">
                     {position.map((p, index) => (
                       <Option key={index} value={p}>
                         {p}
@@ -709,9 +737,9 @@ const EmployeeDetail = () => {
               <Col span={12}>
                 <Form.Item
                   name="baseSalary"
-                  label="Base Salary"
+                  label="Lương cơ bản"
                   rules={[
-                    { required: true, message: "Please enter base salary" },
+                    { required: true, message: "Vui lòng nhập lương cơ bản" },
                   ]}
                 >
                   <InputNumber
@@ -720,7 +748,7 @@ const EmployeeDetail = () => {
                       `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                     }
                     parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
-                    placeholder="Enter base salary"
+                    placeholder="Nhập lương cơ bản"
                     min={0}
                   />
                 </Form.Item>
@@ -728,9 +756,9 @@ const EmployeeDetail = () => {
               <Col span={12}>
                 <Form.Item
                   name="hireDate"
-                  label="Hire Date"
+                  label="Ngày vào làm"
                   rules={[
-                    { required: true, message: "Please select hire date" },
+                    { required: true, message: "Vui lòng chọn ngày vào làm" },
                   ]}
                 >
                   <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
@@ -740,16 +768,16 @@ const EmployeeDetail = () => {
 
             <Form.Item
               name="isActive"
-              label="Active Status"
+              label="Trạng thái hoạt động"
               valuePropName="checked"
             >
-              <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
+              <Switch checkedChildren="Đang hoạt động" unCheckedChildren="Ngừng hoạt động" />
             </Form.Item>
           </Form>
         )}
       </Modal>
       <Modal
-        title="Change Avatar"
+        title="Thay đổi ảnh đại diện"
         open={avatarModalVisible}
         onCancel={() => {
           setAvatarModalVisible(false);
@@ -760,31 +788,31 @@ const EmployeeDetail = () => {
             setAvatarModalVisible(false);
             setFileList([]);
           }}>
-            Cancel
+            Hủy
           </Button>,
-          <Button 
-            key="upload"   
+          <Button
+            key="upload"
             okButtonProps={{ style: { backgroundColor: "#1890ff" } }}
             onClick={() => handleAvatarUpload()}
             disabled={fileList.length === 0}
           >
-            Upload
+            Tải lên
           </Button>,
         ]}
       >
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 16 }}>
           {fileList.length > 0 && (
             <div style={{ marginBottom: 16 }}>
-              <img 
-                src={fileList[0].url || URL.createObjectURL(fileList[0].originFileObj)} 
-                alt="Avatar Preview" 
-                style={{ 
-                  width: 150, 
-                  height: 150, 
-                  borderRadius: '50%', 
+              <img
+                src={fileList[0].url || URL.createObjectURL(fileList[0].originFileObj)}
+                alt="Avatar Preview"
+                style={{
+                  width: 150,
+                  height: 150,
+                  borderRadius: '50%',
                   objectFit: 'cover',
-                  border: '1px solid #d9d9d9' 
-                }} 
+                  border: '1px solid #d9d9d9'
+                }}
               />
             </div>
           )}
@@ -792,47 +820,47 @@ const EmployeeDetail = () => {
           <Upload
             listType="picture-card"
             showUploadList={false}
-            beforeUpload={(file) => { 
+            beforeUpload={(file) => {
               const isImage = file.type.startsWith('image/');
               if (!isImage) {
-                messageApi.error('You can only upload image files!');
+                messageApi.error('Bạn chỉ có thể tải lên tệp hình ảnh!');
                 return Upload.LIST_IGNORE;
-              } 
+              }
               setFileList([{
                 uid: '-1',
                 name: file.name,
                 status: 'done',
                 originFileObj: file,
               }]);
-              
-              return false;  
+
+              return false;
             }}
           >
             {fileList.length === 0 && (
               <div>
                 <PlusOutlined />
-                <div style={{ marginTop: 8 }}>Upload</div>
+                <div style={{ marginTop: 8 }}>Tải lên</div>
               </div>
             )}
           </Upload>
-          
+
           {fileList.length > 0 && (
-            <Button 
-              icon={<CloseOutlined />} 
+            <Button
+              icon={<CloseOutlined />}
               danger
               onClick={() => setFileList([])}
               style={{ marginTop: 8 }}
             >
-              Remove
+              Xóa
             </Button>
           )}
         </div>
-        
+
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <InfoCircleOutlined style={{ color: '#1890ff', marginRight: 8 }} />
-          <span>Vui lòng chọn ảnh bạn muốn thay đổi và chọn Upload</span>
+          <span>Vui lòng chọn ảnh bạn muốn thay đổi và chọn Tải lên</span>
         </div>
-      </Modal> 
+      </Modal>
     </div>
   );
 };

@@ -187,7 +187,7 @@ const filterEmployee = async (req, res) => {
       if (!managedDepartment) {
         return res.status(403).json({
           success: false,
-          message: "You do not have permission to view employee list",
+          message: "Bạn không có quyền xem danh sách nhân viên !",
         });
       }
       filter.departmentId = managedDepartment._id;
@@ -238,7 +238,7 @@ const filterEmployee = async (req, res) => {
     console.error("Error searching employees:", error);
     res.status(500).json({
       success: false,
-      message: "Error searching employees",
+      message: "Lỗi tìm kiếm nhân viên !",
       error: error.message,
     });
   }
@@ -283,7 +283,7 @@ const removeEmployee = async (req, res) => {
     if (!employee) {
       return res.status(404).json({
         success: false,
-        message: "Employee not found",
+        message: "Nhân viên không tồn tại",
       });
     }
     if (employee.userId) {
@@ -315,7 +315,7 @@ const resetPassword = async (req, res) => {
     if (!employee || !employee.userId) {
       return res.status(404).json({
         success: false,
-        message: "Employee not found",
+        message: "Nhân viên không tồn tại",
       });
     }
     const newPassword = generatePassword();
@@ -351,7 +351,7 @@ const changeAvatar = async (req, res) => {
     if (!req.cloudinaryUrl) {
       return res.status(400).json({
         success: false,
-        message: "No file uploaded",
+        message: "Không tìm thấy file được tải lên !",
       });
     }
     const employeeId = req.params.employeeId;
@@ -364,12 +364,12 @@ const changeAvatar = async (req, res) => {
     if (!updatedEmployee) {
       return res.status(404).json({
         success: false,
-        message: "Employee not found",
+        message: "Nhân viên không tồn tại",
       });
     }
     return res.status(200).json({
       success: true,
-      message: "Avatar updated successfully",
+      message: "Cập nhật avatar nhân viên thành công !",
       data: { avatarUrl: avatarUrl },
     });
   } catch (error) {

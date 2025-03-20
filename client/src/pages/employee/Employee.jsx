@@ -18,7 +18,7 @@ import {
   message,
   InputNumber
 } from "antd";
-import { Link, useNavigate  } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from '../../configs/axiosCustomize';
 import { SearchOutlined, FilterOutlined, UserOutlined, ClearOutlined, UserAddOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -41,7 +41,7 @@ const EmployeeManagement = () => {
     current: 1,
     pageSize: 10,
     total: 0,
-  }); 
+  });
   const [form] = useForm();
   const user = useSelector((state) => state?.auth?.user);
   const navigate = useNavigate();
@@ -52,9 +52,9 @@ const EmployeeManagement = () => {
     gender: "",
     salaryRange: [0, 50000000],
     hireDate: [],
-  }); 
+  });
   useEffect(() => {
-    if (user?.position === "STAFF" && user?.role === "EMPLOYEE") {  
+    if (user?.position === "STAFF" && user?.role === "EMPLOYEE") {
       navigate(`/dashboard/employee/${user.employeeId}`);
       return;
     }
@@ -89,7 +89,7 @@ const EmployeeManagement = () => {
         params.append("hireDateTo", queryFilters.hireDate[1].format("YYYY-MM-DD"));
       }
       params.append('page', pagination.current);
-      params.append('limit', pagination.pageSize); 
+      params.append('limit', pagination.pageSize);
       const response = await getEmployees(params.toString());
       if (response.success) {
         setEmployees(response.data);
@@ -98,13 +98,13 @@ const EmployeeManagement = () => {
           current: response.pagination.page,
           pageSize: response.pagination.limit,
           total: response.pagination.total,
-        }); 
+        });
       } else {
-        messageApi.error("Failed to fetch employees");
+        messageApi.error(response.message);
       }
     } catch (error) {
       console.error("Failed to fetch employees:", error);
-      messageApi.error("Failed to fetch employees");
+      messageApi.error("Lỗi lấy danh sách nhân viên");
     } finally {
       setLoading(false);
     }
@@ -135,8 +135,7 @@ const EmployeeManagement = () => {
     try {
       setLoading(true);
       const dataForm = await form.validateFields();
-      const response = await axios.post(`/employee/create`, dataForm);
-      console.log(response)
+      const response = await axios.post(`/employee/create`, dataForm); 
       if (response.success) {
         setAddModalVisible(false);
         form.resetFields();
@@ -149,9 +148,12 @@ const EmployeeManagement = () => {
       }
       setLoading(false);
     } catch (error) {
-      setLoading(false);
-      console.error("Failed to fetch employee data:", error);
-      messageApi.error("Failed to add employee");
+      setLoading(false); 
+      if (error.response && error.response.data) {
+        messageApi.error(error.response.data.message || "Lỗi thêm nhân viên");
+      } else {
+        messageApi.error("Lỗi thêm nhân viên");
+      }
     }
   }
 
@@ -194,7 +196,7 @@ const EmployeeManagement = () => {
 
   const columns = [
     {
-      title: "Employee",
+      title: "Nhân Viên",
       dataIndex: "fullName",
       key: "fullName",
       render: (_, record) => (
@@ -212,18 +214,18 @@ const EmployeeManagement = () => {
       ),
     },
     {
-      title: "Department",
+      title: "Phòng Ban",
       dataIndex: "departmentId",
       key: "department",
       render: (dept) => dept?.name || "N/A",
     },
     {
-      title: "Position",
+      title: "Vị Trí",
       dataIndex: "position",
       key: "position",
     },
     {
-      title: "Gender",
+      title: "Giới Tính",
       dataIndex: "gender",
       key: "gender",
       render: (gender) => {
@@ -233,26 +235,26 @@ const EmployeeManagement = () => {
       },
     },
     {
-      title: "Base Salary",
+      title: "Lương Cơ Bản",
       dataIndex: "baseSalary",
       key: "baseSalary",
       render: (salary) => formatSalary(salary),
       sorter: (a, b) => a.baseSalary - b.baseSalary,
     },
     {
-      title: "Hire Date",
+      title: "Ngày Bắt Đầu",
       dataIndex: "hireDate",
       key: "hireDate",
       render: (date) => dayjs(date).format("DD/MM/YYYY"),
       sorter: (a, b) => new Date(a.hireDate) - new Date(b.hireDate),
     },
     {
-      title: "Actions",
+      title: "Hành Động",
       key: "actions",
       render: (_, record) => (
         <Space>
           <Link to={`/dashboard/employee/${record._id}`}>
-            <Button type="link">View</Button>
+            <Button type="link">Xem</Button>
           </Link>
         </Space>
       ),
@@ -267,15 +269,15 @@ const EmployeeManagement = () => {
       <div className="mb-4 flex justify-between items-center">
         <Space>
           <Input
-            placeholder="Search by name"
+            placeholder="Tìm kiếm theo tên"
             prefix={<SearchOutlined />}
             value={filters.name}
             onChange={(e) => handleFilterChange("name", e.target.value)}
             style={{ width: 250 }}
             allowClear
-          /> 
+          />
           <Select
-            placeholder="Department"
+            placeholder="Phòng ban"
             value={filters.department}
             onChange={(value) => handleFilterChange("department", value)}
             style={{ width: 180 }}
@@ -287,7 +289,7 @@ const EmployeeManagement = () => {
           </Select>
 
           <Select
-            placeholder="Position"
+            placeholder="Vị trí"
             value={filters.position}
             onChange={(value) => handleFilterChange("position", value)}
             style={{ width: 180 }}
@@ -302,7 +304,7 @@ const EmployeeManagement = () => {
             icon={<FilterOutlined />}
             onClick={() => setDrawer(true)}
           >
-            More Filters
+            Thêm bộ lọc
           </Button>
 
           {Object.values(filters).some(v =>
@@ -312,13 +314,13 @@ const EmployeeManagement = () => {
                 icon={<ClearOutlined />}
                 onClick={handleClearFilters}
               >
-                Clear Filters
+                Xóa bộ lọc
               </Button>
             )}
         </Space>
         {user?.role === "ADMIN" &&
           <Button icon={<UserAddOutlined />} onClick={() => setAddModalVisible(true)}>
-            Add Employee
+            Thêm nhân viên
           </Button>
         }
       </div>
@@ -334,34 +336,34 @@ const EmployeeManagement = () => {
           total: pagination.total,
           showSizeChanger: true,
           pageSizeOptions: ['10', '20', '50'],
-          showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+          showTotal: (total, range) => `${range[0]}-${range[1]} / ${total} mục`,
         }}
-        onChange={handlePagination} 
+        onChange={handlePagination}
       />
 
       <Drawer
-        title="Advanced Filters"
+        title="Lọc"
         placement="right"
         onClose={() => setDrawer(false)}
         open={drawer}
         width={400}
       >
         <Form layout="vertical">
-          <Form.Item label="Gender">
+          <Form.Item label="Giới tính">
             <Select
-              placeholder="Select gender"
+              placeholder="Chọn giới tính"
               value={filters.gender}
               onChange={(value) => handleFilterChange("gender", value)}
               style={{ width: '100%' }}
               allowClear
             >
-              <Option value="MALE">Male</Option>
-              <Option value="FEMALE">Female</Option>
-              <Option value="OTHER">Other</Option>
+              <Option value="MALE">Nam</Option>
+              <Option value="FEMALE">Nữ</Option>
+              <Option value="OTHER">Khác</Option>
             </Select>
           </Form.Item>
 
-          <Form.Item label="Salary Range">
+          <Form.Item label="Lương cơ bản">
             <Slider
               range
               min={0}
@@ -377,7 +379,7 @@ const EmployeeManagement = () => {
             </Row>
           </Form.Item>
 
-          <Form.Item label="Hire Date Range">
+          <Form.Item label="Ngày bắt đầu">
             <RangePicker
               value={filters.hireDate}
               onChange={(dates) => handleFilterChange("hireDate", dates)}
@@ -393,7 +395,7 @@ const EmployeeManagement = () => {
                 block
                 onClick={handleClearFilters}
               >
-                Clear All
+                Xóa tất cả
               </Button>
             </Col>
 
@@ -401,11 +403,11 @@ const EmployeeManagement = () => {
         </Form>
       </Drawer>
       <Modal
-        title="Add Employee"
+        title="Thêm Nhân Viên"
         open={addModalVisible}
         onCancel={() => setAddModalVisible(false)}
         onOk={handleAdd}
-        okText="Add"
+        okText="Thêm"
         okButtonProps={{ style: { backgroundColor: "#1890ff" } }}
         width={800}
         destroyOnClose
@@ -420,22 +422,22 @@ const EmployeeManagement = () => {
                 name="email"
                 label="Email"
                 rules={[
-                  { required: true, message: "Please enter email" },
-                  { type: 'email', message: "Please enter a valid email address" },
+                  { required: true, message: "Vui lòng nhập email" },
+                  { type: 'email', message: "Vui lòng nhập email hợp lệ" },
                 ]}
               >
-                <Input placeholder="Enter email" />
+                <Input placeholder="Nhập email" />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
                 name="fullName"
-                label="Full Name"
+                label="Họ tên"
                 rules={[
-                  { required: true, message: "Please enter full name" },
+                  { required: true, message: "Vui lòng nhập họ tên" },
                 ]}
               >
-                <Input placeholder="Enter full name" />
+                <Input placeholder="Nhập họ tên" />
               </Form.Item>
             </Col>
           </Row>
@@ -443,29 +445,29 @@ const EmployeeManagement = () => {
             <Col span={12}>
               <Form.Item
                 name="gender"
-                label="Gender"
-                rules={[{ required: true, message: "Please select gender" }]}
+                label="Giới tính"
+                rules={[{ required: true, message: "Vui lòng chọn giới tính" }]}
               >
-                <Select placeholder="Select gender">
-                  <Option value="MALE">Male</Option>
-                  <Option value="FEMALE">Female</Option>
-                  <Option value="OTHER">Other</Option>
+                <Select placeholder="Chọn giới tính">
+                  <Option value="MALE">Nam</Option>
+                  <Option value="FEMALE">Nữ</Option>
+                  <Option value="OTHER">Khác</Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
                 name="phoneNumber"
-                label="Phone Number"
+                label="Số điện thoại"
                 rules={[
-                  { required: true, message: "Please enter phone number" },
+                  { required: true, message: "Vui lòng nhập số điện thoại" },
                   {
                     pattern: /^(\+84|84|0)([3|5|7|8|9])([0-9]{8})$/,
-                    message: "Please enter a valid phone number",
+                    message: "Vui lòng nhập số điện thoại hợp lệ",
                   },
                 ]}
               >
-                <Input placeholder="Enter phone number" />
+                <Input placeholder="Nhập số điện thoại" />
               </Form.Item>
             </Col>
           </Row>
@@ -474,9 +476,9 @@ const EmployeeManagement = () => {
             <Col span={12}>
               <Form.Item
                 name="dateOfBirth"
-                label="Date of Birth"
+                label="Ngày sinh"
                 rules={[
-                  { required: true, message: "Please select date of birth" },
+                  { required: true, message: "Vui lòng chọn ngày sinh" },
                 ]}
               >
                 <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
@@ -485,10 +487,10 @@ const EmployeeManagement = () => {
             <Col span={12}>
               <Form.Item
                 name="address"
-                label="Address"
-                rules={[{ required: true, message: "Please enter address" }]}
+                label="Địa chỉ"
+                rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
               >
-                <Input.TextArea placeholder="Enter address" rows={1} />
+                <Input.TextArea placeholder="Nhập địa chỉ" rows={1} />
               </Form.Item>
             </Col>
           </Row>
@@ -496,12 +498,12 @@ const EmployeeManagement = () => {
             <Col span={12}>
               <Form.Item
                 name="departmentId"
-                label="Department"
+                label="Phòng ban"
                 rules={[
-                  { required: true, message: "Please select department" },
+                  { required: true, message: "Vui lòng chọn phòng ban" },
                 ]}
               >
-                <Select placeholder="Select department">
+                <Select placeholder="Chọn phòng ban">
                   {departments.map((dept) => (
                     <Option key={dept._id} value={dept._id}>
                       {dept.name}
@@ -513,10 +515,10 @@ const EmployeeManagement = () => {
             <Col span={12}>
               <Form.Item
                 name="position"
-                label="Position"
-                rules={[{ required: true, message: "Please enter position" }]}
+                label="Vị trí"
+                rules={[{ required: true, message: "Vui lòng nhập vị trí" }]}
               >
-                <Input placeholder="Enter position"></Input>
+                <Input placeholder="Nhập vị trí"></Input>
               </Form.Item>
             </Col>
           </Row>
@@ -524,9 +526,9 @@ const EmployeeManagement = () => {
             <Col span={12}>
               <Form.Item
                 name="baseSalary"
-                label="Base Salary"
+                label="Lương cơ bản"
                 rules={[
-                  { required: true, message: "Please enter base salary" },
+                  { required: true, message: "Vui lòng nhập lương cơ bản" },
                 ]}
               >
                 <InputNumber
@@ -535,7 +537,7 @@ const EmployeeManagement = () => {
                     `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                   }
                   parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
-                  placeholder="Enter base salary"
+                  placeholder="Nhập lương cơ bản"
                   min={0}
                 />
               </Form.Item>
@@ -543,12 +545,12 @@ const EmployeeManagement = () => {
             <Col span={12}>
               <Form.Item
                 name="hireDate"
-                label="Hire Date"
+                label="Ngày bắt đầu"
                 rules={[
-                  { required: true, message: "Please select hire date" },
+                  { required: true, message: "Vui lòng chọn ngày bắt đầu" },
                 ]}
-                initialValue={dayjs()}  
-                >
+                initialValue={dayjs()}
+              >
                 <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
               </Form.Item>
             </Col>
