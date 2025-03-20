@@ -39,7 +39,7 @@ export const routes = [
       {
         icon: <HomeIcon {...icon} />,
         name: "dashboard",
-        path: "/statistic",
+        path: "/home",
         element: <Statistic />,
         roles: ["ADMIN"],
       },
