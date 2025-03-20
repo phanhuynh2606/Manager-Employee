@@ -34,9 +34,9 @@ export const routes = [
       {
         icon: <HomeIcon {...icon} />,
         name: "dashboard",
-        path: "/home",
-        element: <Home />,
-        roles: ["EMPLOYEE", "ADMIN"],
+        path: "/statistic",
+        element: <Statistic />,
+        roles: ["ADMIN"],
       },
       {
         icon: <UserCircleIcon {...icon} />,
@@ -64,13 +64,9 @@ export const routes = [
         name: "Departments",
         path: '/departments',
         element: <Department />,
+        roles: ["ADMIN"],
       },
-      {
-        icon: <ChartPieIcon {...icon} />,
-        name: "Statistic",
-        path:'/statistic',
-        element: <Statistic />,
-      },
+     
       {
         icon: <ChartPieIcon {...icon} />,
         name: "Active log",

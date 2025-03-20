@@ -67,6 +67,7 @@ export default function BaseSalaryStatisyic() {
         "Tháng 11",
         "Tháng 12",
     ] : ["Quý 1", "Quý 2", "Quý 3", "Quý 4"];
+
     const chartConfigSalary = {
         type: "bar",
         height: 240,
