@@ -43,11 +43,6 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
         }
     }, [editingSalary, form]);
 
-    const handleOk = () => {
-        fetchSalaries();
-        setIsModalOpenEdit(false);
-    };
-
     const handleCancel = () => {
         form.resetFields();
         setIsModalOpenEdit(false);
@@ -108,12 +103,13 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
 
     return (
         <Modal
-            title="Edit Salary"
+            title="Cập nhật bảng lương"
             open={isModalOpenEdit}
             onOk={handleSubmit}
             onCancel={handleCancel}
             okButtonProps={{ style: { backgroundColor: "black", color: "white" } }}
-            okText="Submit"
+            okText="Cập nhật"
+            cancelText="Hủy"
             width={800}
         >
             <Form
@@ -121,36 +117,36 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                 layout="vertical"
                 onValuesChange={handleValuesChange}
             >
-                <Form.Item name="employeeId" label="Employee:" rules={[{ required: true, message: "Please select an employee" }]}>
+                <Form.Item name="employeeId" label="Nhân viên:" rules={[{ required: true, message: "Please select an employee" }]}>
                     <a className="text-black font-medium text-2xl">{form.getFieldValue("employeeId")?.fullName || "No employee selected"}</a>
                 </Form.Item>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div className="grid grid-cols-2 gap-4">
-                        <Form.Item name="month" label="Month" rules={[{ required: true, message: "Please select a month" }]}>
+                        <Form.Item name="month" label="Tháng" rules={[{ required: true, message: "Please select a month" }]}>
                             <Input type="number" min={1} max={12} className="w-full" disabled />
                         </Form.Item>
-                        <Form.Item name="year" label="Year" rules={[{ required: true, message: "Please select a year" }]}>
+                        <Form.Item name="year" label="Năm" rules={[{ required: true, message: "Please select a year" }]}>
                             <Input type="number" className="w-full" disabled />
                         </Form.Item>
                     </div>
-                    <Form.Item name="baseSalary" label="Base Salary" rules={[{ required: true, message: "Please enter a base salary" }]}>
+                    <Form.Item name="baseSalary" label="Lương cơ bản" rules={[{ required: true, message: "Please enter a base salary" }]}>
                         <Input type="number" className="w-full" disabled />
                     </Form.Item>
                 </div>
 
-                <Form.Item name="totalSalary" label="Total Salary">
+                <Form.Item name="totalSalary" label="Tổng lương nhận được">
                     <Input disabled />
                 </Form.Item>
 
                 <div className="grid grid-cols-3 gap-4">
-                    <Form.Item name="periodStart" label="Period Start" rules={[{ required: true, message: "Please select a period start date" }]} className="w-full">
+                    <Form.Item name="periodStart" label="Ngày bắt đầu" rules={[{ required: true, message: "Please select a period start date" }]} className="w-full">
                         <DatePicker className="w-full" disabled />
                     </Form.Item>
-                    <Form.Item name="periodEnd" label="Period End" rules={[{ required: true, message: "Please select a period end date" }]} className="w-full">
+                    <Form.Item name="periodEnd" label="Ngày kết thúc" rules={[{ required: true, message: "Please select a period end date" }]} className="w-full">
                         <DatePicker className="w-full" disabled />
                     </Form.Item>
-                    <Form.Item name="paymentDate" label="Payment Date" className="w-full" rules={[{ required: true, message: "Please select a payment date" }]}>
+                    <Form.Item name="paymentDate" label="Ngày thanh toán" className="w-full" rules={[{ required: true, message: "Please select a payment date" }]}>
                         <DatePicker className="w-full" disabled />
                     </Form.Item>
                 </div>
@@ -160,7 +156,7 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                     {(fields, { add, remove }) => (
                         <div className="mb-6">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-lg font-medium">Allowances</h3>
+                                <h3 className="text-lg font-medium">Phụ cấp</h3>
                                 <Button
                                     type="default"
                                     variant="solid"
@@ -169,7 +165,7 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                                     onClick={() => add()}
                                     className="flex items-center"
                                 >
-                                    Add Allowance
+                                    Thêm phụ cấp
                                 </Button>
                             </div>
                             {fields.map(({ key, name, ...restField }) => (
@@ -177,7 +173,7 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                                     <Form.Item
                                         {...restField}
                                         name={[name, "name"]}
-                                        label="Allowance Name"
+                                        label="Tên phụ cấp"
                                         rules={[{ required: true, message: 'Please enter allowance name' }]}
                                         className="mb-0"
                                     >
@@ -186,7 +182,7 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                                     <Form.Item
                                         {...restField}
                                         name={[name, "amount"]}
-                                        label="Amount"
+                                        label="Số tiền"
                                         rules={[{ required: true, message: 'Please enter amount' }]}
                                         className="mb-0"
                                     >
@@ -199,7 +195,7 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                                             onClick={() => remove(name)}
                                             className="flex items-center"
                                         >
-                                            Delete
+                                            Xóa
                                         </Button>
                                     </div>
                                 </div>
@@ -217,7 +213,7 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                     {(fields, { add, remove }) => (
                         <div className="mb-6">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-lg font-medium">Bonuses</h3>
+                                <h3 className="text-lg font-medium">Thưởng</h3>
                                 <Button
                                     type="default"
                                     variant="solid"
@@ -226,7 +222,7 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                                     onClick={() => add()}
                                     className="flex items-center"
                                 >
-                                    Add Bonus
+                                    Thêm khoản thưởng
                                 </Button>
                             </div>
                             {fields.map(({ key, name, ...restField }) => (
@@ -234,7 +230,7 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                                     <Form.Item
                                         {...restField}
                                         name={[name, "name"]}
-                                        label="Bonus Name"
+                                        label="Tên khoan thưởng"
                                         rules={[{ required: true, message: 'Please enter bonus name' }]}
                                         className="mb-0"
                                     >
@@ -243,7 +239,7 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                                     <Form.Item
                                         {...restField}
                                         name={[name, "amount"]}
-                                        label="Amount"
+                                        label="Số tiền"
                                         rules={[{ required: true, message: 'Please enter amount' }]}
                                         className="mb-0"
                                     >
@@ -252,7 +248,7 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                                     <Form.Item
                                         {...restField}
                                         name={[name, "reason"]}
-                                        label="Reason"
+                                        label="Lý do"
                                         className="mb-0"
                                     >
                                         <Input />
@@ -264,7 +260,7 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                                             onClick={() => remove(name)}
                                             className="flex items-center"
                                         >
-                                            Delete
+                                            Xóa
                                         </Button>
                                     </div>
                                 </div>
@@ -282,7 +278,7 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                     {(fields, { add, remove }) => (
                         <div className="mb-6">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-lg font-medium">Deductions</h3>
+                                <h3 className="text-lg font-medium">Khấu trừ</h3>
                                 <Button
                                     type="default"
                                     variant="solid"
@@ -291,7 +287,7 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                                     onClick={() => add()}
                                     className="flex items-center"
                                 >
-                                    Add Deduction
+                                    Thêm khoản khấu trừ
                                 </Button>
                             </div>
                             {fields.map(({ key, name, ...restField }) => (
@@ -299,7 +295,7 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                                     <Form.Item
                                         {...restField}
                                         name={[name, "name"]}
-                                        label="Deduction Name"
+                                        label="Tên khoản khấu trừ"
                                         rules={[{ required: true, message: 'Please enter deduction name' }]}
                                         className="mb-0"
                                     >
@@ -308,7 +304,7 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                                     <Form.Item
                                         {...restField}
                                         name={[name, "amount"]}
-                                        label="Amount"
+                                        label="Số tiền"
                                         rules={[{ required: true, message: 'Please enter amount' }]}
                                         className="mb-0"
                                     >
@@ -317,7 +313,7 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                                     <Form.Item
                                         {...restField}
                                         name={[name, "reason"]}
-                                        label="Reason"
+                                        label="Lý do"
                                         className="mb-0"
                                     >
                                         <Input />
@@ -329,7 +325,7 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                                             onClick={() => remove(name)}
                                             className="flex items-center"
                                         >
-                                            Delete
+                                            Xóa
                                         </Button>
                                     </div>
                                 </div>
@@ -342,7 +338,7 @@ const SalaryModalEdit = ({ editingSalary, isModalOpenEdit, setIsModalOpenEdit, f
                         </div>
                     )}
                 </Form.List>
-                <Form.Item name="note" label="Notes">
+                <Form.Item name="note" label="Ghi chú">
                     <Input.TextArea />
                 </Form.Item>
             </Form>
