@@ -42,7 +42,8 @@ import {
 } from "@ant-design/icons";
 import axios from '../../configs/axiosCustomize';
 import dayjs from "dayjs";
-import { getEmployeeDetail, getEmployeePosition } from "@/apis/employees/employee";
+import { getEmployeeDetail } from "@/apis/employees/employee";
+import { getPositions } from "@/apis/position/position";
 import { getDepartments } from "@/apis/departments/departments";
 import { RestoreOutlined } from "@mui/icons-material";
 import { useSelector } from "react-redux";
@@ -91,7 +92,8 @@ const EmployeeDetail = () => {
     try {
       setLoading(true);
       const departmentData = await getDepartments();
-      const positionData = await getEmployeePosition();
+      const positionData = await getPositions({});
+      console.log(positionData)
       if (departmentData.success && positionData.success) {
         setDepartments(departmentData.data);
         setPosition(positionData.data);
@@ -117,7 +119,9 @@ const EmployeeDetail = () => {
       ...employee,
       dateOfBirth: employee.dateOfBirth ? dayjs(employee.dateOfBirth) : null,
       hireDate: employee.hireDate ? dayjs(employee.hireDate) : null,
-      departmentId: employee.departmentId?._id || null
+      departmentId: employee.departmentId?._id || null,
+      position: employee.position?._id || null
+
     };
     form.setFieldsValue(formattedEmployee)
     setUpdateModalVisible(true);
@@ -491,7 +495,7 @@ const EmployeeDetail = () => {
             </div>
             <div className="mt-4">
               <Title level={4}>{employee?.userId?.username}</Title>
-              <Text type="secondary">{employee?.position}</Text>
+              <Text type="secondary">{employee?.position?.name}</Text>
               <div className="mt-2">
                 <Tag color="blue">
                   {employee?.departmentId?.name || "Chưa có phòng ban"}
@@ -721,12 +725,12 @@ const EmployeeDetail = () => {
                 <Form.Item
                   name="position"
                   label="Vị trí"
-                  rules={[{ required: true, message: "Vui lòng nhập vị trí" }]}
+                  rules={[{ required: true, message: "Vui lòng chọn vị trí" }]}
                 >
                   <Select placeholder="Chọn vị trí">
-                    {position.map((p, index) => (
-                      <Option key={index} value={p}>
-                        {p}
+                    {position.map((p) => (
+                      <Option key={p._id} value={p._id}>
+                        {p.name}
                       </Option>
                     ))}
                   </Select>

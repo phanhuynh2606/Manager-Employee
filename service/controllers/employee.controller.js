@@ -150,7 +150,8 @@ const getEmployee = async (req, res) => {
   try {
     const employees = await Employee.find()
       .populate("departmentId")
-      .populate("userId");
+      .populate("userId")
+      .populate("departmentId");
     if (!employees)
       return res
         .status(404)
@@ -197,10 +198,10 @@ const filterEmployee = async (req, res) => {
     }
     if (department && userRequest.role === "ADMIN") {
       filter.departmentId = department;
-    }
+    } 
     if (position) {
-      filter.position = { $regex: position, $options: "i" };
-    }
+      filter.position = position;
+    }  
     if (gender) {
       filter.gender = gender;
     }
@@ -220,10 +221,10 @@ const filterEmployee = async (req, res) => {
 
     const employees = await Employee.find(filter)
       .populate("departmentId", "name")
+      .populate("position", "name")
       .skip(skip)
       .limit(parseInt(limit))
-      .sort({ fullName: 1 });
-
+      .sort({ fullName: 1 });  
     res.json({
       success: true,
       data: employees,
@@ -248,7 +249,8 @@ const getEmployeeDetail = async (req, res) => {
     const employeeId = req.params.id;
     const employee = await Employee.findById(employeeId)
       .populate("departmentId")
-      .populate("userId");
+      .populate("userId")
+      .populate("position");
     if (!employee)
       return res
         .status(404)
