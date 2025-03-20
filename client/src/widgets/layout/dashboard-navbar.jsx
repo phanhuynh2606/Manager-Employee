@@ -77,13 +77,13 @@ export function DashboardNavbar() {
                         className={`bg-transparent p-0 transition-all ${fixedNavbar ? "mt-1" : ""
                             }`}
                     >
-                        <Link to={`/${layout}`}>
+                        <Link to={`/${layout}/home`} className="flex items-center gap-2">
                             <Typography
                                 variant="small"
                                 color="blue-gray"
                                 className="font-normal opacity-50 transition-all hover:text-blue-500 hover:opacity-100"
                             >
-                                {layout}
+                                {layout} 
                             </Typography>
                         </Link>
                         <Typography
@@ -94,9 +94,6 @@ export function DashboardNavbar() {
                             {page}
                         </Typography>
                     </Breadcrumbs>
-                    <Typography variant="h6" color="blue-gray">
-                        {page} 
-                    </Typography>
                 </div>
                 <div className="flex items-center">
                     <div className="mr-auto md:mr-4 md:w-56">

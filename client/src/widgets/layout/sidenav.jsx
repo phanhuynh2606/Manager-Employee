@@ -67,14 +67,15 @@ export function Sidenav({ brandImg, brandName, routes }) {
       <div
         className={`relative`}
       >
-        <Link to="/" className="py-6 px-8 text-center">
+        <Link to="./home" className="py-6 px-8 pl-4 text-center border-b border-blue-gray-100 block">
           <Typography
-            variant="h6"
+            variant="h4"
             color={sidenavType === "dark" ? "white" : "blue-gray"}
           >
             {brandName}
           </Typography>
         </Link>
+        
         <IconButton
           variant="text"
           color="white"
@@ -85,6 +86,7 @@ export function Sidenav({ brandImg, brandName, routes }) {
         >
           <XMarkIcon strokeWidth={2.5} className="h-5 w-5 text-white" />
         </IconButton>
+        
       </div>
       <div className="m-4">
         {routes.filter(router => router.layout !== "auth").map(({ layout, title, pages }, key) => (
@@ -144,13 +146,14 @@ export function Sidenav({ brandImg, brandName, routes }) {
           </ul>
         ))}
       </div>
+      
     </aside>
   );
 }
 
 Sidenav.defaultProps = {
-  brandImg: "/img/logo-ct.png",
-  brandName: "Employee Manager",
+  brandImg: "/img/logo-cty.jpg",
+  brandName: "Quản lý nhân viên",
 };
 
 Sidenav.propTypes = {

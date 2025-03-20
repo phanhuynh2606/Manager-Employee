@@ -6,6 +6,8 @@ const os = require('os');
 const moment = require('moment-timezone');
 const Leave = require('../models/leave');
 const { addSalary } = require("./salary.controller");
+const Notification = require("../models/notification");
+const sendNotification = require("../utils/sendNotification");
 const configTimeWork = {
     workStartTime: { hour: 8, minute: 30 },
     morningStartTime: { hour: 8, minute: 30 },
@@ -279,7 +281,7 @@ const checkout = async (req, res) => {
     const workingRatio = parseFloat((totalWorkingHours / configTimeWork.minWorkingHours).toFixed(2));
     attendance.note += ` Performance score: ${workingRatio}`;
 
-    await addSalary(employeeDetail._id, totalWorkingHours, overtimeHours, earlyLeaveMinutes);
+    await addSalary(employeeDetail._id, totalWorkingHours, overtimeHours, earlyLeaveMinutes, attendance.checkOut, attendance.checkIn);
 
     // Lưu thông tin chấm công
     await attendance.save();
@@ -344,6 +346,7 @@ const getAttendanceHistory = async (req, res) => {
     if (!attendanceRecords) {
         return res.status(404).json({ success: false, message: "Không tìm thấy bản ghi chấm công!" });
     }
+    const leaveDayYear = await Attendance.find({ employeeId: targetEmployeeId, status: 'LEAVE' }).countDocuments();
     // Tính toán tổng kết
     const summary = {
         totalDays: attendanceRecords?.length,
@@ -351,7 +354,7 @@ const getAttendanceHistory = async (req, res) => {
         lateDays: attendanceRecords?.filter(r => r.status === 'LATE').length,
         earlyLeaveDays: attendanceRecords?.filter(r => r.status === 'EARLY_LEAVE').length,
         absentDays: attendanceRecords?.filter(r => r.status === 'ABSENT').length,
-        leaveDays: attendanceRecords?.filter(r => r.status === 'LEAVE').length,
+        leaveDays: leaveDayYear,
         totalWorkingHours: parseFloat(attendanceRecords?.reduce((sum, record) => sum + (record.workingHours || 0), 0).toFixed(2)),
         totalOvertimeHours: parseFloat(attendanceRecords?.reduce((sum, record) => sum + (record.overtimeHours || 0), 0).toFixed(2)),
         averageWorkingHours: attendanceRecords?.length > 0 ? parseFloat((attendanceRecords?.reduce((sum, record) => sum + (record.workingHours || 0), 0) /
@@ -530,7 +533,7 @@ const getListLeave = async (req, res) => {
         const skip = (page - 1) * limit;
 
         const [listLeave, totalLeaves] = await Promise.all([
-            Leave.find().skip(skip).limit(limit).populate('employeeId', 'fullName'),
+            Leave.find().sort({ createdAt: -1 }).skip(skip).limit(limit).populate('employeeId', 'fullName'),
             Leave.countDocuments()
         ]);
 
@@ -563,25 +566,36 @@ const toDoLeave = async (req, res) => {
     if (leave.status !== 'Chờ duyệt') {
         return res.status(400).json({ success: false, message: "Đơn nghỉ phép đã được xử lý!" });
     }
+    const leaveDayYear = await Attendance.find({ employeeId: leave?.employeeId, status: 'LEAVE' }).countDocuments();
+    if (leaveDayYear > 12) {
+        return res.status(400).json({ success: false, message: "Nhân viên đã nghỉ quá số ngày quy định trong năm!" });
+    }
     switch (action) {
         case 'approve':
+            if (!leave) {
+
+            }
             leave.status = 'Đã duyệt';
-            const newAttendance = new Attendance({
-                employeeId: leave.employeeId,
-                date: leave.startDate,
-                checkIn: leave.startDate,
-                status: "LEAVE",
-                workingHours: 0,
-                overtimeHours: 0,
-                morningHours: 0,
-                afternoonHours: 0,
-                breakHours: 1.5,
-                lateMinutes: 0,
-                earlyLeaveMinutes: 0,
-                note: " Performance score: 0" + (leave.reason ? `, Reason: ${leave.reason}` : ''),
-                checkOut: leave.startDate
-            });
-            await newAttendance.save();
+            let currentDate = leave.startDate;
+            while (currentDate <= leave.endDate) {
+                const newAttendance = new Attendance({
+                    employeeId: leave.employeeId,
+                    date: currentDate,
+                    checkIn: currentDate,
+                    status: "LEAVE",
+                    workingHours: 0,
+                    overtimeHours: 0,
+                    morningHours: 0,
+                    afternoonHours: 0,
+                    breakHours: 1.5,
+                    lateMinutes: 0,
+                    earlyLeaveMinutes: 0,
+                    note: " Performance score: 0" + (leave.reason ? `, Reason: ${leave.reason}` : ''),
+                    checkOut: currentDate
+                });
+                await newAttendance.save();
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
             break;
         case 'reject':
             leave.status = 'Từ chối';
@@ -593,7 +607,37 @@ const toDoLeave = async (req, res) => {
     if (!checkingLeave) {
         return res.status(500).json({ success: false, message: "Lỗi khi xử lý đơn nghỉ phép!" });
     }
-
+    let content;
+    switch (action) {
+        case 'reject':
+            content = 'Đơn nghỉ phép của bạn đã bị từ chối!';
+            break;
+        case 'approve':
+            content = 'Đơn nghỉ phép của bạn đã được duyệt!';
+            const employee = await Employee.findById({ employeeId : leave.employeeId });
+            const countLeave = await Attendance.find({ employeeId: leave?.employeeId, status: 'LEAVE' }).countDocuments();
+            if (employee && employee?.leaveBalance) {
+                employee.leaveBalance.unpaid = 12 - countLeave;
+                await employee.save();
+            }
+            break;
+        default:
+            break;
+    }
+    const notification = await Notification.create({
+        title: "Thông báo",
+        content: content,
+        recipientId: leave.employeeId,
+        createdBy: user._id,
+        type: "PERSONAL",
+    });
+    const userSend = await User.findById(notification.createdBy).populate('employeeId',"fullName avatarUrl" )
+    const notificationObject = notification.toObject();
+    notificationObject.createdBy = {
+        fullName: userSend.employeeId.fullName,
+        avatarUrl: userSend.employeeId.avatarUrl
+    };
+    await sendNotification(notificationObj);
     return res.status(200).json({
         success: true,
         message: `Đã ${action === 'approve' ? 'duyệt' : 'từ chối'} đơn nghỉ phép!`,

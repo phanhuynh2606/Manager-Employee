@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const employee = require("../models/employee");
+
+const Employee = require("../models/employee");
 const generatePassword = () => {
   const uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
@@ -26,7 +26,7 @@ const shuffleString = (str) => {
 };
 const generateUsername = async (fullName) => {
   const nameParts = fullName.split(" "); 
-  const count = await employee.countDocuments(); 
+  const count = await Employee.countDocuments(); 
   console.log(nameParts.length);
   if(nameParts.length == 1){
     return fullname + (count + 1);
@@ -45,7 +45,7 @@ const getUsernameFromEmail = async(email) => {
     throw new Error('Invalid email');
   }
   const username = email.split('@')[0];
-  const employee = await employee.find({ username });
+  const employee = await Employee.find({ username });
   if (employee.length === 0) {
     return username;
   }else{

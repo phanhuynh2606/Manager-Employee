@@ -40,10 +40,14 @@ const createDepartment = async (req, res) => {
           createdBy: req.user._id,
           type: "PERSONAL",
         });
+        const userSend = await User.findById(notification.createdBy).populate('employeeId',"fullName avatarUrl" )
         const notificationObject = notification.toObject();
-        notificationObject.createdBy = req.user?.employeeId?.fullName;
+        notificationObject.createdBy = {
+          fullName: userSend.employeeId.fullName,
+          avatarUrl: userSend.employeeId.avatarUrl
+        };
         if(notification){
-          sendNotification(notification);
+          sendNotification(notificationObject);
         }
       }
       await employee.save();
@@ -116,7 +120,7 @@ const updateDepartment = async (req, res) => {
       const notificationObject = notification.toObject();
       notificationObject.createdBy = req.user?.employeeId?.fullName;
       if(notification){
-        sendNotification(notification);
+        sendNotification(notificationObject);
       }
     }
     if (!department)
@@ -235,29 +239,39 @@ const getEmployeeByManager = async (req, res) => {
   try {
     const employees = await Employee.find()
       .populate("departmentId", "-createdAt -updatedAt -__v -deleted")
-      .populate("userId","email")
+      .populate("userId", "email role")
       .select("fullName email departmentId avatarUrl position userId");
-    if (!employees)
-      return res
-        .status(404)
-        .json({ success: false, message: "Employee not found" });
+    if (!employees) return res.status(404).json({ success: false, message: "Employee not found" });
 
     // Lấy danh sách trưởng phòng
     const departments = await Department.find({
       managerId: { $ne: null },
     }).select("managerId name");
-    const managerMap = new Map(
-      departments.map((dep) => [dep.managerId.toString(), dep.name])
-    );
-
+    const managerMap = new Map(departments.map((dep) => [dep.managerId.toString(), dep.name]));
+    const filterEmployee = employees.filter((emp) => emp.userId?.role === "EMPLOYEE");
     // Gắn thông tin trưởng phòng nếu có
-    const employeesWithRole = employees.map((emp) => {
+    const employeesWithRole = filterEmployee.map((emp) => {
       const isManager = managerMap.get(emp._id.toString());
       return {
         ...emp.toObject(),
         roler: isManager ? `Trưởng phòng ${isManager}` : `Nhân viên ${emp?.departmentId?.name}`,
       };
     });
+    // Sắp xếp: Trưởng phòng lên trước, sau đó sắp theo tên
+    employeesWithRole.sort((a, b) => {
+      // Đảm bảo `isManager` là Boolean
+      const isManagerA = a.roler.startsWith("Trưởng phòng") ? 1 : 0;
+      const isManagerB = b.roler.startsWith("Trưởng phòng") ? 1 : 0;
+
+      // So sánh: Trưởng phòng lên trước
+      if (isManagerA !== isManagerB) {
+        return isManagerB - isManagerA;
+      }
+
+      // Nếu cùng vai trò, sắp xếp theo tên
+      return a.fullName.localeCompare(b.fullName, "vi", { sensitivity: "base" });
+    });
+
     return res.status(200).json({
       success: true,
       data: employeesWithRole,

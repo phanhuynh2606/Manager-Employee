@@ -7,6 +7,8 @@ const leaveRequestSchema = new Schema({
     endDate: { type: Date, required: true },
     reason: { type: String, required: true },
     status: { type: String, enum: ['Chờ duyệt', 'Đã duyệt', 'Từ chối'], default: 'Chờ duyệt' }
+},{
+    timestamps: true,
 });
 
 module.exports = mongoose.model('leave', leaveRequestSchema);

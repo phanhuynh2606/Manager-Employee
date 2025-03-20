@@ -1,28 +1,51 @@
+import React, { lazy, Suspense } from "react";
 import {
   HomeIcon,
   UserCircleIcon,
   TableCellsIcon,
-  InformationCircleIcon,
   ServerStackIcon,
   RectangleStackIcon,
   HomeModernIcon,
   BanknotesIcon,
-  PowerIcon
+  PowerIcon,
 } from "@heroicons/react/24/solid";
-import { Home, Profile, Tables } from "@/pages/dashboard";
-import { SignIn, SignUp } from "@/pages/auth";
-import Department from "./pages/department/Department";
-import Employee from "./pages/employee/Employee";
-import ViewEmployee from "./pages/employee/ViewEmployee";
-import Salary from "./pages/salary/salary";
-import AttendanceManagement from "./pages/attendance/attendance";
-import ViewSalaryDetail from "./pages/salary/viewSalaryDetail";
-import Notifications from "./pages/notification/Notifications";
+import { RxCountdownTimer } from "react-icons/rx";
+import { GrUserAdmin } from "react-icons/gr";
+import { LuMapPinCheckInside } from "react-icons/lu";
+import { MdOutlineEditNotifications } from "react-icons/md";
+import { Flex, Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 
+const Profile = lazy(() => import("@/pages/dashboard/Profile"));
+const Tables = lazy(() => import("@/pages/dashboard/Tables"));
+const SignIn = lazy(() => import("@/pages/auth/sign-in"));
+const Department = lazy(() => import("./pages/department/Department"));
+const Statistic = lazy(() => import("./pages/statistic/statistic"));
+const ActiveLog = lazy(() => import("./pages/activelog/activelog"));
+const Employee = lazy(() => import("./pages/employee/Employee"));
+const ViewEmployee = lazy(() => import("./pages/employee/ViewEmployee"));
+const Salary = lazy(() => import("./pages/salary/salary"));
+const AttendanceManagement = lazy(() =>
+  import("./pages/attendance/attendance"),
+);
+const ViewSalaryDetail = lazy(() => import("./pages/salary/viewSalaryDetail"));
+const Notifications = lazy(() => import("./pages/notification/Notifications"));
+const AdminManagement = lazy(() =>
+  import("./pages/administration/Administration"),
+);
+const AdminDetail = lazy(() => import("./pages/administration/AdminView"));
 
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
+
+const LazyElement = (Component) => (
+  <Suspense fallback={<Flex align="center" gap="middle" style={{ height: "100vh",textAlign: "center", justifyContent: "center" }}>
+    <Spin indicator={<LoadingOutlined spin />} size="large" />
+  </Flex>}>
+    <Component />
+  </Suspense>
+);
 
 export const routes = [
   {
@@ -30,76 +53,95 @@ export const routes = [
     pages: [
       {
         icon: <HomeIcon {...icon} />,
-        name: "dashboard",
+        name: "Tổng quan",
         path: "/home",
-        element: <Home />,
-        roles: ["EMPLOYEE", "ADMIN"],
+        element: LazyElement(Statistic),
+        roles: ["ADMIN"],
       },
       {
         icon: <UserCircleIcon {...icon} />,
-        name: "profile",
+        name: "Trang cá nhân",
         path: "/profile",
-        element: <Profile />,
+        element: LazyElement(Profile),
         roles: ["EMPLOYEE"],
       },
       {
         icon: <TableCellsIcon {...icon} />,
         name: "tables",
         path: "/tables",
-        element: <Tables />,
+        element: LazyElement(Tables),
         roles: ["EMPLOYEE"],
       },
       {
-        icon: <InformationCircleIcon {...icon} />,
-        name: "notifications",
+        icon: <MdOutlineEditNotifications {...icon} />,
+        name: "Thông báo",
         path: "/notifications",
-        element: <Notifications />,
+        element: LazyElement(Notifications),
         roles: ["EMPLOYEE", "ADMIN"],
       },
       {
-        icon: <HomeModernIcon {...icon} />,
-        name: "Departments",
-        path: '/departments',
-        element: <Department />,
+        icon: <GrUserAdmin {...icon} />,
+        name: "Quản trị viên",
+        path: "/admin",
+        element: LazyElement(AdminManagement),
         roles: ["ADMIN"],
       },
       {
         icon: <UserCircleIcon {...icon} />,
-        name: "Employees",
-        path: '/employee',
-        element: <Employee />,
+        name: "Nhân Viên",
+        path: "/employee",
+        element: LazyElement(Employee),
         roles: ["ADMIN", "EMPLOYEE"],
       },
       {
-        path: '/employee/:employeeId',
-        element: <ViewEmployee />,
+        icon: <HomeModernIcon {...icon} />,
+        name: "Phòng ban",
+        path: "/departments",
+        element: LazyElement(Department),
+        roles: ["ADMIN"],
+      },
+      {
+        path: "/admin/:adminId",
+        element: LazyElement(AdminDetail),
+        roles: ["ADMIN"],
+      },
+      {
+        path: "/employee/:employeeId",
+        element: LazyElement(ViewEmployee),
         roles: ["EMPLOYEE", "ADMIN"],
       },
       {
         icon: <BanknotesIcon {...icon} />,
-        name: "Salary",
-        path: '/salaries',
-        element: <Salary />,
+        name: "Quản lý lương",
+        path: "/salaries",
+        element: LazyElement(Salary),
         roles: ["EMPLOYEE", "ADMIN"],
       },
       {
-        path: '/salaries/:salaryId',
-        element: <ViewSalaryDetail />,
+        path: "/salaries/:salaryId",
+        element: LazyElement(ViewSalaryDetail),
         roles: ["EMPLOYEE", "ADMIN"],
       },
       {
-        icon: <UserCircleIcon {...icon} />,
-        name: "Attendance",
-        path: '/attendance',
-        element: <AttendanceManagement />,
+        icon: <LuMapPinCheckInside {...icon} />,
+        name: "Quản lý điểm danh",
+        path: "/attendance",
+        element: LazyElement(AttendanceManagement),
         roles: ["EMPLOYEE", "ADMIN"],
+      },
+      {
+        icon: <RxCountdownTimer {...icon} />,
+        name: "Nhật ký hoạt động",
+        path: "/activelog",
+        element: LazyElement(ActiveLog),
+        roles: ["ADMIN"],
       },
       {
         icon: <PowerIcon {...icon} />,
-        name: "Logout",
+        name: "Đăng xuất",
         path: "/logout",
         roles: ["EMPLOYEE", "ADMIN"],
-      }
+      },
     ],
   },
   {
@@ -110,13 +152,7 @@ export const routes = [
         icon: <ServerStackIcon {...icon} />,
         name: "sign in",
         path: "/sign-in",
-        element: <SignIn />,
-      },
-      {
-        icon: <RectangleStackIcon {...icon} />,
-        name: "sign up",
-        path: "/sign-up",
-        element: <SignUp />,
+        element: LazyElement(SignIn),
       },
     ],
   },
