@@ -71,7 +71,7 @@ const createEmployee = async (req, res) => {
     await logActivity(
       req,
       "Create new employee",
-      "employees",
+      "EMPLOYEE",
       newEmployee._id,
       null,
       newEmployee
@@ -127,15 +127,26 @@ const updateEmployee = async (req, res) => {
       employeeId,
       { $set: employeeData },
       { new: true }
-    );
-    await logActivity(
-      req,
-      "Update employee",
-      "employees",
-      employee._id,
-      employee,
-      updatedEmployee
-    );
+    ).populate("userId");
+    if (updatedEmployee.userId?.role === "ADMIN") {
+      await logActivity(
+        req,
+        "Update account admin",
+        "ADMIN",
+        employee._id,
+        employee,
+        updatedEmployee
+      );
+    }else{
+      await logActivity(
+        req,
+        "Update employee",
+        "EMPLOYEE",
+        employee._id,
+        employee,
+        updatedEmployee
+      );
+    }
     return res.status(200).json({
       success: true,
       message: "Cập nhật thông tin nhân viên thành công",
@@ -292,7 +303,7 @@ const removeEmployee = async (req, res) => {
     await logActivity(
       req,
       `Delete employee ${employee.fullName}`,
-      "employees",
+      "EMPLOYEE",
       employee._id,
       employee,
       null
@@ -329,7 +340,7 @@ const resetPassword = async (req, res) => {
     await logActivity(
       req,
       `Reset password employee ${employee.fullName}`,
-      "employees",
+      "EMPLOYEE",
       employee._id,
       employee,
       employee

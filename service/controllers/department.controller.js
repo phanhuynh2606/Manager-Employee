@@ -200,10 +200,12 @@ const asignEmployeeToDepartment = async (req, res) => {
 // Xem danh sách nhân viên theo phòng ban
 const getEmployeesByDepartment = async (req, res) => {
   try {
-    const employees = await Employee.find({ department: req.params.id });
+    const employees = await Employee.find({ departmentId: req.params.departmentId }).populate("userId", "email role").populate("position", "name");
+    const filteredEmployees = employees?.filter(emp => emp.userId.role === 'EMPLOYEE');
+    console.log(employees);
     return res.status(200).json({
       success: true,
-      data: employees,
+      data: filteredEmployees,
     });
   } catch (error) {
     res.status(500).json({

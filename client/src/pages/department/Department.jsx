@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Table, Input, Button, Modal, Form, Space, Row, Col, Select, message, Avatar, Popconfirm } from "antd";
-import { assignEmployeeToDepartment, assignManager, createDepartment, deleteDepartment, getDepartments, getEmployeesOtherDepartments, updateDepartment } from "@/apis/departments/departments";
-import { DeleteFilled, EditFilled, QuestionCircleOutlined, UserAddOutlined } from "@ant-design/icons";
+import { assignEmployeeToDepartment, assignManager, createDepartment, deleteDepartment, getDepartmentEmployees, getDepartments, getEmployeesOtherDepartments, updateDepartment } from "@/apis/departments/departments";
+import { DeleteFilled, EditFilled, EyeFilled, QuestionCircleOutlined, UserAddOutlined } from "@ant-design/icons";
+import EmployeeListModal from "./ViewEmployeeDepartment";
 
 const { Option } = Select;
 const DepartmentManagement = () => {
@@ -19,6 +20,9 @@ const DepartmentManagement = () => {
   const [assignModalOpen, setAssignModalOpen] = useState(false);
   const [employeeList, setEmployeeList] = useState([]);
   const [loadingAssign, setLoadingAssign] = useState(true);
+  const [employeeModalOpen, setEmployeeModalOpen] = useState(false);
+  const [departmentEmployees, setDepartmentEmployees] = useState([]);
+  const [loadingEmployees, setLoadingEmployees] = useState(false);
   useEffect(() => {
     fetchDepartments();
   }, []);
@@ -143,7 +147,23 @@ const DepartmentManagement = () => {
       messageApi.error("Lấy danh sách nhân viên thất bại");
     }
   }
-
+  const fetchDepartmentEmployees = async (departmentId) => {
+    try {
+      setLoadingEmployees(true);
+      const res = await getDepartmentEmployees(departmentId);
+      if (res.success) {
+        setDepartmentEmployees(res.data);
+        setEmployeeModalOpen(true);
+      } else {
+        messageApi.error("Không thể tải danh sách nhân viên");
+      }
+    } catch (error) {
+      console.error("Failed to fetch department employees", error);
+      messageApi.error("Xảy ra lỗi khi tải danh sách nhân viên");
+    } finally {
+      setLoadingEmployees(false);
+    }
+  };
   const filteredDepartments = departments?.filter(dept =>
     dept?.name?.toLowerCase().includes(searchText.toLowerCase()) ||
     dept?.roomNumber?.toLowerCase().includes(searchText.toLowerCase())
@@ -193,6 +213,8 @@ const DepartmentManagement = () => {
             key: "actions",
             render: (_, dept) => (
               <Space>
+                <Button type="link" onClick={() => fetchDepartmentEmployees(dept._id)} icon={<EyeFilled />}/>
+
                 <Button type="link" icon={<EditFilled />} onClick={() => { setEditingDepartment(dept); form.setFieldsValue({ ...dept, managerId: dept?.managerId?._id }); setModalOpen(true); }} />
                 <Popconfirm
                   title="Are you sure you want to delete this department?"
@@ -269,8 +291,8 @@ const DepartmentManagement = () => {
           </Row>
         </Form>
       </Modal>
-       {/* Modal Gán Nhân Viên */}
-       <Modal
+      {/* Modal Gán Nhân Viên */}
+      <Modal
         title="Gán nhân viên vào phòng ban"
         open={assignModalOpen}
         onCancel={() => setAssignModalOpen(false)}
@@ -279,22 +301,28 @@ const DepartmentManagement = () => {
         okButtonProps={{ style: { backgroundColor: "#1890ff", borderColor: "#1890ff" } }}
       >
         <Form form={assignForm} layout="vertical">
-          <Form.Item name="employeeId" label="Chọn nhân viên" rules={[{ required: true, message: "Vui lòng chọn nhân viên" }]}> 
+          <Form.Item name="employeeId" label="Chọn nhân viên" rules={[{ required: true, message: "Vui lòng chọn nhân viên" }]}>
             {/* Chỉ hiển thị nhân viên có trong phòng ban khác */}
             {loadingData ? <Select loading /> : (
               <Select placeholder="Chọn nhân viên" showSearch mode="multiple" loading={loadingAssign} allowClear
-              filterOption={(input, option) =>
-                option.children.toLowerCase().includes(input.toLowerCase())
-              }
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().includes(input.toLowerCase())
+                }
               >
-              {employeeList.map(emp => (
-                <Option key={emp._id} value={emp._id}>{emp.fullName}</Option>
-              ))}
-            </Select>
+                {employeeList.map(emp => (
+                  <Option key={emp._id} value={emp._id}>{emp.fullName}</Option>
+                ))}
+              </Select>
             )}
           </Form.Item>
         </Form>
       </Modal>
+      <EmployeeListModal
+        visible={employeeModalOpen}
+        onCancel={() => setEmployeeModalOpen(false)}
+        employees={departmentEmployees}
+        loading={loadingEmployees}
+      />
     </div>
   );
 };
