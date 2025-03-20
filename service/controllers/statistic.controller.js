@@ -89,7 +89,7 @@ module.exports.statisticSalary = async (req, res) => {
                     {
                         $group: {
                             _id: null,
-                            totalAmount: { $sum: "$baseSalary" },
+                            totalAmount: { $sum: "$totalSalary" },
                             employees: { $push: "$$ROOT" }
                         }
                     }
@@ -123,7 +123,7 @@ module.exports.statisticSalary = async (req, res) => {
                     {
                         $group: {
                             _id: null,
-                            totalAmount: { $sum: "$baseSalary" },
+                            totalAmount: { $sum: "$totalSalary" },
                             employees: { $push: "$$ROOT" }
                         }
                     }

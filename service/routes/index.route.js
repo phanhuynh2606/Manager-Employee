@@ -8,6 +8,7 @@ const attendanceRoute = require('./attendance.route');
 const salaryRoute = require('./salary.route');
 const notificationRoute = require('./notification.route');
 const backupRoute = require('./backup.route');
+const activeRoute = require("./activelog.route")
 const positionRoute = require('./position.route');
 const initRoutes = (app) => {
 
@@ -15,8 +16,8 @@ const initRoutes = (app) => {
     res.send('Welcome to API Manager Employee!');
   });
 
-
-  app.use('/statistic', statisticRoute);
+  app.use("/activelog",activeRoute)
+  app.use('/statistic', statisticRoute); 
   app.use('/departments', departmentRoute);
   app.use('/auth', authRoute);
   app.use('/employee', employeeRoute);
