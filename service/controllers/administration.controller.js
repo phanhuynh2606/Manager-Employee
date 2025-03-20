@@ -23,6 +23,8 @@ const createAdmin = async (req, res) => {
     }
     const user = await User.findOne({ email });
     if (user) return res.status(400).json({ success: false, message: 'Email đã tồn tại trong hệ thống !' });
+    const phoneNumberExist  = await Employee.findOne({ phoneNumber });
+    if (phoneNumberExist) return res.status(400).json({ success: false, message: 'Số điện thoại đã tồn tại trong hệ thống !' }); 
     const passwordRandom = generatePassword();
     const userName = await getUsernameFromEmail(email);
     const newUser = await User.create({
@@ -94,7 +96,6 @@ const getAdmins = async (req, res) => {
 const getAdmin = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id);
     const admin = await User.findById(id).populate('employeeId');
     if (!admin) return res.status(404).json({ success: false, message: 'Không tìm thấy quản trị viên !' });
     const adminFormatted = {

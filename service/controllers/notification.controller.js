@@ -45,7 +45,6 @@ const createNotification = async (req, res) => {
       fullName: userSend.employeeId.fullName,
       avatarUrl: userSend.employeeId.avatarUrl
     };
-    console.log(notificationObj);
     sendNotification(notificationObj);
     res.status(201).json({
       success: true,
@@ -176,7 +175,6 @@ const getNotifications = async (req, res) => {
 
 //  Đánh dấu thông báo đã đọc
 const markAsRead = async (req, res) => {
-  console.log("run update read");
   try {
     const { id } = req.params;
     const employeeId = req.user?.employeeId;
@@ -201,7 +199,6 @@ const markAsRead = async (req, res) => {
 };
 
 const multiMarkAsRead = async (req, res) => {
-  console.log("Run update multi read");
   try {
     const { ids } = req.body;
     const employeeId = req.user?.employeeId;
