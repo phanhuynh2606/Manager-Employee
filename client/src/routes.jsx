@@ -77,7 +77,7 @@ export const routes = [
         name: "Active log",
         path:'/activelog',
         element: <ActiveLog />,
-        roles: ["ADMIN"],
+        roles: ["EMPLOYEE","ADMIN"],
       },
       {
         icon: <UserCircleIcon {...icon} />,
