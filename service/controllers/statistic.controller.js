@@ -6,7 +6,6 @@ const mongoose = require("mongoose")
 module.exports.statisticEmployee = async (req, res) => {
     try {
         const { department, position } = req.body;
-        console.log("Department is", department)
 
         let find = {};
         if (department && department.length > 0) {

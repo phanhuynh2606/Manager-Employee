@@ -16,8 +16,6 @@ const addSalary = async (employeeId, workingHours, overtimeHours, earlyLeaveMinu
         const month = currentDate.getMonth() + 1;
         const date = currentDate.getDate();
         const lastDayOfMonth = moment().tz('Asia/Ho_Chi_Minh').endOf('month').toDate();
-        console.log('11111', checkIn),
-            console.log('222', checkout)
 
         const employee = await Employee.findById(employeeId);
         if (!employee || !employee.baseSalary) {

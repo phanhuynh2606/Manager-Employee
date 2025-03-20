@@ -16,8 +16,8 @@ import { MdOutlineEditNotifications } from "react-icons/md";
 import { Flex, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 
-const Profile = lazy(() => import("@/pages/dashboard/Profile"));
-const Tables = lazy(() => import("@/pages/dashboard/Tables"));
+const Profile = lazy(() => import("@/pages/dashboard/profile"));
+const Tables = lazy(() => import("@/pages/dashboard/tables"));
 const SignIn = lazy(() => import("@/pages/auth/sign-in"));
 const Department = lazy(() => import("./pages/department/Department"));
 const Statistic = lazy(() => import("./pages/statistic/statistic"));
