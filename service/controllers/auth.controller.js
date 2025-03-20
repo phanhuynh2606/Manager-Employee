@@ -65,6 +65,7 @@ const authLogin = async (req, res) => {
         res.status(200).json({
             success: true,
             message: "Đăng nhập thành công!",
+            userId: user._id,
             employeeId: user.employeeId,
             departmentId: getEmployee.departmentId,
             email: user.email,

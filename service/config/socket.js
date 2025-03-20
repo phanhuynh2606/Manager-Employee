@@ -1,6 +1,7 @@
 const { Server } = require('socket.io');
 
 let io;
+const connectedUsers = {};
 
 const initSocket = (server) => {
   io = new Server(server, {
@@ -19,8 +20,19 @@ const initSocket = (server) => {
       socket.emit('joinedRoom', `Joined room: ${employeeId}`);
     });
 
+    socket.on('registerUser', (userId) => {
+      // Lưu socket id và user id vào map để theo dõi
+      connectedUsers[socket.id] = userId;
+      console.log(`User ${userId} registered with socket ${socket.id}`);
+    });
+
     socket.on('disconnect', () => {
       // console.log(`❌ User disconnected: ${socket.id}`);
+      const userId = connectedUsers[socket.id];
+      if (userId) {
+        console.log(`User ${userId} disconnected`); 
+        delete connectedUsers[socket.id];
+      }
     });
   });
 
