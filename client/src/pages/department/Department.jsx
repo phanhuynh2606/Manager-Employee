@@ -215,7 +215,7 @@ const DepartmentManagement = () => {
                 );
               }}
               >
-                {managerList.map(manager => (
+                {managerList?.map(manager => (
                 <Option key={manager._id} value={manager._id}>
                   <div className="flex items-center gap-2">
                     <img src={manager?.avatarUrl} alt={manager.fullName} height={30} width={30} 
