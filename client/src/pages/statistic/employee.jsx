@@ -34,7 +34,6 @@ import Chart from "react-apexcharts"
 import instance from "../../configs/axiosCustomize"
 import { func } from "prop-types";
 
-const POSITION = ["HR Manager", "Software Engineer", "System Administrator", "Test", "Manager IT", "Marketing Specialist", "Project Manager", "Manager"]
 export default function StatisticEmployee() {
     const [total, setTotal] = React.useState(0);
     const [totalFemale, setTotalFemale] = React.useState(0);
@@ -45,11 +44,13 @@ export default function StatisticEmployee() {
     const [idDepartment, setIdDepartment] = React.useState([]);
     const [departmentCheckbox,setDepartmentCheckBox] = React.useState([]);
     const [postionCheckBox,setPositionCheckbox] = React.useState([]);
- 
+    const [position,setPosition] = React.useState([]);
     
     const getDataDepartment = async () => {
         try {
-            const response = await instance.get("/departments")
+            const position = await instance.get("/positions"); 
+            const response = await instance.get("/departments");
+            setPosition(position.data)
             setDepartment(response.data)
         } catch (error) {
             console.log(error)
@@ -59,7 +60,7 @@ export default function StatisticEmployee() {
         try {
             const respone = await instance.post("/statistic/employee",{
                 department: departmentCheckbox.map((item,index) => item._id),
-                position: postionCheckBox
+                position: postionCheckBox.map((item) => item._id)
             })
             console.log(respone)
             setListEmployee(respone.listEmployee)
@@ -90,7 +91,13 @@ export default function StatisticEmployee() {
     };
 
     const checkBoxCheckPosition = (item) =>{
-        setPositionCheckbox(prev => prev.includes(item) ? prev.filter((pos) => pos != item)  : [...prev,item] )
+        setPositionCheckbox(prev => {
+            if(prev.some((pos)=>pos._id==item._id)) {
+                return prev.filter(pos=>pos._id!==item._id)
+            }else{
+                return [...prev,item];
+            }
+        })
     }
     const exportToExcel = () => {
         if (listEmployee.length === 0) {
@@ -143,7 +150,7 @@ export default function StatisticEmployee() {
     };
     
     
-
+    console.log("POSSS",position)
     return (
         <>
         <Card>
@@ -225,32 +232,32 @@ export default function StatisticEmployee() {
                             <h3 className="text-lg font-bold text-green-800">Chức vụ</h3>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                            {POSITION.map((item, index) => (
+                            {position.map((item, index) => (
                                 <label key={index} className="flex items-center cursor-pointer group">
                                     <div className="relative">
                                         <input
                                             type="checkbox"
-                                            value={item}
-                                            checked={postionCheckBox.some( pos => pos === item )}
+                                            value={item.name}
+                                            checked={postionCheckBox.some( pos => pos === item._id )}
                                             onChange={() =>checkBoxCheckPosition(item)}
                                             className="sr-only"
                                         />
                                         <div className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all ${
-                                            postionCheckBox.includes(item)
+                                            postionCheckBox.some(pos=>pos._id=item._id)
                                                 ? 'border-green-500 bg-green-500' 
                                                 : 'border-gray-300 group-hover:border-green-300'
                                         }`}>
-                                            {postionCheckBox.includes(item) && (
+                                            { postionCheckBox.some(pos=>pos._id=item._id) && (
                                                 <i className="fas fa-check text-xs text-white"></i>
                                             )}
                                         </div>
                                     </div>
                                     <span className={`ml-2 text-sm transition-all ${
-                                        postionCheckBox.includes(item)
+                                        postionCheckBox.some(pos=>pos._id=item._id)
                                             ? 'text-green-600 font-medium' 
                                             : 'text-gray-600 group-hover:text-green-500'
                                     }`}>
-                                        {item}
+                                        {item.name}
                                     </span>
                                 </label>
                             ))}

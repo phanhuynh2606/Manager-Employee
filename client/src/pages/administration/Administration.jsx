@@ -247,8 +247,8 @@ const AdminManagement = () => {
                 rules={[
                   { required: true, message: "Hãy nhập số điện thoại" },
                   {
-                    pattern: /^[0-9+\-\s]+$/,
-                    message: "Nhập đúng định dạng số điện thoại",
+                    pattern: /^(0)[3-9][0-9]{8}$/,
+                    message: "Số điện thoại không hợp lệ (VD: 0901234567)",
                   },
                 ]}
               >
@@ -264,6 +264,16 @@ const AdminManagement = () => {
                 label="Ngày sinh"
                 rules={[
                   { required: true, message: "Nhập ngày sinh nhật" },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (!value) return Promise.resolve();
+                      const age = dayjs().diff(value, 'year');
+                      if (age < 18) {
+                        return Promise.reject(new Error("Người dùng phải đủ 18 tuổi"));
+                      }
+                      return Promise.resolve();
+                    },
+                  }),
                 ]}
               >
                 <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" placeholder='Chọn ngày sinh nhật' />

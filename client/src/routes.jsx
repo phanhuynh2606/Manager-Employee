@@ -15,17 +15,17 @@ import { GrUserAdmin } from "react-icons/gr";
 import { LuMapPinCheckInside } from "react-icons/lu";
 import { MdOutlineEditNotifications } from "react-icons/md";
 import { Flex, Spin } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
-const Profile = lazy(() => import("../src/pages/dashboard/profile"));
-const Tables = lazy(() => import("../src/pages/dashboard/tables"));
-const SignIn = lazy(() => import("../src/pages/auth/sign-in"));
-const FirstTimeChangePassword = lazy(() => import("../src/pages/auth/first-time-password-change"));
-const Department = lazy(() => import("../src/pages/department/Department"));
-const Statistic = lazy(() => import("../src/pages/statistic/statistic"));
-const ActiveLog = lazy(() => import("../src/pages/activelog/activelog"));
-const Employee = lazy(() => import("../src/pages/employee/Employee"));
-const ViewEmployee = lazy(() => import("../src/pages/employee/ViewEmployee"));
-const Salary = lazy(() => import("../src/pages/salary/salary"));
+import { LoadingOutlined, TeamOutlined } from "@ant-design/icons";
+
+const Profile = lazy(() => import("@/pages/dashboard/profile"));
+const Tables = lazy(() => import("@/pages/dashboard/tables"));
+const SignIn = lazy(() => import("@/pages/auth/sign-in"));
+const Department = lazy(() => import("./pages/department/Department"));
+const Statistic = lazy(() => import("./pages/statistic/statistic"));
+const ActiveLog = lazy(() => import("./pages/activelog/activelog"));
+const Employee = lazy(() => import("./pages/employee/Employee"));
+const ViewEmployee = lazy(() => import("./pages/employee/ViewEmployee"));
+const Salary = lazy(() => import("./pages/salary/salary"));
 const AttendanceManagement = lazy(() =>
   import("../src/pages/attendance/attendance"),
 );
@@ -34,14 +34,18 @@ const Notifications = lazy(() => import("../src/pages/notification/Notifications
 const AdminManagement = lazy(() =>
   import("../src/pages/administration/Administration"),
 );
-const AdminDetail = lazy(() => import("../src/pages/administration/AdminView"));
+const AdminDetail = lazy(() => import("./pages/administration/AdminView"));
+const Positions = lazy(() => import("./pages/positions/position"));
+const FirstTimeChangePassword = lazy(() =>
+  import("../src/pages/auth/first-time-password-change"),
+);
 
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
 
 const LazyElement = (Component) => (
-  <Suspense fallback={<Flex align="center" gap="middle" style={{ height: "100vh",textAlign: "center", justifyContent: "center" }}>
+  <Suspense fallback={<Flex align="center" gap="middle" style={{ height: "100vh", textAlign: "center", justifyContent: "center" }}>
     <Spin indicator={<LoadingOutlined spin />} size="large" />
   </Flex>}>
     <Component />
@@ -93,6 +97,13 @@ export const routes = [
         path: "/employee",
         element: LazyElement(Employee),
         roles: ["ADMIN", "EMPLOYEE"],
+      },
+      {
+        icon: <TeamOutlined {...icon} />,
+        name: "Vị trí việc làm",
+        path: "/position",
+        element: LazyElement(Positions),
+        roles: ["ADMIN"],
       },
       {
         icon: <HomeModernIcon {...icon} />,
