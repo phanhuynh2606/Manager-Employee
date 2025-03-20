@@ -7,6 +7,8 @@ const API_BE = {
     DOWLOAD_FILE_BACKUP: "/download-latest",
     RESTORES: "/restores",
     GET_PROFILE_USER: "/auth/get-profile-user",
+    BACKUP_DATA_IN_DATABASE: "/create-backup-from-mongodb",
+    RESTORE_DATA_IN_DATABASE: "/restore-latest-backup",
 }
 
 export default API_BE;
