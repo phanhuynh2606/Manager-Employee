@@ -6,8 +6,8 @@ router.get('/backups', backupDatabase);
 
 router.get('/cleanups', cleanupOldBackups);
 
-router.post('/restores', restoreDatabase);
+router.post('/restores', authenticate, isAdmin, restoreDatabase);
 
-router.get("/download-latest", downloadLatestBackup);
+router.get("/download-latest", authenticate, isAdmin, downloadLatestBackup);
 
 module.exports = router;

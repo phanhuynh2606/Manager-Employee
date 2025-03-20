@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require("../models/user");
 const Employee = require("../models/employee");
 const Department =require("../models/department");
+const Salary = require("../models/salary");
 const {isActiveUser} = require("../utils/isActiveUser");
 
 const authLogin = async (req, res) => {
@@ -136,10 +137,19 @@ const firstTimeChangePassword = async (req, res) => {
     try {
         const {email, oldPassword, newPassword, newConfirmPassword} = req.body;
 
-        if (!oldPassword || !newPassword || !newConfirmPassword) {
+        if (!oldPassword.trim() || !newPassword.trim() || !newConfirmPassword.trim()) {
             return res.status(400).json({
                 success: false,
                 message: "Vui lòng điền đầy đủ các trường!"
+            });
+        }
+
+        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/;
+
+        if (!passwordRegex.test(newPassword)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Mật khẩu phải có ít nhất 6 ký tự, 1 chữ in hoa, 1 số và 1 ký tự đặc biệt.'
             });
         }
 
@@ -229,9 +239,77 @@ const getProfile = (req, res) => {
     } catch (e) {
         res.status(500).json({
             success: false,
-            message: "Đăng xuất thất bại!"
+            message: "Lấy thông tin người dùng thất bại!"
         });
     }
 };
 
-module.exports = {authLogin, refreshAccessToken, firstTimeChangePassword, authLogout, getProfile};
+const getProfileUser = async (req, res) => {
+    try {
+        const { _id } = req.user;
+
+        // Lấy thông tin nhân viên
+        const getEmployee = await Employee.findOne({ userId: _id })
+            .populate({
+                path: "departmentId",
+                select: "name roomNumber managerId",
+                populate: { path: "managerId", select: "fullName" }
+            });
+
+        if (!getEmployee) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy nhân viên!" });
+        }
+
+        // Lấy lương tháng gần nhất
+        const latestSalary = await Salary.findOne({ employeeId: getEmployee._id })
+            .sort({ year: -1, month: -1 })
+            .select("totalSalary bonuses allowances deductions");
+
+        res.status(200).json({
+            success: true,
+            result: {
+                // 1. Thông tin cá nhân
+                fullName: getEmployee.fullName,
+                dateOfBirth: getEmployee.dateOfBirth,
+                gender: getEmployee.gender,
+                address: getEmployee.address,
+                phoneNumber: getEmployee.phoneNumber,
+                avatar: getEmployee.avatarUrl,
+
+                // 2. Thông tin công việc
+                employeeId: getEmployee._id ? "FPT " + getEmployee._id : "",
+                position: getEmployee.departmentId?.managerId?.equals(getEmployee._id) ? "MANAGER" : "STAFF",
+                departmentName: getEmployee.departmentId?.name || "",
+                roomNumber: getEmployee.departmentId?.roomNumber || "",
+                managerName: getEmployee.departmentId?.managerId?.fullName || "",
+                hireDate: getEmployee.hireDate,
+                isActive: getEmployee.isActive,
+
+                // 3. Thông tin lương & phụ cấp
+                baseSalary: getEmployee.baseSalary,
+                latestSalary: latestSalary?.totalSalary || 0,
+                bonuses: latestSalary?.bonuses || [],
+                allowances: latestSalary?.allowances || [],
+                deductions: latestSalary?.deductions || [],
+
+                // 4. Thông tin nghỉ phép
+                annualLeave: getEmployee.leaveBalance.annual,
+                sickLeave: getEmployee.leaveBalance.sick,
+                unpaidLeave: getEmployee.leaveBalance.unpaid,
+
+                // 5. Hoạt động gần đây
+                // lastLogin: getEmployee.lastLogin,
+                // updatedAt: getEmployee.updatedAt,
+            }
+        });
+
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({
+            success: false,
+            message: "Lấy thông tin người dùng thất bại!"
+        });
+    }
+};
+
+module.exports = {authLogin, refreshAccessToken, firstTimeChangePassword, authLogout, getProfile, getProfileUser};

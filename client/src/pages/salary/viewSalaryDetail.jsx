@@ -252,7 +252,7 @@ function ViewSalaryDetail() {
                                                 precision={2}
                                                 valueStyle={{ color: '#3f8600' }}
                                                 prefix={<DollarOutlined />}
-                                                formatter={(value) => formatVND(value)}
+                                                formatter={(value) => Math.ceil(value).toLocaleString() + ' ₫'}
                                             />
                                         </Card>
                                     </Col>

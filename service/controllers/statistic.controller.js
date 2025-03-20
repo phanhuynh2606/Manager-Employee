@@ -6,7 +6,6 @@ const mongoose = require("mongoose")
 module.exports.statisticEmployee = async (req, res) => {
     try {
         const { department, position } = req.body;
-        console.log("Department is", department)
 
         let find = {};
         if (department && department.length > 0) {
@@ -90,7 +89,7 @@ module.exports.statisticSalary = async (req, res) => {
                     {
                         $group: {
                             _id: null,
-                            totalAmount: { $sum: "$baseSalary" },
+                            totalAmount: { $sum: "$totalSalary" },
                             employees: { $push: "$$ROOT" }
                         }
                     }
@@ -124,7 +123,7 @@ module.exports.statisticSalary = async (req, res) => {
                     {
                         $group: {
                             _id: null,
-                            totalAmount: { $sum: "$baseSalary" },
+                            totalAmount: { $sum: "$totalSalary" },
                             employees: { $push: "$$ROOT" }
                         }
                     }

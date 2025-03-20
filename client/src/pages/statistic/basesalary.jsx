@@ -37,18 +37,18 @@ import Chart from "react-apexcharts"
 import instance from "../../configs/axiosCustomize"
 
 
-    
-const getFullYear = () =>{
+
+const getFullYear = () => {
     const year = new Date().getFullYear();
     const arr = [];
-    for (let i =2020; i <= year;i++) {
+    for (let i = 2020; i <= year; i++) {
         arr.push(i)
     }
     return arr;
 }
 export default function BaseSalaryStatisyic() {
-    const [year,setYear] = React.useState(getFullYear)
-    const [selectedYear,setSelectedYear] = React.useState(year.includes(new Date().getFullYear()) ? new Date().getFullYear() : year[0]);
+    const [year, setYear] = React.useState(getFullYear)
+    const [selectedYear, setSelectedYear] = React.useState(year.includes(new Date().getFullYear()) ? new Date().getFullYear() : year[0]);
     const [salary, setSalary] = React.useState([]);
     const [check, setCheck] = React.useState(true)
     const [employee, setEmployee] = React.useState([]);
@@ -115,6 +115,13 @@ export default function BaseSalaryStatisyic() {
             },
             yaxis: {
                 labels: {
+                    formatter: function (value) {
+                        return value.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                            maximumFractionDigits: 0
+                        });
+                    },
                     style: {
                         colors: "#616161",
                         fontSize: "12px",
@@ -142,15 +149,22 @@ export default function BaseSalaryStatisyic() {
             },
             tooltip: {
                 theme: "dark",
+                y: {
+                    formatter: function (value) {
+                        return value.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                            maximumFractionDigits: 0
+                        });
+                    }
+                }
             },
         },
     };
     
 
-   console.log(selectedYear)
-
     const getMonthSalary = async () => {
-          
+
         try {
             const respone = await instance.post("/statistic/salary", {
                 check: check,
@@ -164,8 +178,8 @@ export default function BaseSalaryStatisyic() {
     }
     React.useEffect(() => {
         getMonthSalary();
-    }, [check,selectedYear])
-    
+    }, [check, selectedYear])
+
     const exportExcel = () => {
         if (!selected) {
             alert("Chưa chọn tháng hoặc quý")
@@ -180,19 +194,31 @@ export default function BaseSalaryStatisyic() {
                 console.log("Employee is ", employee)
                 const employees = employee[i][selected]
                 console.log(employees)
-                const data = employees.map((item, index) => { 
+                const data = employees.map((item, index) => {
                     const currency = item.baseSalary;
-                    const currencyFormat = currency.toLocaleString("vi-VN",{style:"currency",currency : "VND"})
-
+                    const currencyFormat = currency.toLocaleString("vi-VN", { style: "currency", currency: "VND" })
+                    const bonuses = item.bonuses.map((bonus) => bonus.name + " : " + bonus.amount).join("\n")
+                    const deduction = item.deductions.map((deduc) => deduc.name + ":" + deduc.amount).join("\n");
+                    const allowances = item.allowances.map((allow) => allow.name + ":" + allow.amount).join("\n")
+                    const periodStart = new Date(item.periodStart).toLocaleString();
+                    const periodEnd = new Date(item.periodEnd).toLocaleString();
+                    const totalSalary = item.totalSalary.toLocaleString("vi-VN", { style: "currency", currency: "VND" })
+                    console.log("Deduction", deduction)
                     return (
-                    {
-                    "STT": index + 1,
-                    "Mã nhân viên": item._id,
-                    "Full Name": item.employeeData[0].fullName,
-                    "Phone number": item.employeeData[0].phoneNumber,
-                    "Position": item.employeeData[0].position,
-                    "Base salary":currencyFormat
-                })});
+                        {
+                            "STT": index + 1,
+                            "Họ và tên": item.employeeData[0].fullName,
+                            "Số điện thoại": item.employeeData[0].phoneNumber,
+                            "Chức vụ": item.employeeData[0].position,
+                            "Lương cơ bản": currencyFormat,
+                            "Thưởng": bonuses,
+                            "Phụ cấp": allowances,
+                            "Trừ": deduction,
+                            "Tổng": totalSalary,
+                            "Thời gian bắt đầu": periodStart,
+                            "Thời gian kết thúc": periodEnd
+                        })
+                });
                 const worksheet = XLSX.utils.json_to_sheet(data);
                 const workbook = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(workbook, worksheet, "Salary");

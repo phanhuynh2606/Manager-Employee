@@ -4,6 +4,7 @@ import {
   UserIcon,
   UserPlusIcon,
   ArrowRightOnRectangleIcon,
+  KeyIcon,
 } from "@heroicons/react/24/solid";
 import routes from "@/routes";
 
@@ -28,6 +29,11 @@ export function Auth() {
       name: "sign in",
       path: "/auth/sign-in",
       icon: ArrowRightOnRectangleIcon,
+    },
+    {
+      name: "first time password change",
+      path: "/auth/first-time-password-change",
+      icon: KeyIcon,
     },
   ];
 

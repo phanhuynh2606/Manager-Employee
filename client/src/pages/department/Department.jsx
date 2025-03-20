@@ -1,20 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { Table, Input, Button, Modal, Form, Space, Row, Col, Select, message, Avatar, Popconfirm } from "antd";
-import { assignManager, createDepartment, deleteDepartment, getDepartments, updateDepartment } from "@/apis/departments/departments";
-import { DeleteFilled, EditFilled, QuestionCircleOutlined } from "@ant-design/icons";
+import { assignEmployeeToDepartment, assignManager, createDepartment, deleteDepartment, getDepartments, getEmployeesOtherDepartments, updateDepartment } from "@/apis/departments/departments";
+import { DeleteFilled, EditFilled, QuestionCircleOutlined, UserAddOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
 const DepartmentManagement = () => {
   const [departments, setDepartments] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [form] = Form.useForm();
+  const [assignForm] = Form.useForm();
   const [editingDepartment, setEditingDepartment] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const [managerList, setManagerList] = useState([]);
   const [messageApi, contextHolder] = message.useMessage();
-
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState(null);
+  const [assignModalOpen, setAssignModalOpen] = useState(false);
+  const [employeeList, setEmployeeList] = useState([]);
+  const [loadingAssign, setLoadingAssign] = useState(true);
   useEffect(() => {
     fetchDepartments();
   }, []);
@@ -110,6 +114,35 @@ const DepartmentManagement = () => {
       messageApi.error("Xảy ra lỗi khi xóa phòng ban");
     }
   };
+  const handleAssignEmployee = async () => {
+    try {
+      const values = await assignForm.validateFields();
+      const res = await assignEmployeeToDepartment(selectedDepartmentId, values.employeeId);
+      if (res.success) {
+        messageApi.success("Gán nhân viên thành công");
+        setAssignModalOpen(false);
+        fetchDepartments();
+      } else {
+        messageApi.error("Gán nhân viên thất bại");
+      }
+    } catch (error) {
+      console.error("Failed to assign employee", error);
+      messageApi.error("Xảy ra lỗi khi gán nhân viên");
+    }
+  };
+
+  const handleOpenModalAssign = async (departmentId) => {
+    setSelectedDepartmentId(departmentId);
+    setAssignModalOpen(true);
+    const res = await getEmployeesOtherDepartments(departmentId);
+    console.log(res);
+    if (res.success) {
+      setEmployeeList(res.data);
+      setLoadingAssign(false);
+    } else {
+      messageApi.error("Lấy danh sách nhân viên thất bại");
+    }
+  }
 
   const filteredDepartments = departments?.filter(dept =>
     dept?.name?.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -171,6 +204,7 @@ const DepartmentManagement = () => {
                 >
                   <Button type="link" danger icon={<DeleteFilled />} />
                 </Popconfirm>
+                <Button type="link" icon={<UserAddOutlined />} onClick={() => handleOpenModalAssign(dept._id)} />
               </Space>
             )
           }
@@ -233,6 +267,32 @@ const DepartmentManagement = () => {
               </Form.Item>
             </Col>
           </Row>
+        </Form>
+      </Modal>
+       {/* Modal Gán Nhân Viên */}
+       <Modal
+        title="Gán nhân viên vào phòng ban"
+        open={assignModalOpen}
+        onCancel={() => setAssignModalOpen(false)}
+        onOk={handleAssignEmployee}
+        confirmLoading={loadingAssign}
+        okButtonProps={{ style: { backgroundColor: "#1890ff", borderColor: "#1890ff" } }}
+      >
+        <Form form={assignForm} layout="vertical">
+          <Form.Item name="employeeId" label="Chọn nhân viên" rules={[{ required: true, message: "Vui lòng chọn nhân viên" }]}> 
+            {/* Chỉ hiển thị nhân viên có trong phòng ban khác */}
+            {loadingData ? <Select loading /> : (
+              <Select placeholder="Chọn nhân viên" showSearch mode="multiple" loading={loadingAssign} allowClear
+              filterOption={(input, option) =>
+                option.children.toLowerCase().includes(input.toLowerCase())
+              }
+              >
+              {employeeList.map(emp => (
+                <Option key={emp._id} value={emp._id}>{emp.fullName}</Option>
+              ))}
+            </Select>
+            )}
+          </Form.Item>
         </Form>
       </Modal>
     </div>
