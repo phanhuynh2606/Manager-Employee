@@ -36,7 +36,7 @@ import BaseSalaryStatisyic from "./basesalary";
 export function Statistic() {  
     return (
         <div className="p-6 bg-gray-50 max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6 text-gray-800">Trang quản trị</h1>
+        <h1 className="text-2xl font-bold mb-6 text-gray-800">Trang quản trịr</h1>
         
         <div className="flex flex-col gap-6">
           <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
