@@ -29,13 +29,47 @@ export function FirstTimeChangePassword() {
             closeOnClick: true,
             pauseOnHover: false,
         });
-    };
-
+    }; 
+    const verifyPassword = () =>{ 
+        if (!oldPassword || !newPassword || !newConfirmPassword){
+            toast.error("Vui lòng nhập đầy đủ thông tin", {
+                autoClose: 2000,
+                closeOnClick: true,
+                pauseOnHover: false,
+            });
+            return;
+        }
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+        if (!passwordRegex.test(newPassword)) {
+            toast.error("Mật khẩu phải chứa ít nhất 1 kí tự viết hoa, 1 kí tự viết thường, 1 số, 1 kí tự đặc biệt và tối thiểu 8 kí tự", {
+                autoClose: 2000,
+                closeOnClick: true,
+                pauseOnHover: false,
+            });
+            return;
+        }
+        if (oldPassword === newPassword){
+            toast.error("Mật khẩu mới phải khác mật khẩu cũ", {
+                autoClose: 2000,
+                closeOnClick: true,
+                pauseOnHover: false,
+            });
+            return;
+        }
+        if (newPassword !== newConfirmPassword){
+            toast.error("Mật khẩu xác nhận không trùng khớp", {
+                autoClose: 2000,
+                closeOnClick: true,
+                pauseOnHover: false,
+            });
+            return;
+        } 
+        handleChangePassword();
+    }
     const handleChangePassword = async () => {
         setLoading(true);
-        try {
-            const result = await firstTimeChangePassword(email, oldPassword, newPassword, newConfirmPassword);
-
+        try { 
+            const result = await firstTimeChangePassword(email, oldPassword, newPassword, newConfirmPassword); 
             const errorResponse = result?.response?.data;
             if (errorResponse?.success === false || result?.success === false) {
                 handleError(errorResponse || result);
@@ -86,40 +120,40 @@ export function FirstTimeChangePassword() {
                             </Typography>
                             <Input
                                 type={showPassword ? 'text' : 'password'}
-                                size="lg"
+                                size="lg" 
                                 placeholder="********"
                                 className="!border-t-blue-gray-200 focus:!border-t-gray-900"
                                 labelProps={{
                                     className: "before:content-none after:content-none",
-                                }}
+                                }} 
                                 onChange={(e) => setOldPassword(e.target.value)}
                             />
 
                             <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
                                 Mật khẩu mới
                             </Typography>
-                            <Input
+                            <Input 
                                 type={showPassword ? 'text' : 'password'}
                                 size="lg"
                                 placeholder="********"
                                 className="!border-t-blue-gray-200 focus:!border-t-gray-900"
                                 labelProps={{
                                     className: "before:content-none after:content-none",
-                                }}
+                                }} 
                                 onChange={(e) => setNewPassword(e.target.value)}
                             />
 
                             <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
                                 Xác nhận mật khẩu mới
                             </Typography>
-                            <Input
+                            <Input 
                                 type={showPassword ? 'text' : 'password'}
                                 size="lg"
                                 placeholder="********"
                                 className="!border-t-blue-gray-200 focus:!border-t-gray-900"
                                 labelProps={{
                                     className: "before:content-none after:content-none",
-                                }}
+                                }} 
                                 onChange={(e) => setNewConfirmPassword(e.target.value)}
                             />
                         </div>
@@ -137,7 +171,7 @@ export function FirstTimeChangePassword() {
                             checked={showPassword}
                             onChange={() => setShowPassword(!showPassword)}
                         />
-                        <Button className="mt-6" fullWidth onClick={handleChangePassword}>
+                        <Button className="mt-6" fullWidth onClick={verifyPassword}>
                             Thay đổi mật khẩu
                         </Button>
                     </form>

@@ -14,7 +14,7 @@ import { GrUserAdmin } from "react-icons/gr";
 import { LuMapPinCheckInside } from "react-icons/lu";
 import { MdOutlineEditNotifications } from "react-icons/md";
 import { Flex, Spin } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
+import { LoadingOutlined, TeamOutlined } from "@ant-design/icons";
 
 const Profile = lazy(() => import("@/pages/dashboard/Profile"));
 const Tables = lazy(() => import("@/pages/dashboard/Tables"));
@@ -34,13 +34,14 @@ const AdminManagement = lazy(() =>
   import("./pages/administration/Administration"),
 );
 const AdminDetail = lazy(() => import("./pages/administration/AdminView"));
+const Positions = lazy(() => import("./pages/positions/position"));
 
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
 
 const LazyElement = (Component) => (
-  <Suspense fallback={<Flex align="center" gap="middle" style={{ height: "100vh",textAlign: "center", justifyContent: "center" }}>
+  <Suspense fallback={<Flex align="center" gap="middle" style={{ height: "100vh", textAlign: "center", justifyContent: "center" }}>
     <Spin indicator={<LoadingOutlined spin />} size="large" />
   </Flex>}>
     <Component />
@@ -92,6 +93,13 @@ export const routes = [
         path: "/employee",
         element: LazyElement(Employee),
         roles: ["ADMIN", "EMPLOYEE"],
+      },
+      {
+        icon: <TeamOutlined {...icon} />,
+        name: "Vị trí việc làm",
+        path: "/position",
+        element: LazyElement(Positions),
+        roles: ["ADMIN"],
       },
       {
         icon: <HomeModernIcon {...icon} />,

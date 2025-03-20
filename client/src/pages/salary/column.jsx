@@ -7,11 +7,11 @@ import { Link } from "react-router-dom";
 
 export const columns = (setEditingSalary, setIsModalOpenEdit, role) => [
     {
-        title: "Actions",
+        title: "Hành động",
         key: "action",
         dataIndex: "_id",
         fixed: "left",
-        width: 80,
+        width: 120,
         render: (id) => (
             <Dropdown
                 menu={{
@@ -21,7 +21,7 @@ export const columns = (setEditingSalary, setIsModalOpenEdit, role) => [
                             label: (
                                 <Link className="flex items-center gap-2 w-full" to={`/dashboard/salaries/${id}`}>
                                     < ReadOutlined />
-                                    <span className="font-semibold">View Details</span>
+                                    <span className="font-semibold">Xem chi tiết</span>
                                 </Link>
                             ),
                         },
@@ -43,7 +43,7 @@ export const columns = (setEditingSalary, setIsModalOpenEdit, role) => [
                                         className="font-semibold cursor-pointer"
 
                                     >
-                                        Edit
+                                        Cập nhật
                                     </span>
                                 </div>
                             ),
@@ -58,7 +58,7 @@ export const columns = (setEditingSalary, setIsModalOpenEdit, role) => [
         ),
     },
     {
-        title: "Employee",
+        title: "Nhân viên",
         dataIndex: "employeeId",
         key: "employeeId",
         render: (value) => (
@@ -76,26 +76,26 @@ export const columns = (setEditingSalary, setIsModalOpenEdit, role) => [
         ),
     },
     {
-        title: "Year",
+        title: "Năm",
         dataIndex: "year",
         key: "year",
         align: "center",
     },
     {
-        title: "Month",
+        title: "Tháng",
         dataIndex: "month",
         key: "month",
         align: "center",
     },
     {
-        title: "Base Salary",
+        title: "Lương cơ bản",
         dataIndex: "baseSalary",
         key: "baseSalary",
         align: "right",
         render: (value) => `${value.toLocaleString()}đ`,
     },
     {
-        title: "Allowances",
+        title: "Phụ cấp",
         dataIndex: "allowances",
         key: "allowances",
         render: (allowances) =>
@@ -113,7 +113,7 @@ export const columns = (setEditingSalary, setIsModalOpenEdit, role) => [
             ),
     },
     {
-        title: "Bonuses",
+        title: "Tiền thưởng",
         dataIndex: "bonuses",
         key: "bonuses",
         render: (bonuses) =>
@@ -131,7 +131,7 @@ export const columns = (setEditingSalary, setIsModalOpenEdit, role) => [
             ),
     },
     {
-        title: "Deductions",
+        title: "Khoản khấu trừ",
         dataIndex: "deductions",
         key: "deductions",
         render: (deductions) =>
@@ -149,16 +149,16 @@ export const columns = (setEditingSalary, setIsModalOpenEdit, role) => [
             ),
     },
     {
-        title: "Total Salary",
+        title: "Tổng lương nhận",
         dataIndex: "totalSalary",
         key: "totalSalary",
         align: "right",
         render: (value) => (
-            <span className="font-semibold text-lg text-black">{value.toLocaleString()}</span>
+            <span className="font-semibold text-lg text-black">{Math.ceil(value).toLocaleString()}đ</span>
         ),
     },
     {
-        title: "Note",
+        title: "Ghi chú",
         dataIndex: "note",
         key: "note",
         render: (note) =>

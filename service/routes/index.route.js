@@ -9,6 +9,7 @@ const salaryRoute = require('./salary.route');
 const notificationRoute = require('./notification.route');
 const backupRoute = require('./backup.route');
 const activeRoute = require("./activelog.route")
+const positionRoute = require('./position.route');
 const initRoutes = (app) => {
 
   app.get('/', (req, res) => {
@@ -25,6 +26,7 @@ const initRoutes = (app) => {
   app.use('/salaries', salaryRoute)
   app.use('/notifications', notificationRoute);
   app.use('/', backupRoute);
+  app.use('/positions', positionRoute)
 }
 
 module.exports = initRoutes;
