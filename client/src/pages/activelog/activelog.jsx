@@ -285,7 +285,7 @@ export function ActiveLogTable() {
               </Typography>
             </div>
 
-            {selectedLog.oldValues?.userId?.role !== "ADMIN" && (
+            {selectedLog.newValues?.userId?.role !== "ADMIN" && (
                 <>
                 <div className="space-y-1">
               <Typography variant="small" className="font-semibold text-blue-gray-700">
@@ -315,7 +315,7 @@ export function ActiveLogTable() {
                 Vị trí
               </Typography>
               <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
-                {selectedLog.newValues?.position || "N/A"}
+                {selectedLog.newValues?.position?.name || "N/A"}
               </Typography>
             </div>
                 </>
@@ -441,7 +441,7 @@ export function ActiveLogTable() {
                       Vị trí
                     </Typography>
                     <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
-                      {selectedLog.oldValues?.position || "N/A"}
+                      {selectedLog.oldValues?.position?.name || "N/A"}
                     </Typography>
                   </div>
                 </>

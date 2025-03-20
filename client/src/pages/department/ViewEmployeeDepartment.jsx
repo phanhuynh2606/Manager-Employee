@@ -33,6 +33,11 @@ const EmployeeListModal = ({ visible, onCancel, employees, loading }) => {
       key: "userId.email"
     },
     {
+      title: "Vị trí",
+      dataIndex: ["position", "name"],
+      key: "position.name",
+    },
+    {
       title: "Giới Tính",
       dataIndex: "gender",
       key: "gender",

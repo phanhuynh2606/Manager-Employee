@@ -2,6 +2,8 @@ const Log = require("../models/log");
 const Department = require("../models/department");
 const User = require("../models/user");
 const Employee = require("../models/employee");
+const Position = require("../models/position");
+const { default: mongoose } = require("mongoose");
 module.exports.getAllLog =async (req,res)=> {
     const role = req.user.role
     const {sort,page,limitItem,startDate,endDate,entityType } = req.body;
@@ -30,7 +32,7 @@ module.exports.getAllLog =async (req,res)=> {
             path:"employeeId",
             model:"employee"
         },
-    });
+    })
     
     const length = allLog.length;
     const arr =[];
@@ -40,6 +42,13 @@ module.exports.getAllLog =async (req,res)=> {
             obj.newValues.departmentId = await Department.findOne({_id:  obj.newValues.departmentId})
             obj.newValues.userId = await User.findById(obj.newValues.userId).select("email role username");
             obj.newValues.managerId = await Employee.findById(obj.newValues.managerId).select("fullName");
+            
+            if (
+                obj.newValues.position &&
+                mongoose.Types.ObjectId.isValid(obj.newValues.position)
+              ) {
+                obj.newValues.position = await Position.findById(obj.newValues.position).select("name");
+              } 
         }else{
             obj.newValues=null
         }
@@ -47,6 +56,12 @@ module.exports.getAllLog =async (req,res)=> {
             obj.oldValues.departmentId = await Department.findOne({_id:  obj.oldValues.departmentId});
             obj.oldValues.userId = await User.findById(obj.oldValues.userId).select("email role username");
             obj.oldValues.managerId = await Employee.findById(obj.oldValues.managerId).select("fullName");
+            if (
+                obj.oldValues.position &&
+                mongoose.Types.ObjectId.isValid(obj.oldValues.position)
+              ) {
+                obj.oldValues.position = await Position.findById(obj.oldValues.position).select("name");
+              }
         }else{
             obj.oldValues = null
         }
