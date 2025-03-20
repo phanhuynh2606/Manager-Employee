@@ -32,6 +32,7 @@ import { getProfile } from "@/apis/auth/auth.js";
 import { useNavigate } from 'react-router-dom';
 import NotificaionNavbar from "./NotificaionNavbar";
 import useIsAdmin from "@/utils/useIsAdmin";
+import { downloadBackup, restoreBackup } from "@/apis/backup/backup";
 
 export function DashboardNavbar() {
     const [controller, dispatch] = useMaterialTailwindController();
@@ -41,6 +42,7 @@ export function DashboardNavbar() {
     const navigate = useNavigate();
     const isAdmin = useIsAdmin();
     const [userName, setUserName] = useState("");
+    const [file, setFile] = useState(null);
 
     useEffect(() => {
         const GET_PROFILE = async () => {
@@ -64,13 +66,36 @@ export function DashboardNavbar() {
         GET_PROFILE();
     }, [navigate]);
 
-    const handleBackups = () => {
-        console.log("Backups");
-    }
+const handleBackups = async () => {
+    console.log("Bắt đầu lấy dữ liệu backup...");
+    
+    const result = await downloadBackup(); // Đổi từ downloadLatestBackup thành fetchLatestBackup
 
-    const handleRestores = () => {
-        console.log("Restores");
+    if (result.success) {
+        console.log("Tên file backup:", result.filename);
+        console.log("Dữ liệu backup:", result.data);
+        alert(`Lấy dữ liệu backup thành công! File: ${result.filename}`);
+    } else {
+        alert(result.message);
     }
+};
+
+
+    const handleFileChange = (event) => {
+        if (event.target.files && event.target.files.length > 0) {
+            setFile(event.target.files[0]);
+        }
+    };
+
+    const handleRestores = async () => {
+        if (!file) {
+            alert("Vui lòng chọn file backup để phục hồi!");
+            return;
+        }
+        console.log("Bắt đầu phục hồi dữ liệu...");
+        const result = await restoreBackup(file);
+        alert(result.success ? "Phục hồi dữ liệu thành công!" : result.message);
+    };
 
     return (
         <Navbar
@@ -88,13 +113,13 @@ export function DashboardNavbar() {
                         className={`bg-transparent p-0 transition-all ${fixedNavbar ? "mt-1" : ""
                             }`}
                     >
-                        <Link to={`/${layout}`}>
+                        <Link to={`/${layout}/home`} className="flex items-center gap-2">
                             <Typography
                                 variant="small"
                                 color="blue-gray"
                                 className="font-normal opacity-50 transition-all hover:text-blue-500 hover:opacity-100"
                             >
-                                {layout}
+                                {layout} 
                             </Typography>
                         </Link>
                         <Typography
@@ -105,16 +130,31 @@ export function DashboardNavbar() {
                             {page}
                         </Typography>
                     </Breadcrumbs>
-                    <Typography variant="h6" color="blue-gray">
-                        {page} 
-                    </Typography>
                 </div>
                 <div className="flex items-center">
                     {
                         isAdmin && (
-                        <div className="mr-auto md:mr-4 md:w-56 flex gap-2">
-                            <Button color="blue" className="flex items-center gap-2" onClick={handleBackups}>Sao lưu dữ liệu</Button>
-                            <Button color="green" className="flex items-center gap-2" onClick={handleRestores}>Phục hồi dữ liệu</Button>
+                            <div className="mr-auto md:mr-4 md:w-56 flex gap-2">
+                            <Button color="blue" className="flex items-center gap-2" onClick={handleBackups}>
+                                Sao lưu dữ liệu
+                            </Button>
+                
+                            <input
+                                type="file"
+                                accept=".json"
+                                onChange={handleFileChange}
+                                className="hidden"
+                                id="backupFileInput"
+                            />
+                            <label htmlFor="backupFileInput" className="flex items-center gap-2">
+                                <Button color="green" as="span">
+                                    Chọn file
+                                </Button>
+                            </label>
+                
+                            <Button color="green" className="flex items-center gap-2" onClick={handleRestores} disabled={!file}>
+                                Phục hồi dữ liệu
+                            </Button>
                         </div>
                         )
                     }

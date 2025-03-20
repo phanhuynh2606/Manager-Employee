@@ -67,9 +67,9 @@ export function Sidenav({ brandImg, brandName, routes }) {
       <div
         className={`relative`}
       >
-        <Link to="/" className="py-6 px-8 text-center">
+        <Link to="./home" className="py-6 px-8 pl-4 text-center border-b border-blue-gray-100 block">
           <Typography
-            variant="h6"
+            variant="h4"
             color={sidenavType === "dark" ? "white" : "blue-gray"}
           >
             {brandName}
@@ -107,7 +107,7 @@ export function Sidenav({ brandImg, brandName, routes }) {
                 <NavLink
                   to={`/${layout}${path}`}
                   onClick={e => {
-                    if (name === "Logout") {
+                    if (name === "Đăng xuất") {
                       e.preventDefault();
                       handleLogout();
                     }
@@ -152,8 +152,8 @@ export function Sidenav({ brandImg, brandName, routes }) {
 }
 
 Sidenav.defaultProps = {
-  brandImg: "/img/logo-ct.png",
-  brandName: "Employee Manager",
+  brandImg: "/img/logo-cty.jpg",
+  brandName: "Quản lý nhân viên",
 };
 
 Sidenav.propTypes = {

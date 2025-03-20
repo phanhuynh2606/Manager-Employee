@@ -53,3 +53,12 @@ export const getProfile = async () => {
         return e;
     }
 };
+
+export const getProfileUser = async () => {
+    try {
+        const response = await axios.get(API_BE.GET_PROFILE_USER);
+        return response;
+    } catch (e) {
+        return e;
+    }
+};
