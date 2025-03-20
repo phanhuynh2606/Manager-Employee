@@ -13,6 +13,7 @@ function Positions() {
     useEffect(() => {
         fetchPositions();
     }, [name])
+ 
     const fetchPositions = async () => {
         try {
             const response = await getPositions({ name });

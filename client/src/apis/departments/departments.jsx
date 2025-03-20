@@ -72,3 +72,12 @@ export const assignEmployeeToDepartment = async (departmentId, employeeIds) => {
     return error;
   }
 }
+
+export const getDepartmentEmployees = async (departmentId) => {
+  try {
+    const response = await axios.get(`/departments/${departmentId}/employees`);
+    return response;
+  } catch (error) {
+    return error;
+  }
+};

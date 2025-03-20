@@ -1,6 +1,7 @@
 const { Server } = require('socket.io');
 
 let io;
+const connectedUsers = {};
 
 const initSocket = (server) => {
   io = new Server(server, {
@@ -18,9 +19,10 @@ const initSocket = (server) => {
       socket.join(employeeId);
       socket.emit('joinedRoom', `Joined room: ${employeeId}`);
     });
-
+ 
     socket.on('disconnect', () => {
       // console.log(`❌ User disconnected: ${socket.id}`);
+       
     });
   });
 

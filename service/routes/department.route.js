@@ -13,7 +13,7 @@ router.post('/', ctrls.createDepartment);
 router.post("/:departmentId/assign-employee",ctrls.asignEmployeesToDepartment);
 router.put('/:id', ctrls.updateDepartment);
 router.delete('/:id', ctrls.deleteDepartment);
-router.get("/departments/:id/employees",ctrls.getEmployeesByDepartment);
+router.get("/:departmentId/employees",ctrls.getEmployeesByDepartment);
 router.delete("/departments/:id/employees/:employeeId",ctrls.removeEmployeeFromDepartment);
 
 module.exports = router;

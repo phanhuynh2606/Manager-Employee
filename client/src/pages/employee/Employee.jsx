@@ -26,6 +26,9 @@ import { getDepartments } from "@/apis/departments/departments";
 import { getEmployees, getEmployeePosition } from "@/apis/employees/employee";
 import { useForm } from "antd/es/form/Form";
 import { useSelector } from 'react-redux';
+import useLastPageSession from '@/hooks/useSession';
+import { getPositions } from "@/apis/position/position";
+
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
@@ -53,6 +56,18 @@ const EmployeeManagement = () => {
     salaryRange: [0, 50000000],
     hireDate: [],
   });
+  const {
+    sessionFilters,
+    updateFilter,
+    clearFilters,
+    isLoading
+  } = useLastPageSession(filters); 
+  useEffect(() => {
+    if (!isLoading) {
+      setFilters(sessionFilters);
+      fetchEmployees(sessionFilters);
+    }
+  }, [isLoading]);
   useEffect(() => {
     if (user?.position === "STAFF" && user?.role === "EMPLOYEE") {
       navigate(`/dashboard/employee/${user.employeeId}`);
@@ -63,7 +78,9 @@ const EmployeeManagement = () => {
   }, [user, navigate]);
 
   useEffect(() => {
-    fetchEmployees(filters);
+    if (!isLoading) {
+      fetchEmployees(filters);
+    }
   }, [filters, pagination.current, pagination.pageSize]);
 
   const fetchEmployees = async (queryFilters = {}) => {
@@ -74,7 +91,7 @@ const EmployeeManagement = () => {
       if (queryFilters.department) params.append("department", queryFilters.department);
       if (queryFilters.position) params.append("position", queryFilters.position);
       if (queryFilters.gender) params.append("gender", queryFilters.gender);
-
+      
       if (queryFilters.salaryRange && queryFilters.salaryRange[0] > 0) {
         params.append("salaryMin", queryFilters.salaryRange[0]);
       }
@@ -91,8 +108,8 @@ const EmployeeManagement = () => {
       params.append('page', pagination.current);
       params.append('limit', pagination.pageSize);
       const response = await getEmployees(params.toString());
-      if (response.success) {
-        setEmployees(response.data);
+      if (response.success) {  
+        setEmployees(response.data) 
         setPagination({
           ...pagination,
           current: response.pagination.page,
@@ -123,7 +140,7 @@ const EmployeeManagement = () => {
 
   const fetchPositions = async () => {
     try {
-      const response = await getEmployeePosition();
+      const response = await getPositions({});
       if (response.success) {
         setPositions(response.data);
       }
@@ -135,7 +152,7 @@ const EmployeeManagement = () => {
     try {
       setLoading(true);
       const dataForm = await form.validateFields();
-      const response = await axios.post(`/employee/create`, dataForm); 
+      const response = await axios.post(`/employee/create`, dataForm);
       if (response.success) {
         setAddModalVisible(false);
         form.resetFields();
@@ -148,7 +165,7 @@ const EmployeeManagement = () => {
       }
       setLoading(false);
     } catch (error) {
-      setLoading(false); 
+      setLoading(false);
       if (error.response && error.response.data) {
         messageApi.error(error.response.data.message || "Lỗi thêm nhân viên");
       } else {
@@ -158,6 +175,7 @@ const EmployeeManagement = () => {
   }
 
   const handleFilterChange = (key, value) => {
+    updateFilter(key, value);
     setFilters(prev => ({
       ...prev,
       [key]: value
@@ -169,6 +187,7 @@ const EmployeeManagement = () => {
   };
 
   const handleClearFilters = () => {
+    clearFilters();
     setFilters({
       name: "",
       department: "",
@@ -223,6 +242,7 @@ const EmployeeManagement = () => {
       title: "Vị Trí",
       dataIndex: "position",
       key: "position",
+      render: (pos) => pos?.name || "N/A",
     },
     {
       title: "Giới Tính",
@@ -296,7 +316,7 @@ const EmployeeManagement = () => {
             allowClear
           >
             {positions.map(pos => (
-              <Option key={pos} value={pos}>{pos}</Option>
+              <Option key={pos._id} value={pos._id}>{pos.name}</Option>
             ))}
           </Select>
 
@@ -516,9 +536,15 @@ const EmployeeManagement = () => {
               <Form.Item
                 name="position"
                 label="Vị trí"
-                rules={[{ required: true, message: "Vui lòng nhập vị trí" }]}
+                rules={[{ required: true, message: "Vui lòng chọn vị trí" }]}
               >
-                <Input placeholder="Nhập vị trí"></Input>
+                <Select placeholder="Chọn vị trí">
+                  {positions.map((pos) => (
+                    <Option key={pos._id} value={pos._id}>
+                      {pos.name}
+                    </Option>
+                  ))}
+                </Select>
               </Form.Item>
             </Col>
           </Row>

@@ -71,7 +71,7 @@ const createEmployee = async (req, res) => {
     await logActivity(
       req,
       "Create new employee",
-      "employees",
+      "EMPLOYEE",
       newEmployee._id,
       null,
       newEmployee
@@ -127,15 +127,26 @@ const updateEmployee = async (req, res) => {
       employeeId,
       { $set: employeeData },
       { new: true }
-    );
-    await logActivity(
-      req,
-      "Update employee",
-      "employees",
-      employee._id,
-      employee,
-      updatedEmployee
-    );
+    ).populate("userId");
+    if (updatedEmployee.userId?.role === "ADMIN") {
+      await logActivity(
+        req,
+        "Update account admin",
+        "ADMIN",
+        employee._id,
+        employee,
+        updatedEmployee
+      );
+    }else{
+      await logActivity(
+        req,
+        "Update employee",
+        "EMPLOYEE",
+        employee._id,
+        employee,
+        updatedEmployee
+      );
+    }
     return res.status(200).json({
       success: true,
       message: "Cập nhật thông tin nhân viên thành công",
@@ -150,7 +161,8 @@ const getEmployee = async (req, res) => {
   try {
     const employees = await Employee.find()
       .populate("departmentId")
-      .populate("userId");
+      .populate("userId")
+      .populate("departmentId");
     if (!employees)
       return res
         .status(404)
@@ -197,10 +209,10 @@ const filterEmployee = async (req, res) => {
     }
     if (department && userRequest.role === "ADMIN") {
       filter.departmentId = department;
-    }
+    } 
     if (position) {
-      filter.position = { $regex: position, $options: "i" };
-    }
+      filter.position = position;
+    }  
     if (gender) {
       filter.gender = gender;
     }
@@ -220,10 +232,10 @@ const filterEmployee = async (req, res) => {
 
     const employees = await Employee.find(filter)
       .populate("departmentId", "name")
+      .populate("position", "name")
       .skip(skip)
       .limit(parseInt(limit))
-      .sort({ fullName: 1 });
-
+      .sort({ fullName: 1 });  
     res.json({
       success: true,
       data: employees,
@@ -248,7 +260,8 @@ const getEmployeeDetail = async (req, res) => {
     const employeeId = req.params.id;
     const employee = await Employee.findById(employeeId)
       .populate("departmentId")
-      .populate("userId");
+      .populate("userId")
+      .populate("position");
     if (!employee)
       return res
         .status(404)
@@ -292,7 +305,7 @@ const removeEmployee = async (req, res) => {
     await logActivity(
       req,
       `Delete employee ${employee.fullName}`,
-      "employees",
+      "EMPLOYEE",
       employee._id,
       employee,
       null
@@ -329,7 +342,7 @@ const resetPassword = async (req, res) => {
     await logActivity(
       req,
       `Reset password employee ${employee.fullName}`,
-      "employees",
+      "EMPLOYEE",
       employee._id,
       employee,
       employee

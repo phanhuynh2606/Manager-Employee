@@ -35,7 +35,8 @@ const employeeSchema = new Schema({
       ref: 'department',
     },
     position: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: 'position',
     },
     baseSalary: {
       type: Number,
@@ -49,7 +50,6 @@ const employeeSchema = new Schema({
     },
     avatarUrl: {
       type: String,
-      default: '/assets/images/avatar-default.png'
     },
     isActive: {
       type: Boolean,
