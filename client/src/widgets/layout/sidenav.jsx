@@ -107,7 +107,7 @@ export function Sidenav({ brandImg, brandName, routes }) {
                 <NavLink
                   to={`/${layout}${path}`}
                   onClick={e => {
-                    if (name === "Logout") {
+                    if (name === "Đăng xuất") {
                       e.preventDefault();
                       handleLogout();
                     }

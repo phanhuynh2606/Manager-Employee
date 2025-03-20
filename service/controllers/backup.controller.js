@@ -20,6 +20,13 @@ const backupDatabase = async (req, res) => {
         const collections = await mongoose.connection.db.collections();
         const backupData = {};
 
+        await Backup.create({
+            filename,
+            filePath,
+            description: "Sao lưu thành công",
+            createdBy: null,
+        });
+
         for (const collection of collections) {
             const data = await collection.find({}).toArray();
             backupData[collection.collectionName] = data;
@@ -34,13 +41,6 @@ const backupDatabase = async (req, res) => {
             console.log("Lỗi khi ghi file sao lưu:", err);
             return;
         }
-
-        await Backup.create({
-            filename,
-            filePath,
-            description: "Sao lưu thành công",
-            createdBy: null,
-        });
 
         console.log(`Sao lưu thành công: ${filename}`);
 
