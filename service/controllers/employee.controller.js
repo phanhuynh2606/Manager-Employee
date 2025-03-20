@@ -52,7 +52,7 @@ const createEmployee = async (req, res) => {
         await User.findByIdAndUpdate(newUser._id, { employeeId: newEmployee._id });
         const emailContent = `Hi ${newEmployee.fullName}, Tài khoản của bạn vừa được đăng ký thành công ! Vui lòng sử dụng thông tin bên dưới để truy cập vào Hệ thống\nTài khoản đăng nhập: ${newUser.email}\nMật khẩu đăng nhập: ${passwordRandom}\nVui lòng đổi mật khẩu sau khi đăng nhập lần đầu !`;
         await sendEmail(newUser.email, 'Cấp Tài Khoản Đăng Nhập Hệ Thống', emailContent);
-        await logActivity(req, "Create new employee", 'EMPLOYEE', newEmployee._id, null, newEmployee);
+        await logActivity(req, "Create new employee", 'employees', newEmployee._id, null, newEmployee);
         return res.status(201).json({
             success: true,
             message: 'Đăng ký tài khoản nhân viên thành công, thông tin truy cập đã được gửi đến email của nhân viên !',
@@ -104,7 +104,7 @@ const updateEmployee = async (req, res) => {
             { $set: employeeData },
             { new: true }
         );
-        await logActivity(req, "Update employee", 'EMPLOYEE', employee._id, employee, updatedEmployee);
+        await logActivity(req, "Update employee", 'employees', employee._id, employee, updatedEmployee);
         return res.status(200).json({
             success: true,
             message: 'Cập nhật thông tin nhân viên thành công',

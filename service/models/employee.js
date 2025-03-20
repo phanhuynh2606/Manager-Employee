@@ -33,14 +33,15 @@ const employeeSchema = new Schema({
     departmentId: {
       type: Schema.Types.ObjectId,
       ref: 'department',
+      required: true
     },
     position: {
       type: String,
+      required: true
     },
     baseSalary: {
       type: Number,
       required: true,
-      default: 1000,
       min: 0
     },
     hireDate: {

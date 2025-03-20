@@ -81,7 +81,7 @@ const NotificaionNavbar = () => {
     }
 
     socket.on("connect", () => {
-      // console.log("Socket connected in NotificationDropdown, socket.id:", socket.id);
+      console.log("Socket connected in NotificationDropdown, socket.id:", socket.id);
       socket.emit("joinRoom", employeeId);
       if (departmentId) {
         socket.emit("joinRoom", departmentId);
@@ -89,15 +89,15 @@ const NotificaionNavbar = () => {
     });
 
     socket.on("connect_error", (error) => {
-      // console.error("Socket connection error:", error.message);
+      console.error("Socket connection error:", error.message);
     });
 
     socket.on("joinedRoom", (message) => {
-      // console.log("NotificationDropdown joined room:", message);
+      console.log("NotificationDropdown joined room:", message);
     });
 
     socket.on("newNotification", (newNotification) => {
-      // console.log("New notification received:", newNotification);
+      console.log("New notification received:", newNotification);
       if (notificationSound.current) {
         notificationSound.current.play().catch((error) => console.warn("Audio play failed:", error));
       }
@@ -107,7 +107,7 @@ const NotificaionNavbar = () => {
     });
 
     return () => {
-      // console.log("Cleaning up NotificationDropdown socket listeners");
+      console.log("Cleaning up NotificationDropdown socket listeners");
       socket.off("connect");
       socket.off("connect_error");
       socket.off("joinedRoom");

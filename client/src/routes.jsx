@@ -10,9 +10,6 @@ import {
   BanknotesIcon,
   PowerIcon
 } from "@heroicons/react/24/solid";
-import { GrUserAdmin } from "react-icons/gr";
-import { LuMapPinCheckInside } from "react-icons/lu";
-import { MdOutlineEditNotifications } from "react-icons/md"
 import { Home, Profile, Tables } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
 import Department from "./pages/department/Department";
@@ -24,8 +21,6 @@ import Salary from "./pages/salary/salary";
 import AttendanceManagement from "./pages/attendance/attendance";
 import ViewSalaryDetail from "./pages/salary/viewSalaryDetail";
 import Notifications from "./pages/notification/Notifications";
-import AdminManagement from "./pages/administration/Administration";
-import AdminDetail from "./pages/administration/AdminView";
 
 
 const icon = {
@@ -58,7 +53,7 @@ export const routes = [
         roles: ["EMPLOYEE"],
       },
       {
-        icon: <MdOutlineEditNotifications {...icon} />,
+        icon: <InformationCircleIcon {...icon} />,
         name: "notifications",
         path: "/notifications",
         element: <Notifications />,
@@ -87,18 +82,6 @@ export const routes = [
         roles: ["ADMIN", "EMPLOYEE"],
       },
       {
-        icon: <GrUserAdmin {...icon} />,
-        name: "Administration",
-        path: '/admin',
-        element: <AdminManagement />,
-        roles: ["ADMIN"],
-      },
-      {
-        path: '/admin/:adminId',
-        element: <AdminDetail />,
-        roles: ["ADMIN"],
-      },
-      {
         path: '/employee/:employeeId',
         element: <ViewEmployee />,
         roles: ["EMPLOYEE", "ADMIN"],
@@ -116,7 +99,7 @@ export const routes = [
         roles: ["EMPLOYEE", "ADMIN"],
       },
       {
-        icon: <LuMapPinCheckInside {...icon} />,
+        icon: <UserCircleIcon {...icon} />,
         name: "Attendance",
         path: '/attendance',
         element: <AttendanceManagement />,
