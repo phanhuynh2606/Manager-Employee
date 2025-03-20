@@ -45,7 +45,7 @@ export function Statistic() {
           </div>
           
           <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-            <h2 className="text-lg font-semibold mb-4 text-gray-700 border-b pb-2">Thông tin lương cơ bản</h2>
+            <h2 className="text-lg font-semibold mb-4 text-gray-700 border-b pb-2">Thông tin lương cơ bản $</h2>
             <BaseSalaryStatisyic />
           </div>
         </div>
