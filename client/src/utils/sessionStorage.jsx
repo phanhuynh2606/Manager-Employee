@@ -1,21 +1,12 @@
-import { io } from 'socket.io-client';
-import dayjs from 'dayjs'; 
+import dayjs from 'dayjs';
+
 const LAST_SESSION_KEY = 'userSession';
- 
-
 let currentSession = null;
-
-const socket = io('http://localhost:4000', {
-  transports: ['websocket'],
-  withCredentials: true,
-  autoConnect: false,
-});
  
 const saveSessionToStorage = () => {
   if (currentSession) {
     try {
-      localStorage.setItem(LAST_SESSION_KEY, JSON.stringify(currentSession));
-      console.log('Session saved to localStorage:', currentSession);
+      localStorage.setItem(LAST_SESSION_KEY, JSON.stringify(currentSession)); 
       return true;
     } catch (error) {
       console.error('Error saving session:', error);
@@ -25,17 +16,8 @@ const saveSessionToStorage = () => {
   return false;
 };
  
-export const connectSocket = (userId) => {
-  if (!socket.connected) {
-    socket.connect();
-    socket.emit('registerUser', userId);
-  }
-  return socket;
-};
- 
 export const updateCurrentSession = (userId, pagePath, filters) => {
-  if (!userId || !pagePath) {
-    console.error('Invalid parameters:', { userId, pagePath });
+  if (!userId || !pagePath) { 
     return false;
   }
   
@@ -100,25 +82,21 @@ export const getLastSession = (pagePath) => {
     console.error('Error parsing session data:', error);
     return null;
   }
-}; 
+};
+ 
 export const clearLastSession = () => {
   localStorage.removeItem(LAST_SESSION_KEY);
   currentSession = null;
 };
  
 if (typeof window !== 'undefined') { 
-  window.addEventListener('beforeunload', () => {
-    console.log('Window beforeunload triggered');
+  window.addEventListener('beforeunload', () => { 
     saveSessionToStorage();
   });
    
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') {
-      console.log('Page visibility changed to hidden');
+    if (document.visibilityState === 'hidden') { 
       saveSessionToStorage();
     }
   });
-   
 }
-
-export default socket;
