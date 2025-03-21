@@ -2,6 +2,7 @@ const Salary = require("../models/salary");
 const Employee = require("../models/employee");
 const User = require("../models/user");
 const moment = require('moment-timezone');
+const Position = require("../models/position");
 
 
 //thêm bảng lương
@@ -106,6 +107,8 @@ const getSalary = async (req, res) => {
             filter.year = year;
         }
 
+        const positions = await Position.find();
+
         if (req.user.role === 'ADMIN') {
             salaries = await Salary.find(filter).populate('employeeId');
             if (search) {
@@ -125,7 +128,19 @@ const getSalary = async (req, res) => {
             }
         }
 
-        return res.status(200).json({ success: true, data: salaries });
+        const salaryReal = salaries.map(salary => {
+            const positionName = positions.find(pos => pos._id.toString() === salary.employeeId.position.toString());
+            return {
+                ...salary.toObject(),
+                employeeId: {
+                    ...salary.employeeId.toObject(),
+                    position: positionName ? positionName.name : null
+                }
+            };
+        });
+
+
+        return res.status(200).json({ success: true, data: salaryReal });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
@@ -134,12 +149,24 @@ const getSalary = async (req, res) => {
 //lấy chi tiết bảng lương
 const getSalaryById = async (req, res) => {
     try {
-        const salaries = await Salary.findById(req.params.id).populate('employeeId');
+        const positions = await Position.find();
+        const salary = await Salary.findById(req.params.id).populate('employeeId');
 
-        if (!salaries) {
+        if (!salary) {
             return res.status(404).json({ success: false, message: 'Không tìm thấy bảng lương' });
         }
-        return res.status(200).json({ success: true, data: salaries });
+
+        const positionName = positions.find(pos => pos._id.toString() === salary.employeeId.position.toString());
+
+        const salaryReal = {
+            ...salary.toObject(),
+            employeeId: {
+                ...salary.employeeId.toObject(),
+                position: positionName ? positionName.name : null
+            }
+        };
+
+        return res.status(200).json({ success: true, data: salaryReal });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
