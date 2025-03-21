@@ -6,7 +6,7 @@ const connectedUsers = {};
 const initSocket = (server) => {
   io = new Server(server, {
     cors: {
-      origin: 'https://employe-manager-sdn302.netlify.app/',
+      origin: 'https://codemy.id.vn/',
       methods: ['GET', 'POST']
     }
   });

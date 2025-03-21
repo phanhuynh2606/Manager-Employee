@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
 
-const socket = io('https://manager-employee-production.up.railway.app/', {
+const socket = io('https://api.codemy.id.vn/', {
   transports: ['websocket'],
   withCredentials: true,
   autoConnect: false,

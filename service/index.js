@@ -12,7 +12,7 @@ const { initSocket } = require('./config/socket');
 const server = http.createServer(app);
 app.use(
   cors({
-    origin: "https://employe-manager-sdn302.netlify.app",
+    origin: "*",
     credentials: true,
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization", "Content-Disposition"],
@@ -30,5 +30,5 @@ connectDB();
 initRoutes(app);
 
 server.listen(port, () => {
-  console.log(`Server is running on https://employe-manager-sdn302.netlify.app${port}`);
+  console.log(`Server is running on https://api.codemy.id.vn/${port}`);
 });
