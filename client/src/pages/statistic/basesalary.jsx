@@ -203,7 +203,6 @@ export default function BaseSalaryStatisyic() {
                     const periodStart = new Date(item.periodStart).toLocaleString();
                     const periodEnd = new Date(item.periodEnd).toLocaleString();
                     const totalSalary = item.totalSalary.toLocaleString("vi-VN", { style: "currency", currency: "VND" })
-                    console.log("Deduction", deduction)
                     return (
                         {
                             "STT": index + 1,
