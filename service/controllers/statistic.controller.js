@@ -72,7 +72,6 @@ module.exports.statisticSalary = async (req, res) => {
         if(req.body.year) 
             find.year = req.body.year
         if (check) {
-            console.log(123)
             let arr = [];
             const allemployee = []
             for (let i = 1; i <= 12; i++) {

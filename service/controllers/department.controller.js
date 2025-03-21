@@ -202,7 +202,6 @@ const getEmployeesByDepartment = async (req, res) => {
   try {
     const employees = await Employee.find({ departmentId: req.params.departmentId }).populate("userId", "email role").populate("position", "name");
     const filteredEmployees = employees?.filter(emp => emp.userId.role === 'EMPLOYEE');
-    console.log(employees);
     return res.status(200).json({
       success: true,
       data: filteredEmployees,

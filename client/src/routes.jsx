@@ -18,7 +18,6 @@ import { Flex, Spin } from "antd";
 import { LoadingOutlined, TeamOutlined } from "@ant-design/icons";
 
 const Profile = lazy(() => import("@/pages/dashboard/profile"));
-const Tables = lazy(() => import("@/pages/dashboard/tables"));
 const SignIn = lazy(() => import("@/pages/auth/sign-in"));
 const Department = lazy(() => import("./pages/department/Department"));
 const Statistic = lazy(() => import("./pages/statistic/statistic"));
@@ -69,13 +68,6 @@ export const routes = [
         path: "/profile",
         element: LazyElement(Profile),
         roles: ["EMPLOYEE", "ADMIN"],
-      },
-      {
-        icon: <TableCellsIcon {...icon} />,
-        name: "tables",
-        path: "/tables",
-        element: LazyElement(Tables),
-        roles: ["EMPLOYEE"],
       },
       {
         icon: <MdOutlineEditNotifications {...icon} />,

@@ -2,9 +2,7 @@ const { getIO } = require('../config/socket');
 
 const sendNotification = async(notification) => {
   const io = getIO();
-  console.log('Sending notification:', notification);
   if (notification.type === 'SYSTEM') {
-    console.log('Sending to all');
     io.emit('newNotification', notification);
   } else if (notification.type === 'PERSONAL' && notification.recipientId) {
     const recipients = Array.isArray(notification.recipientId) ? notification.recipientId : [notification.recipientId];

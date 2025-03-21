@@ -78,7 +78,6 @@ export function ActiveLogTable() {
   };
 
   const handleOpenDetailDialog = (log) => {
-    console.log(log);
     setSelectedLog(log);
     setOpenDetailDialog(true);
   };

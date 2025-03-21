@@ -27,7 +27,6 @@ const createNotification = async (req, res) => {
       const department = await Department.find().select('_id');
       departmentId = department.map(dep => dep._id);
     }
-    console.log(title, content, type, departmentId, recipientId);
     let newNotification = new Notification({
       title,
       content,
