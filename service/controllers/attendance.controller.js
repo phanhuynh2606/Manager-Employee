@@ -63,7 +63,7 @@ const getInformation = async (req, res) => {
     let formatData;
     const formatDate = `${localDate.getMonth() + 1}/${localDate.getFullYear()}`;
     const employee = await User.findOne({ email: user.email }, '-password');
-    const employeeDetail = await Employee.findById({ _id: employee.employeeId }).populate('departmentId', 'name');
+    const employeeDetail = await Employee.findById({ _id: employee.employeeId }).populate('departmentId', 'name').populate('position', 'name');
     const attendanceEmploy = await Attendance.find({ employeeId: employeeDetail._id });
     if (!attendanceEmploy) {
         return res.status(404).json({ success: false, message: "Không tìm thấy bản ghi chấm công!" });
@@ -73,7 +73,7 @@ const getInformation = async (req, res) => {
         date: formatDate,
         fullName: employeeDetail.fullName,
         department: employeeDetail.departmentId.name,
-        position: employeeDetail.position,
+        position: employeeDetail.position.name,
         workingDay: 22,
         leaveBalance: 12,
         leaveTaken: count,
@@ -92,7 +92,7 @@ const getAllAttendance = async (req, res) => {
     }
     const admin = await User.find({ role: 'EMPLOYEE' }, '-password');
     const employeeIds = admin.map(user => user.employeeId);
-    const employees = await Employee.find({ _id: { $in: employeeIds } }).populate('departmentId', 'name');
+    const employees = await Employee.find({ _id: { $in: employeeIds } }).populate('departmentId', 'name').populate('position', 'name');
     let formatData;
     const formatDate = `${localDate.getMonth() + 1}/${localDate.getFullYear()}`;
     formatData = await Promise.all(employees.map(async (employee) => {
@@ -112,7 +112,7 @@ const getAllAttendance = async (req, res) => {
             date: formatDate,
             fullName: employee.fullName,
             department: employee.departmentId.name,
-            position: employee.position,
+            position: employee.position.name,
             workingDay: 22,
             leaveBalance: 12,
             lateDays: countLate,
