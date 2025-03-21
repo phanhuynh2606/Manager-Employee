@@ -1,19 +1,20 @@
 const Employee = require("../models/employee");
 const Department = require("../models/department")
+const position = require("../models/position")
 const Salary = require("../models/salary")
 const mongoose = require("mongoose")
 //[POST] /statistic/employee
 module.exports.statisticEmployee = async (req, res) => {
     try {
         const { department, position } = req.body;
-        console.log("Department is", department)
+        console.log("POS is ",position)
 
         let find = {};
         if (department && department.length > 0) {
             find.departmentId = { $in: department.map((id, index) => new mongoose.Types.ObjectId(id)) }
         }
         if (position && position.length > 0) {
-            find.position = { $in: position }
+            find.position = { $in: position.map((id, index) => new mongoose.Types.ObjectId(id)) }
         }
         const totalEmployee = await Employee.countDocuments(find);
         const totalMale = await Employee.countDocuments({ ...find, gender: "MALE" });

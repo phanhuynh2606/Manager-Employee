@@ -35,7 +35,8 @@ const employeeSchema = new Schema({
       ref: 'department',
     },
     position: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref:"position"
     },
     baseSalary: {
       type: Number,

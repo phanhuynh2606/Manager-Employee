@@ -76,8 +76,6 @@ export default function StatisticEmployee() {
     React.useEffect(() => {
         getDataEmployee();
         getDataDepartment();
-        console.log("DP" ,departmentCheckbox)
-        console.log("PS",postionCheckBox)
     }, [departmentCheckbox,postionCheckBox])
 
     const checkBoxCheckDepartment = (item) => {
@@ -150,7 +148,7 @@ export default function StatisticEmployee() {
     };
     
     
-    console.log("POSSS",position)
+    console.log("POSSS",postionCheckBox)
     return (
         <>
         <Card>
@@ -179,10 +177,8 @@ export default function StatisticEmployee() {
                 </button>
             </CardHeader>
     
-            {/* Vùng checkbox được thiết kế lại */}
             <CardBody className="mt-4 px-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Department Checkbox */}
                     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-5 shadow-sm border border-blue-100">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
@@ -223,7 +219,6 @@ export default function StatisticEmployee() {
                         </div>
                     </div>
     
-                    {/* Position Checkbox */}
                     <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-lg p-5 shadow-sm border border-green-100">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
@@ -231,31 +226,31 @@ export default function StatisticEmployee() {
                             </div>
                             <h3 className="text-lg font-bold text-green-800">Chức vụ</h3>
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                             {position.map((item, index) => (
                                 <label key={index} className="flex items-center cursor-pointer group">
                                     <div className="relative">
                                         <input
                                             type="checkbox"
-                                            value={item.name}
-                                            checked={postionCheckBox.some( pos => pos === item._id )}
-                                            onChange={() =>checkBoxCheckPosition(item)}
+                                            value={item._id}
+                                            checked={postionCheckBox.some(dep => dep._id === item._id)}
+                                            onChange={() => checkBoxCheckPosition(item)}
                                             className="sr-only"
                                         />
                                         <div className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all ${
-                                            postionCheckBox.some(pos=>pos._id=item._id)
-                                                ? 'border-green-500 bg-green-500' 
-                                                : 'border-gray-300 group-hover:border-green-300'
+                                            postionCheckBox.some(dep => dep._id === item._id) 
+                                                ? 'border-blue-500 bg-blue-500' 
+                                                : 'border-gray-300 group-hover:border-blue-300'
                                         }`}>
-                                            { postionCheckBox.some(pos=>pos._id=item._id) && (
+                                            {postionCheckBox.some(dep => dep._id === item._id) && (
                                                 <i className="fas fa-check text-xs text-white"></i>
                                             )}
                                         </div>
                                     </div>
                                     <span className={`ml-2 text-sm transition-all ${
-                                        postionCheckBox.some(pos=>pos._id=item._id)
-                                            ? 'text-green-600 font-medium' 
-                                            : 'text-gray-600 group-hover:text-green-500'
+                                        postionCheckBox.some(dep => dep._id === item._id) 
+                                            ? 'text-blue-600 font-medium' 
+                                            : 'text-gray-600 group-hover:text-blue-500'
                                     }`}>
                                         {item.name}
                                     </span>
