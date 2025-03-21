@@ -12,7 +12,7 @@ const { initSocket } = require('./config/socket');
 const server = http.createServer(app);
 app.use(
   cors({
-    origin: "*",
+    origin: "https://codemy.id.vn",
     credentials: true,
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization", "Content-Disposition"],
