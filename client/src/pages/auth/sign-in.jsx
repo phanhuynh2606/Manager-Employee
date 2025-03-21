@@ -32,8 +32,7 @@ export function SignIn() {
     const handleLogin = async () => {
         setLoading(true);
         try {
-            const result = await authLogin(email, password);
-
+            const result = await authLogin(email, password); 
             const errorResponse = result?.response?.data;
             if (errorResponse?.success === false || result?.success === false) {
                 handleError(errorResponse || result);
@@ -54,16 +53,15 @@ export function SignIn() {
                     autoClose: 3000,
                     closeOnClick: true,
                     pauseOnHover: false,
-                });
-            
+                }); 
                 dispatch(setUser({
+                    userId: result?.userId, 
                     employeeId:result?.employeeId,
                     departmentId: result?.departmentId,
                     email: result.email,
                     role: result.role,
                     position: result.position
-                }));
-            
+                })); 
                 return navigate(result.role.toUpperCase() === "ADMIN" ? '/dashboard/home' : '/dashboard/employee');
             }
         } catch (e) {

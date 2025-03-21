@@ -1,0 +1,35 @@
+{
+  "attendances": [],
+  "notifications": [],
+  "leaves": [],
+  "positions": [],
+  "backups": [
+    {
+      "_id": "67dc70c8d2a6e72130539605",
+      "filename": "backup_1742500040529.json",
+      "filePath": "/home/harley/Documents/SDN302/Manager-Employee/service/backups/backup_1742500040529.json",
+      "description": "Sao lưu thành công",
+      "createdBy": null,
+      "createdAt": "2025-03-20T19:47:20.537Z",
+      "__v": 0
+    }
+  ],
+  "departments": [],
+  "salaries": [],
+  "activity_logs": [],
+  "users": [
+    {
+      "_id": "67dc577999f4f4a4293dbcd8",
+      "username": "codewithyangyang",
+      "password": "$2b$10$CClHxIMNUpEXZ7pbu5m8suTjKeiLoYZZED1YLBezbOeNkfnYzZvru",
+      "email": "codewithyangyang@gmail.com",
+      "role": "ADMIN",
+      "isActive": "1",
+      "createdAt": "2025-03-20T17:59:21.849Z",
+      "updatedAt": "2025-03-20T18:00:18.139Z",
+      "__v": 0,
+      "employeeId": "67dc577a99f4f4a4293dbcda"
+    }
+  ],
+  "employees": []
+}

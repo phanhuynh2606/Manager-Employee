@@ -7,12 +7,11 @@ function App() {
     return (
         <Routes>
             <Route path="/auth/*" element={<Auth />} />
-
             <Route element={<ProtectedRoute />}>
                 <Route path="/dashboard/*" element={<Dashboard />} />
-            {/* <Route path="//*" element={<Error/>} /> */} 
+            {/* <Route path="//*" element={<Error/>} /> */}
+            {/* <Route path="/auth/first-time-password-change" element={<FirstTimeChangePassword />} /> */}
             </Route>
-            <Route path="/auth/first-time-password-change" element={<FirstTimeChangePassword />} />
             <Route path="*" element={<Navigate to="/auth/sign-in" replace />} />
         </Routes>
     );

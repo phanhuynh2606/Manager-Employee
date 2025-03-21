@@ -19,6 +19,7 @@ import {
     ClockIcon,
     CreditCardIcon,
     Bars3Icon,
+    ArrowPathIcon,
 } from "@heroicons/react/24/solid";
 import {
     useMaterialTailwindController,
@@ -30,6 +31,8 @@ import { toast } from "react-toastify";
 import { getProfile } from "@/apis/auth/auth.js";
 import { useNavigate } from 'react-router-dom';
 import NotificaionNavbar from "./NotificaionNavbar";
+import useIsAdmin from "@/utils/useIsAdmin";
+import { backupsData, restoreBackup } from "@/apis/backup/backup";
 
 export function DashboardNavbar() {
     const [controller, dispatch] = useMaterialTailwindController();
@@ -37,7 +40,9 @@ export function DashboardNavbar() {
     const { pathname } = useLocation();
     const [layout, page] = pathname.split("/").filter((el) => el !== "");
     const navigate = useNavigate();
+    const isAdmin = useIsAdmin();
     const [userName, setUserName] = useState("");
+    const [file, setFile] = useState(null);
 
     useEffect(() => {
         const GET_PROFILE = async () => {
@@ -61,6 +66,46 @@ export function DashboardNavbar() {
         GET_PROFILE();
     }, [navigate]);
 
+    const handleBackups = async () => {
+        try {
+            const response = await backupsData();
+            if(response.success) {
+                toast.success(response.message, {
+                    autoClose: 3000,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                });
+            }
+        } catch (e) {
+            console.error(e, "Error");
+            toast.error("Tạo file sao lưu ở server thất bại!", {
+                autoClose: 2000,
+                closeOnClick: true,
+                pauseOnHover: false,
+            });
+        }
+    };
+
+    const handleRestores = async () => {
+        try {
+            const response = await restoreBackup();
+            if(response.success) {
+                toast.success(response.message, {
+                    autoClose: 3000,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                });
+            }
+        } catch (e) {
+            console.error(e, "Error");
+            toast.error("Phục hồi file ở server thất bại!", {
+                autoClose: 2000,
+                closeOnClick: true,
+                pauseOnHover: false,
+            });
+        }
+    };
+
     return (
         <Navbar
             color={fixedNavbar ? "white" : "transparent"}
@@ -83,7 +128,7 @@ export function DashboardNavbar() {
                                 color="blue-gray"
                                 className="font-normal opacity-50 transition-all hover:text-blue-500 hover:opacity-100"
                             >
-                                {layout} 
+                                {layout}
                             </Typography>
                         </Link>
                         <Typography
@@ -96,9 +141,19 @@ export function DashboardNavbar() {
                     </Breadcrumbs>
                 </div>
                 <div className="flex items-center">
-                    <div className="mr-auto md:mr-4 md:w-56">
-                        <Input label="Search" />
-                    </div>
+                    {
+                        isAdmin && (
+                            <div className="mr-auto md:mr-4 md:w-56 flex gap-2">
+                                <Button color="gray" className="flex items-center gap-2" onClick={handleBackups}>
+                                    Sao lưu dữ liệu
+                                </Button>
+
+                                <Button color="blue" className="flex items-center gap-2" onClick={handleRestores}>
+                                    Phục hồi dữ liệu
+                                </Button>
+                            </div>
+                        )
+                    }
                     <IconButton
                         variant="text"
                         color="blue-gray"
@@ -124,7 +179,7 @@ export function DashboardNavbar() {
                             <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
                         </IconButton>
                     </div>
-                    <NotificaionNavbar/>
+                    <NotificaionNavbar />
                     <IconButton
                         variant="text"
                         color="blue-gray"

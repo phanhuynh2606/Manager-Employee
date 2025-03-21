@@ -8,6 +8,7 @@ import {
   HomeModernIcon,
   BanknotesIcon,
   PowerIcon,
+  KeyIcon
 } from "@heroicons/react/24/solid";
 import { RxCountdownTimer } from "react-icons/rx";
 import { GrUserAdmin } from "react-icons/gr";
@@ -16,8 +17,7 @@ import { MdOutlineEditNotifications } from "react-icons/md";
 import { Flex, Spin } from "antd";
 import { LoadingOutlined, TeamOutlined } from "@ant-design/icons";
 
-const Profile = lazy(() => import("@/pages/dashboard/Profile"));
-const Tables = lazy(() => import("@/pages/dashboard/Tables"));
+const Profile = lazy(() => import("@/pages/dashboard/profile"));
 const SignIn = lazy(() => import("@/pages/auth/sign-in"));
 const Department = lazy(() => import("./pages/department/Department"));
 const Statistic = lazy(() => import("./pages/statistic/statistic"));
@@ -26,15 +26,18 @@ const Employee = lazy(() => import("./pages/employee/Employee"));
 const ViewEmployee = lazy(() => import("./pages/employee/ViewEmployee"));
 const Salary = lazy(() => import("./pages/salary/salary"));
 const AttendanceManagement = lazy(() =>
-  import("./pages/attendance/attendance"),
+  import("../src/pages/attendance/attendance"),
 );
-const ViewSalaryDetail = lazy(() => import("./pages/salary/viewSalaryDetail"));
-const Notifications = lazy(() => import("./pages/notification/Notifications"));
+const ViewSalaryDetail = lazy(() => import("../src/pages/salary/viewSalaryDetail"));
+const Notifications = lazy(() => import("../src/pages/notification/Notifications"));
 const AdminManagement = lazy(() =>
-  import("./pages/administration/Administration"),
+  import("../src/pages/administration/Administration"),
 );
 const AdminDetail = lazy(() => import("./pages/administration/AdminView"));
 const Positions = lazy(() => import("./pages/positions/position"));
+const FirstTimeChangePassword = lazy(() =>
+  import("../src/pages/auth/first-time-password-change"),
+);
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -64,14 +67,7 @@ export const routes = [
         name: "Trang cá nhân",
         path: "/profile",
         element: LazyElement(Profile),
-        roles: ["EMPLOYEE"],
-      },
-      {
-        icon: <TableCellsIcon {...icon} />,
-        name: "tables",
-        path: "/tables",
-        element: LazyElement(Tables),
-        roles: ["EMPLOYEE"],
+        roles: ["EMPLOYEE", "ADMIN"],
       },
       {
         icon: <MdOutlineEditNotifications {...icon} />,
@@ -158,9 +154,15 @@ export const routes = [
     pages: [
       {
         icon: <ServerStackIcon {...icon} />,
-        name: "sign in",
+        name: "Đăng nhập",
         path: "/sign-in",
         element: LazyElement(SignIn),
+      },
+      {
+        icon: <KeyIcon {...icon} />,
+        name: "Thay đổi mật khẩu lần đầu",
+        path: "/first-time-password-change",
+        element: LazyElement(FirstTimeChangePassword),
       },
     ],
   },

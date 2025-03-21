@@ -46,6 +46,7 @@ export function ActiveLogTable() {
   const [selectedLog, setSelectedLog] = useState(null);
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [entityTypeFilter, setEntityTypeFilter] = useState("");
 
   useEffect(() => {
     const fetchLogs = async () => {
@@ -58,7 +59,8 @@ export function ActiveLogTable() {
           "limitItem": 10,
           "page": currentPage,
           "startDate": startDate,
-          "endDate": endDate
+          "endDate": endDate,
+          "entityType": entityTypeFilter
         });
         setLogs(response.data);
         setNumberOfPage(response.totalItem);
@@ -70,8 +72,7 @@ export function ActiveLogTable() {
     };
 
     fetchLogs();
-  }, [currentPage, startDate, endDate, numberOfPage]);
-
+  }, [currentPage, startDate, endDate, entityTypeFilter]);
   const paginate = (page) => {
     setCurrentPage(page);
   };
@@ -85,7 +86,406 @@ export function ActiveLogTable() {
     setOpenDetailDialog(false);
     setSelectedLog(null);
   };
-  
+  const getEntityTypeChip = (entityType) => {
+    switch (entityType) {
+      case "DEPARTMENT":
+        return <Chip value={entityType} color="indigo" className="rounded-full text-center" />;
+      case "EMPLOYEE":
+        return <Chip value={entityType} color="blue" className="rounded-full text-center" />;
+      case "employees":
+        return <Chip value={entityType} color="blue" className="rounded-full text-center" />;
+      default:
+        return <Chip value={entityType} color="orange" className="rounded-full text-center" />;
+    }
+  };
+  const renderDetailContent = () => {
+    if (!selectedLog) return null;
+
+    // Render different detail dialogs based on entity type
+    if (selectedLog.entityType === "DEPARTMENT") {
+      return renderDepartmentDetails();
+    } else if (selectedLog.entityType === "EMPLOYEE" || selectedLog.entityType === "employees" || selectedLog.entityType === "ADMIN") {
+      return renderEmployeeDetails();
+    } else {
+      return renderGenericDetails();
+    }
+  };
+
+  const renderDepartmentDetails = () => {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x">
+        <div className="p-6">
+          <div className="flex items-center mb-5">
+            <div className="bg-green-500 w-3 h-3 rounded-md mr-2"></div>
+            <Typography variant="h6" color="blue-gray">
+              Giá trị mới
+            </Typography>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            <div className="space-y-1">
+              <Typography variant="small" className="font-semibold text-blue-gray-700">
+                Tên phòng ban
+              </Typography>
+              <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
+                {selectedLog.newValues?.name || "N/A"}
+              </Typography>
+            </div>
+
+            <div className="space-y-1">
+              <Typography variant="small" className="font-semibold text-blue-gray-700">
+                Mô tả
+              </Typography>
+              <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
+                {selectedLog.newValues?.description || "N/A"}
+              </Typography>
+            </div>
+
+            <div className="space-y-1">
+              <Typography variant="small" className="font-semibold text-blue-gray-700">
+                Người quản lý
+              </Typography>
+              <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
+                {selectedLog.newValues?.managerId ? selectedLog.newValues?.managerId?.fullName : ""}
+              </Typography>
+            </div>
+            <div className="space-y-1">
+              <Typography variant="small" className="font-semibold text-blue-gray-700">
+                Phòng
+              </Typography>
+              <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
+                {selectedLog.newValues?.roomNumber ? selectedLog.newValues?.roomNumber : "N/A"}
+              </Typography>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6">
+          <div className="flex items-center mb-5">
+            <div className="bg-red-500 w-3 h-3 rounded-full mr-2"></div>
+            <Typography variant="h6" color="blue-gray">
+              Giá trị cũ
+            </Typography>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            <div className="space-y-1">
+              <Typography variant="small" className="font-semibold text-blue-gray-700">
+                Tên phòng ban
+              </Typography>
+              <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
+                {selectedLog.oldValues?.name || "N/A"}
+              </Typography>
+            </div>
+
+            <div className="space-y-1">
+              <Typography variant="small" className="font-semibold text-blue-gray-700">
+                Mô tả
+              </Typography>
+              <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
+                {selectedLog.oldValues?.description || "N/A"}
+              </Typography>
+            </div>
+
+            <div className="space-y-1">
+              <Typography variant="small" className="font-semibold text-blue-gray-700">
+                Người quản lý
+              </Typography>
+              <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
+                {selectedLog.oldValues?.managerId ? selectedLog.newValues?.managerId?.fullName : "N/A"}
+              </Typography>
+            </div>
+            <div className="space-y-1">
+              <Typography variant="small" className="font-semibold text-blue-gray-700">
+                Phòng
+              </Typography>
+              <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
+                {selectedLog.oldValues?.roomNumber ? selectedLog.oldValues?.roomNumber : "N/A"}
+              </Typography>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderEmployeeDetails = () => {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x">
+        <div className="p-6">
+          <div className="flex items-center mb-5">
+            <div className="bg-green-500 w-3 h-3 rounded-full mr-2"></div>
+            <Typography variant="h6" color="blue-gray">
+              Giá trị mới
+            </Typography>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <Typography variant="small" className="font-semibold text-blue-gray-700">
+                Username
+              </Typography>
+              <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
+                {selectedLog.newValues?.userId?.username || "N/A"}
+              </Typography>
+            </div>
+            <div className="space-y-1">
+              <Typography variant="small" className="font-semibold text-blue-gray-700">
+                Tên
+              </Typography>
+              <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
+                {selectedLog.newValues?.fullName || "N/A"}
+              </Typography>
+            </div>
+
+            <div className="space-y-1">
+              <Typography variant="small" className="font-semibold text-blue-gray-700">
+                Giới tính
+              </Typography>
+              <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
+                {selectedLog.newValues?.gender || "N/A"}
+              </Typography>
+            </div>
+
+            <div className="space-y-1">
+              <Typography variant="small" className="font-semibold text-blue-gray-700">
+                Email
+              </Typography>
+              <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
+                {selectedLog.newValues?.userId?.email || "N/A"}
+              </Typography>
+            </div>
+
+            <div className="space-y-1">
+              <Typography variant="small" className="font-semibold text-blue-gray-700">
+                Số điện thoại
+              </Typography>
+              <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
+                {selectedLog.newValues?.phoneNumber || "N/A"}
+              </Typography>
+            </div>
+
+            <div className="space-y-1">
+              <Typography variant="small" className="font-semibold text-blue-gray-700">
+                Địa chỉ
+              </Typography>
+              <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
+                {selectedLog.newValues?.address || "N/A"}
+              </Typography>
+            </div>
+            <div className="space-y-1">
+              <Typography variant="small" className="font-semibold text-blue-gray-700">
+                Ngày sinh
+              </Typography>
+              <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
+                {selectedLog.newValues?.dateOfBirth
+                  ? new Date(selectedLog.newValues.dateOfBirth).toLocaleDateString()
+                  : "N/A"}
+              </Typography>
+            </div>
+
+            {selectedLog.newValues?.userId?.role !== "ADMIN" && (
+                <>
+                <div className="space-y-1">
+              <Typography variant="small" className="font-semibold text-blue-gray-700">
+                Lương cơ bản
+              </Typography>
+              <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
+                {selectedLog.newValues?.baseSalary
+                  ? (selectedLog.newValues?.baseSalary).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND"
+                  })
+                  : "N/A"}
+              </Typography>
+            </div>
+
+            <div className="space-y-1">
+              <Typography variant="small" className="font-semibold text-blue-gray-700">
+                Phòng ban
+              </Typography>
+              <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
+                {selectedLog.newValues?.departmentId?.name || "N/A"}
+              </Typography>
+            </div>
+
+            <div className="space-y-1">
+              <Typography variant="small" className="font-semibold text-blue-gray-700">
+                Vị trí
+              </Typography>
+              <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
+                {selectedLog.newValues?.position?.name || "N/A"}
+              </Typography>
+            </div>
+                </>
+            )}
+          </div>
+
+          {selectedLog.newValues?.avatarUrl && (
+            <div className="mt-6">
+              <Typography variant="small" className="font-semibold text-blue-gray-700 mb-2">
+                Ảnh đại diện
+              </Typography>
+              <div className="bg-green-50 p-2 rounded-md inline-block">
+                <img
+                  className="w-24 h-24 object-cover rounded-md border border-green-200"
+                  src={selectedLog.newValues?.avatarUrl}
+                  alt="Ảnh đại diện mới"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Old Values */}
+        {selectedLog.oldValues ? (
+          <div className="p-6">
+            <div className="flex items-center mb-5">
+              <div className="bg-red-500 w-3 h-3 rounded-full mr-2"></div>
+              <Typography variant="h6" color="blue-gray">
+                Giá trị cũ
+              </Typography>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <Typography variant="small" className="font-semibold text-blue-gray-700">
+                  Username
+                </Typography>
+                <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
+                  {selectedLog.oldValues?.userId?.username || "N/A"}
+                </Typography>
+              </div>
+              <div className="space-y-1">
+                <Typography variant="small" className="font-semibold text-blue-gray-700">
+                  Tên người dùng
+                </Typography>
+                <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
+                  {selectedLog.oldValues?.fullName || "N/A"}
+                </Typography>
+              </div>
+
+              <div className="space-y-1">
+                <Typography variant="small" className="font-semibold text-blue-gray-700">
+                  Giới tính
+                </Typography>
+                <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
+                  {selectedLog.oldValues?.gender || "N/A"}
+                </Typography>
+              </div>
+
+              <div className="space-y-1">
+                <Typography variant="small" className="font-semibold text-blue-gray-700">
+                  Email
+                </Typography>
+                <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
+                  {selectedLog.oldValues?.userId?.email || "N/A"}
+                </Typography>
+              </div>
+
+              <div className="space-y-1">
+                <Typography variant="small" className="font-semibold text-blue-gray-700">
+                  Số điện thoại
+                </Typography>
+                <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
+                  {selectedLog.oldValues?.phoneNumber || "N/A"}
+                </Typography>
+              </div>
+
+              <div className="space-y-1">
+                <Typography variant="small" className="font-semibold text-blue-gray-700">
+                  Địa chỉ
+                </Typography>
+                <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
+                  {selectedLog.oldValues?.address || "N/A"}
+                </Typography>
+              </div>
+              <div className="space-y-1">
+                <Typography variant="small" className="font-semibold text-blue-gray-700">
+                  Ngày sinh
+                </Typography>
+                <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
+                  {selectedLog.oldValues?.dateOfBirth
+                    ? new Date(selectedLog.oldValues.dateOfBirth).toLocaleDateString()
+                    : "N/A"}
+                </Typography>
+              </div>
+              {selectedLog.oldValues?.userId?.role !== "ADMIN" && (
+                <>
+                  <div className="space-y-1">
+                    <Typography variant="small" className="font-semibold text-blue-gray-700">
+                      Lương cơ bản
+                    </Typography>
+                    <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
+                      {selectedLog.oldValues?.baseSalary
+                        ? (selectedLog.oldValues?.baseSalary).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND"
+                        })
+                        : "N/A"}
+                    </Typography>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Typography variant="small" className="font-semibold text-blue-gray-700">
+                      Phòng ban
+                    </Typography>
+                    <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
+                      {selectedLog.oldValues?.departmentId?.name || "N/A"}
+                    </Typography>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Typography variant="small" className="font-semibold text-blue-gray-700">
+                      Vị trí
+                    </Typography>
+                    <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
+                      {selectedLog.oldValues?.position?.name || "N/A"}
+                    </Typography>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {selectedLog.oldValues?.avatarUrl && (
+              <div className="mt-6">
+                <Typography variant="small" className="font-semibold text-blue-gray-700 mb-2">
+                  Ảnh đại diện
+                </Typography>
+                <div className="bg-red-50 p-2 rounded-md inline-block">
+                  <img
+                    className="w-24 h-24 object-cover rounded-md border border-red-200"
+                    src={selectedLog.oldValues?.avatarUrl}
+                    alt="Ảnh đại diện cũ"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="p-6">
+            <Typography variant="h6" color="blue-gray">
+              Không có giá trị cũ
+            </Typography>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderGenericDetails = () => {
+    return (
+      <div className="p-6">
+        <Typography variant="h6" color="blue-gray" className="mb-4">
+          Chi tiết hoạt động không có dữ liệu cụ thể
+        </Typography>
+        <Typography variant="paragraph" color="blue-gray">
+          Xem thông tin cơ bản trong bảng hoạt động.
+        </Typography>
+      </div>
+    );
+  };
+
   return (
     <Card className="h-full w-full">
       <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -99,8 +499,24 @@ export function ActiveLogTable() {
             </Typography>
           </div>
           <div className="flex w-full shrink-0 flex-col md:flex-row md:w-max gap-4">
+            <div className="w-full md:w-30">
+              <Typography variant="small" color="blue-gray" className="mb-1 font-medium">
+                Loại thực thể
+              </Typography>
+              <div className="relative">
+                <select
+                  value={entityTypeFilter}
+                  onChange={(e) => setEntityTypeFilter(e.target.value)}
+                  className="w-full h-10 px-3 border border-blue-gray-200 rounded-md focus:outline-none focus:border-blue-500"
+                >
+                  <option value="">Tất cả</option>
+                  <option value="DEPARTMENT">Phòng ban</option>
+                  <option value="EMPLOYEE">Nhân viên</option>
+                </select>
+              </div>
+            </div>
             <div className="flex flex-col md:flex-row gap-2 w-full">
-              <div className="w-full md:w-48">
+              <div className="w-full md:w-48 mr-3">
                 <Typography variant="small" color="blue-gray" className="mb-1 font-medium">
                   From Date
                 </Typography>
@@ -114,7 +530,7 @@ export function ActiveLogTable() {
                   <CalendarIcon className="h-5 w-5 absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-gray-300" />
                 </div>
               </div>
-              <div className="w-full md:w-48">
+              <div className="w-full md:w-48 mr-3">
                 <Typography variant="small" color="blue-gray" className="mb-1 font-medium">
                   To Date
                 </Typography>
@@ -128,8 +544,7 @@ export function ActiveLogTable() {
                   <CalendarIcon className="h-5 w-5 absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-gray-300" />
                 </div>
               </div>
-              <div className="flex items-end">
-              </div>
+
             </div>
           </div>
         </div>
@@ -171,7 +586,7 @@ export function ActiveLogTable() {
                     <tr key={index} className="hover:bg-blue-gray-50/50">
                       <td className={classes}>
                         <Typography variant="small" color="blue-gray" className="font-normal">
-                          {log.userId?.employeeId.fullName || "N/A"}
+                          {log.userId?.employeeId?.fullName || "N/A"}
                         </Typography>
                       </td>
                       <td className={classes}>
@@ -180,9 +595,7 @@ export function ActiveLogTable() {
                         </Typography>
                       </td>
                       <td className={classes}>
-                        <Typography variant="small" color="blue-gray" className="font-normal">
-                          {log.entityType}
-                        </Typography>
+                        {getEntityTypeChip(log.entityType)}
                       </td>
                       <td className={classes}>
                         <Typography variant="small" color="blue-gray" className="font-normal">
@@ -211,7 +624,7 @@ export function ActiveLogTable() {
             </table>
             <div className="flex items-center justify-between p-4">
               <Typography variant="small" color="blue-gray" className="font-normal">
-                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, numberOfPage)} of {numberOfPage} entries
+                Showing {logs.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to {Math.min(currentPage * itemsPerPage, numberOfPage)} of {numberOfPage} entries
               </Typography>
               <div className="flex gap-2">
                 <Button
@@ -223,7 +636,7 @@ export function ActiveLogTable() {
                 >
                   Previous
                 </Button>
-                {Array.from({ length: Math.ceil(numberOfPage / itemsPerPage) }, (_, i) => (
+                {Array.from({ length: Math.ceil(numberOfPage / itemsPerPage) || 1 }, (_, i) => (
                   <Button
                     key={i + 1}
                     variant={currentPage === i + 1 ? "filled" : "text"}
@@ -238,7 +651,7 @@ export function ActiveLogTable() {
                   variant="outlined"
                   color="blue-gray"
                   size="sm"
-                  disabled={currentPage == Math.ceil(numberOfPage / itemsPerPage)}
+                  disabled={currentPage === Math.ceil(numberOfPage / itemsPerPage) || Math.ceil(numberOfPage / itemsPerPage) === 0}
                   onClick={() => paginate(currentPage + 1)}
                 >
                   Next
@@ -249,7 +662,7 @@ export function ActiveLogTable() {
         )}
       </CardBody>
 
-      {/* Redesigned Detail Dialog */}
+      {/* Dynamic Detail Dialog */}
       <Dialog
         open={openDetailDialog}
         handler={handleCloseDetailDialog}
@@ -276,235 +689,11 @@ export function ActiveLogTable() {
           </IconButton>
         </DialogHeader>
         <DialogBody className="p-0">
-          {selectedLog && (
-            <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x">
-              <div className="p-6">
-                <div className="flex items-center mb-5">
-                  <div className="bg-green-500 w-3 h-3 rounded-full mr-2"></div>
-                  <Typography variant="h6" color="blue-gray">
-                    Giá trị mới
-                  </Typography>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <Typography variant="small" className="font-semibold text-blue-gray-700">
-                      Tên người dùng
-                    </Typography>
-                    <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
-                      {selectedLog.newValues?.fullName || "N/A"}
-                    </Typography>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Typography variant="small" className="font-semibold text-blue-gray-700">
-                      Giới tính
-                    </Typography>
-                    <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
-                      {selectedLog.newValues?.gender || "N/A"}
-                    </Typography>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Typography variant="small" className="font-semibold text-blue-gray-700">
-                      Email
-                    </Typography>
-                    <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
-                      {selectedLog.userId?.email || "N/A"}
-                    </Typography>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Typography variant="small" className="font-semibold text-blue-gray-700">
-                      Số điện thoại
-                    </Typography>
-                    <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
-                      {selectedLog.newValues?.phoneNumber || "N/A"}
-                    </Typography>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Typography variant="small" className="font-semibold text-blue-gray-700">
-                      Địa chỉ
-                    </Typography>
-                    <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
-                      {selectedLog.newValues?.address || "N/A"}
-                    </Typography>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Typography variant="small" className="font-semibold text-blue-gray-700">
-                      Lương cơ bản
-                    </Typography>
-                    <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
-                      {selectedLog.newValues?.baseSalary 
-                        ? (selectedLog.newValues?.baseSalary).toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND"
-                          }) 
-                        : "N/A"}
-                    </Typography>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Typography variant="small" className="font-semibold text-blue-gray-700">
-                      Ngày sinh
-                    </Typography>
-                    <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
-                      {selectedLog.newValues?.dateOfBirth
-                        ? new Date(selectedLog.newValues.dateOfBirth).toLocaleDateString()
-                        : "N/A"}
-                    </Typography>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Typography variant="small" className="font-semibold text-blue-gray-700">
-                      Phòng ban
-                    </Typography>
-                    <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
-                      {selectedLog.newValues?.departmentId?.name || "N/A"}
-                    </Typography>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Typography variant="small" className="font-semibold text-blue-gray-700">
-                      Vị trí
-                    </Typography>
-                    <Typography variant="small" className="block text-blue-gray-600 bg-green-50 p-2 rounded-md">
-                      {selectedLog.newValues?.position || "N/A"}
-                    </Typography>
-                  </div>
-                </div>
-                
-                {selectedLog.newValues?.avatarUrl && (
-                  <div className="mt-6">
-                    <Typography variant="small" className="font-semibold text-blue-gray-700 mb-2">
-                      Ảnh đại diện
-                    </Typography>
-                    <div className="bg-green-50 p-2 rounded-md inline-block">
-                      <img 
-                        className="w-24 h-24 object-cover rounded-md border border-green-200" 
-                        src={selectedLog.newValues?.avatarUrl} 
-                        alt="Ảnh đại diện mới" 
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="p-6">
-                <div className="flex items-center mb-5">
-                  <div className="bg-red-500 w-3 h-3 rounded-full mr-2"></div>
-                  <Typography variant="h6" color="blue-gray">
-                    Giá trị cũ
-                  </Typography>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <Typography variant="small" className="font-semibold text-blue-gray-700">
-                      Tên người dùng
-                    </Typography>
-                    <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
-                      {selectedLog.oldValues?.fullName || "N/A"}
-                    </Typography>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Typography variant="small" className="font-semibold text-blue-gray-700">
-                      Giới tính
-                    </Typography>
-                    <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
-                      {selectedLog.oldValues?.gender || "N/A"}
-                    </Typography>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Typography variant="small" className="font-semibold text-blue-gray-700">
-                      Email
-                    </Typography>
-                    <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
-                      {selectedLog.oldValues?.email || "N/A"}
-                    </Typography>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Typography variant="small" className="font-semibold text-blue-gray-700">
-                      Số điện thoại
-                    </Typography>
-                    <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
-                      {selectedLog.oldValues?.phoneNumber || "N/A"}
-                    </Typography>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Typography variant="small" className="font-semibold text-blue-gray-700">
-                      Địa chỉ
-                    </Typography>
-                    <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
-                      {selectedLog.oldValues?.address || "N/A"}
-                    </Typography>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Typography variant="small" className="font-semibold text-blue-gray-700">
-                      Lương cơ bản
-                    </Typography>
-                    <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
-                      {selectedLog.oldValues?.baseSalary 
-                        ? (selectedLog.oldValues?.baseSalary).toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND"
-                          }) 
-                        : "N/A"}
-                    </Typography>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Typography variant="small" className="font-semibold text-blue-gray-700">
-                      Ngày sinh
-                    </Typography>
-                    <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
-                      {selectedLog.oldValues?.dateOfBirth
-                        ? new Date(selectedLog.oldValues.dateOfBirth).toLocaleDateString()
-                        : "N/A"}
-                    </Typography>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Typography variant="small" className="font-semibold text-blue-gray-700">
-                      Phòng ban
-                    </Typography>
-                    <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
-                      {selectedLog.oldValues?.departmentId?.name || "N/A"}
-                    </Typography>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <Typography variant="small" className="font-semibold text-blue-gray-700">
-                      Vị trí
-                    </Typography>
-                    <Typography variant="small" className="block text-blue-gray-600 bg-red-50 p-2 rounded-md">
-                      {selectedLog.oldValues?.position || "N/A"}
-                    </Typography>
-                  </div>
-                </div>
-                
-                {selectedLog.oldValues?.avatarUrl && (
-                  <div className="mt-6">
-                    <Typography variant="small" className="font-semibold text-blue-gray-700 mb-2">
-                      Ảnh đại diện
-                    </Typography>
-                    <div className="bg-red-50 p-2 rounded-md inline-block">
-                      <img 
-                        className="w-24 h-24 object-cover rounded-md border border-red-200" 
-                        src={selectedLog.oldValues?.avatarUrl} 
-                        alt="Ảnh đại diện cũ" 
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
+          {selectedLog ? (
+            renderDetailContent()
+          ) : (
+            <div className="flex justify-center items-center h-64">
+              <Spinner color="blue" className="h-12 w-12" />
             </div>
           )}
         </DialogBody>

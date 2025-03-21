@@ -1,4 +1,5 @@
 const Department = require("../models/department");
+const employee = require("../models/employee");
 const Employee = require("../models/employee");
 const Notification = require("../models/notification");
 const { logActivity } = require("../utils/logger");
@@ -199,10 +200,11 @@ const asignEmployeeToDepartment = async (req, res) => {
 // Xem danh sách nhân viên theo phòng ban
 const getEmployeesByDepartment = async (req, res) => {
   try {
-    const employees = await Employee.find({ department: req.params.id });
+    const employees = await Employee.find({ departmentId: req.params.departmentId }).populate("userId", "email role").populate("position", "name");
+    const filteredEmployees = employees?.filter(emp => emp.userId.role === 'EMPLOYEE');
     return res.status(200).json({
       success: true,
-      data: employees,
+      data: filteredEmployees,
     });
   } catch (error) {
     res.status(500).json({
@@ -284,6 +286,50 @@ const getEmployeeByManager = async (req, res) => {
   }
 };
 
+const asignEmployeesToDepartment = async (req, res) => {
+  const { departmentId } = req.params;
+  const { employeeIds } = req.body;
+  try {
+    const department = await Department.findById(departmentId);
+    if (!department) {
+      return res.status(404).json({ success: false, message: 'Department not found' });
+    }
+    const employees = await Employee.find({ _id: { $in: employeeIds }});
+
+    if (employees?.length !== employeeIds?.length) {
+      return res.status(404).json({ success: false, message: 'Some employees not found' });
+    }
+    // Gán nhân viên vào phòng ban
+    await Employee.updateMany({ _id: { $in: employeeIds } }, { departmentId });
+     // Cập nhật các phòng ban khác nếu nhân viên được gán là manager
+     for (const emp of employees) {
+      await Department.updateMany({ managerId: emp._id }, { managerId: null });
+    }
+    res.status(200).json({ success: true, message: 'Employees assigned successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+};
+const getEmployeesOtherDepartments = async (req, res) => {
+  try {
+    const employees = await Employee.find({ departmentId: { $ne: req.params.departmentId }}  
+    )
+    .populate('userId', 'role');
+    const filteredEmployees = employees?.filter(emp => emp.userId.role === 'EMPLOYEE');
+
+    return res.status(200).json({
+      success: true,
+      data: filteredEmployees,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
 module.exports = {
   createDepartment,
   getDepartments,
@@ -294,4 +340,6 @@ module.exports = {
   getEmployeesByDepartment,
   removeEmployeeFromDepartment,
   getEmployeeByManager,
+  getEmployeesOtherDepartments,
+  asignEmployeesToDepartment
 };
