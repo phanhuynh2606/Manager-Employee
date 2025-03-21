@@ -75,6 +75,7 @@ const authLogin = async (req, res) => {
             position: manager
         });
     } catch (e) {
+        console.log(e, "123");
         res.status(500).json({
             success: false,
             message: "Đăng nhập thất bại!"
