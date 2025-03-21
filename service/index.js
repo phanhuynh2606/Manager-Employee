@@ -30,5 +30,5 @@ connectDB();
 initRoutes(app);
 
 server.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server is running on https://employe-manager-sdn302.netlify.app${port}`);
 });
