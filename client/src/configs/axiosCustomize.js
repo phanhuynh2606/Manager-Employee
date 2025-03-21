@@ -4,6 +4,10 @@ import { refreshToken } from "@/apis/auth/auth.js";
 const instance = axios.create({
     baseURL: "https://manager-employee-production.up.railway.app",
     withCredentials: true,
+    headers: {
+        "Content-Type": "application/json",
+    },
+    
 });
 
 instance.interceptors.response.use(
