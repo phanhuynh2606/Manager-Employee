@@ -6,7 +6,7 @@ const connectedUsers = {};
 const initSocket = (server) => {
   io = new Server(server, {
     cors: {
-      origin: 'http://localhost:5173',
+      origin: 'https://codemy.id.vn/',
       methods: ['GET', 'POST']
     }
   });
