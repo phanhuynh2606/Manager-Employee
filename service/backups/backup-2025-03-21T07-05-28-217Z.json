@@ -1,0 +1,2735 @@
+{
+  "user_session": [
+    {
+      "_id": "67da9d6fddc0d6bcd7f5cb2e",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "sessionData": {
+        "currentPage": "notifications"
+      },
+      "isActive": true,
+      "lastAccessed": "2025-03-20T14:45:07.869Z",
+      "createdAt": "2025-03-19T10:33:19.631Z",
+      "updatedAt": "2025-03-20T14:45:07.869Z",
+      "__v": 0
+    }
+  ],
+  "backups": [
+    {
+      "_id": "67d4758ec39a6d223c514683",
+      "filename": "backup_1741976974399.json",
+      "filePath": "/home/harley/Documents/SDN302/Manager-Employee/service/backups/backup_1741976974399.json",
+      "description": "Sao lưu cũ",
+      "createdBy": "67d1c1980521a7bd468c3888",
+      "createdAt": "2025-03-14T18:29:34.415Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d4778fc5d4b1f0b4737d2c",
+      "filename": "backup_1741977487740.json",
+      "filePath": "/home/harley/Documents/SDN302/Manager-Employee/service/backups/backup_1741977487740.json",
+      "description": "Sao lưu thành công",
+      "createdBy": null,
+      "createdAt": "2025-03-14T18:38:07.758Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d477cac5d4b1f0b4737d2e",
+      "filename": "backup_1741977546496.json",
+      "filePath": "/home/harley/Documents/SDN302/Manager-Employee/service/backups/backup_1741977546496.json",
+      "description": "Sao lưu thành công",
+      "createdBy": null,
+      "createdAt": "2025-03-14T18:39:06.502Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d47a55da70e9136ffa3891",
+      "filename": "backup_1741978197483.json",
+      "filePath": "/home/harley/Documents/SDN302/Manager-Employee/service/backups/backup_1741978197483.json",
+      "description": "Sao lưu thành công",
+      "createdBy": null,
+      "createdAt": "2025-03-14T18:49:57.498Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d47a8556c64d97f778bb8f",
+      "filename": "backup_1741978245711.json",
+      "filePath": "/home/harley/Documents/SDN302/Manager-Employee/service/backups/backup_1741978245711.json",
+      "description": "Sao lưu thành công",
+      "createdBy": null,
+      "createdAt": "2025-03-14T18:50:45.720Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d47b45aa39ea36fa41b5dc",
+      "filename": "backup_1741978437622.json",
+      "filePath": "/home/harley/Documents/SDN302/Manager-Employee/service/backups/backup_1741978437622.json",
+      "description": "Sao lưu thành công",
+      "createdBy": null,
+      "createdAt": "2025-03-14T18:53:57.638Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d47ba53c9a71585dc73959",
+      "filename": "backup_1741978533826.json",
+      "filePath": "/home/harley/Documents/SDN302/Manager-Employee/service/backups/backup_1741978533826.json",
+      "description": "Sao lưu thành công",
+      "createdBy": null,
+      "createdAt": "2025-03-14T18:55:33.847Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dc2da854de8fae94460c38",
+      "filename": "backup_1742482856540.json",
+      "filePath": "/home/harley/Documents/SDN302/Manager-Employee/service/backups/backup_1742482856540.json",
+      "description": "Sao lưu thành công",
+      "createdBy": null,
+      "createdAt": "2025-03-20T15:00:56.546Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dc6a833986ca2f9f168bbf",
+      "filename": "backup_1742498435212.json",
+      "filePath": "/home/harley/Documents/SDN302/Manager-Employee/service/backups/backup_1742498435212.json",
+      "description": "Sao lưu thành công",
+      "createdBy": null,
+      "createdAt": "2025-03-20T19:20:35.220Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dc7106a0887feb30507118",
+      "filename": "backup_1742500102368.json",
+      "filePath": "/home/harley/Documents/SDN302/Manager-Employee/service/backups/backup_1742500102368.json",
+      "description": "Sao lưu thành công",
+      "createdBy": null,
+      "createdAt": "2025-03-20T19:48:22.381Z",
+      "__v": 0
+    }
+  ],
+  "users": [
+    {
+      "_id": "67cb7e76651e8ab881d49e10",
+      "username": "huynhpv",
+      "password": "$2b$10$0Wf1C5KQU4JOak7BKNo5F.mSPDV9z7gTJ3lJC88xWKxRr2AVKNCZ2",
+      "email": "phanhuynh681@gmail.com",
+      "role": "ADMIN",
+      "isActive": "1",
+      "createdAt": "2025-03-07T23:17:10.386Z",
+      "updatedAt": "2025-03-07T23:17:10.534Z",
+      "__v": 0,
+      "employeeId": "67cb7e76651e8ab881d49e12"
+    },
+    {
+      "_id": "67d3cb7af49724adc47a3fff",
+      "username": "viêntln19",
+      "password": "$2b$10$ZX9ajy1XPYC1ayD3lSiE8uaPYfY99VTca2g53AJAXBLXMPcc4Lb6S",
+      "email": "employee@gmail.com",
+      "role": "EMPLOYEE",
+      "isActive": "1",
+      "createdAt": "2025-03-14T06:23:54.963Z",
+      "updatedAt": "2025-03-14T06:23:55.501Z",
+      "__v": 0,
+      "employeeId": "67d3cb7bf49724adc47a4001"
+    },
+    {
+      "_id": "67d556f0138751a9f2083a23",
+      "username": "2nv14",
+      "password": "$2b$10$LZxThO2HDnWKvYfrv5stP.5TQxAPMiR5cGfO.8WXn.U25DUiZjiJG",
+      "email": "employee1@gmail.com",
+      "role": "EMPLOYEE",
+      "isActive": "1",
+      "createdAt": "2025-03-15T10:31:12.340Z",
+      "updatedAt": "2025-03-15T10:31:12.476Z",
+      "__v": 0,
+      "employeeId": "67d556f0138751a9f2083a25"
+    },
+    {
+      "_id": "67dbd086002ff71fb1d902bc",
+      "username": "sinanidesuka12",
+      "password": "$2b$10$1Jg4hV9h9z6nq7rECFpiDuEt39ZOCCZtIYfL6BGRyjmiI7Otvv0/W",
+      "email": "sinanidesuka12@gmail.com",
+      "role": "ADMIN",
+      "isActive": "0",
+      "createdAt": "2025-03-20T08:23:34.849Z",
+      "updatedAt": "2025-03-20T08:23:35.360Z",
+      "__v": 0,
+      "employeeId": "67dbd087002ff71fb1d902be"
+    },
+    {
+      "_id": "67dc3777541b0df644e572c3",
+      "username": "khoind.283",
+      "password": "$2b$10$Wn/2Y/Xu6Z/OFBDWFx.bge0aGa9mHcyRBKsworNWG88kS7BXR2lTq",
+      "email": "khoind.283@gmail.com",
+      "role": "EMPLOYEE",
+      "isActive": "1",
+      "createdAt": "2025-03-20T15:42:47.825Z",
+      "updatedAt": "2025-03-20T16:20:32.428Z",
+      "__v": 0,
+      "employeeId": "67dc3777541b0df644e572c5"
+    },
+    {
+      "_id": "67dc583a50911f0daa0bb963",
+      "username": "hoando015",
+      "password": "$2b$10$T0pR2qo3ewMoPC4XF8zAQuOyCddpDPwewsYLKHdFbgdXRB2eOxOGm",
+      "email": "hoando015@gmail.com",
+      "role": "EMPLOYEE",
+      "isActive": "1",
+      "createdAt": "2025-03-20T18:02:34.422Z",
+      "updatedAt": "2025-03-20T18:06:55.361Z",
+      "__v": 0,
+      "employeeId": "67dc583a50911f0daa0bb965"
+    },
+    {
+      "_id": "67dc91eac269e55fb5de3524",
+      "username": "phanhuynh682",
+      "password": "$2b$10$v1OLZ0kmF1tgUuZm6aXoAu0oV6Q7hL0Nf4FPwAxlQsJ3vx3NcGpxu",
+      "email": "phanhuynh682@gmail.com",
+      "role": "ADMIN",
+      "isActive": "0",
+      "createdAt": "2025-03-20T22:08:42.303Z",
+      "updatedAt": "2025-03-20T22:08:42.445Z",
+      "__v": 0,
+      "employeeId": "67dc91eac269e55fb5de3526"
+    }
+  ],
+  "departments": [
+    {
+      "_id": "67cb7a7124a86d7f04c49ef8",
+      "name": "IT Support",
+      "roomNumber": "AL-R101",
+      "deleted": false,
+      "createdAt": "2025-03-07T23:00:01.802Z",
+      "updatedAt": "2025-03-17T17:07:03.316Z",
+      "__v": 0,
+      "managerId": "67cd3fd05ecdd54f5687c879",
+      "createBy": "67cc66da54b39517aeb79003"
+    },
+    {
+      "_id": "67cf218c87bf4fe6f0f5677d",
+      "name": "IT Department",
+      "description": "Handles all IT-related operations and infrastructure",
+      "roomNumber": "AL-L101",
+      "managerId": "67d556f0138751a9f2083a25",
+      "deleted": false,
+      "createdAt": "2025-03-10T17:29:48.779Z",
+      "updatedAt": "2025-03-20T17:56:31.276Z",
+      "__v": 0,
+      "createBy": "67cc66da54b39517aeb79003"
+    },
+    {
+      "_id": "67cf2835adc5d29f1d6f5651",
+      "name": "HR Department",
+      "description": "Manages human resources and employee relations",
+      "roomNumber": "BE-205",
+      "managerId": "67d3cb7bf49724adc47a4001",
+      "deleted": false,
+      "createdAt": "2025-03-10T17:58:13.783Z",
+      "updatedAt": "2025-03-20T18:33:13.012Z",
+      "__v": 0,
+      "createdBy": "67cc66da54b39517aeb79003"
+    },
+    {
+      "_id": "67cf2c3655d04cb273733f32",
+      "name": "Finance Department",
+      "description": "Responsible for financial planning and budgeting",
+      "roomNumber": "DE-303",
+      "managerId": null,
+      "deleted": false,
+      "createBy": "67cc66da54b39517aeb79003",
+      "createdAt": "2025-03-10T18:15:18.523Z",
+      "updatedAt": "2025-03-20T17:50:40.799Z",
+      "__v": 0
+    },
+    {
+      "_id": "67cf328f84dff9f2a0e897c6",
+      "name": "Marketing Department",
+      "description": "Oversees branding, advertising, and outreach",
+      "roomNumber": "DE-101",
+      "managerId": null,
+      "deleted": false,
+      "createBy": "67cc66da54b39517aeb79003",
+      "createdAt": "2025-03-10T18:42:23.094Z",
+      "updatedAt": "2025-03-20T12:38:51.538Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d5a35ebeb6691e3d4f3d09",
+      "name": "Tester Department",
+      "roomNumber": "BE-312",
+      "managerId": "67cbfd6984d55987e4b20b97",
+      "deleted": false,
+      "createBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-15T15:57:18.493Z",
+      "updatedAt": "2025-03-17T17:37:27.220Z",
+      "__v": 0
+    }
+  ],
+  "leaves": [
+    {
+      "_id": "67d911556684af95abd485a6",
+      "employeeId": "67d3cb7bf49724adc47a4001",
+      "startDate": "2025-03-21T00:00:00.000Z",
+      "endDate": "2025-03-22T00:00:00.000Z",
+      "reason": "sick",
+      "status": "Chờ duyệt",
+      "createdAt": "2025-03-18T06:23:17.698Z",
+      "updatedAt": "2025-03-18T06:23:17.698Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d911cb6684af95abd485e9",
+      "employeeId": "67d3cb7bf49724adc47a4001",
+      "startDate": "2025-03-22T00:00:00.000Z",
+      "endDate": "2025-03-26T00:00:00.000Z",
+      "reason": "travel",
+      "status": "Đã duyệt",
+      "createdAt": "2025-03-18T06:25:15.525Z",
+      "updatedAt": "2025-03-18T06:30:58.600Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d912986684af95abd48657",
+      "employeeId": "67d3cb7bf49724adc47a4001",
+      "startDate": "2025-04-01T00:00:00.000Z",
+      "endDate": "2025-04-02T00:00:00.000Z",
+      "reason": "wedding",
+      "status": "Đã duyệt",
+      "createdAt": "2025-03-18T06:28:40.579Z",
+      "updatedAt": "2025-03-18T06:29:28.500Z",
+      "__v": 0
+    }
+  ],
+  "salaries": [
+    {
+      "_id": "67d524d84c4ab937684383ef",
+      "employeeId": "67d3cb7bf49724adc47a4001",
+      "year": 2025,
+      "month": 3,
+      "baseSalary": 1000000,
+      "allowances": [
+        {
+          "name": "Phụ cấp ăn trưa",
+          "amount": 500000,
+          "_id": "67d56bff4b6800755cfb49ba"
+        }
+      ],
+      "bonuses": [
+        {
+          "name": "Thưởng lễ Tết",
+          "amount": 1000000,
+          "reason": "Thưởng Tết Nguyên Đán",
+          "_id": "67d56bff4b6800755cfb49bb"
+        }
+      ],
+      "deductions": [
+        {
+          "name": "Bảo hiểm xã hội",
+          "amount": 800000,
+          "reason": "Trừ BHXH tháng 3",
+          "_id": "67d56bff4b6800755cfb49bc"
+        }
+      ],
+      "daySalary": [
+        {
+          "day": 16,
+          "overTimeHours": 1.74,
+          "workingHours": 3.85,
+          "periodStart": "2025-03-16T11:44:53.961Z",
+          "periodEnd": "2025-03-16T12:44:53.961Z",
+          "salary": 37693.181818181816,
+          "_id": "67d6c7c6ad06e40ea8f8549e"
+        },
+        {
+          "day": 17,
+          "overTimeHours": 5.87,
+          "workingHours": 0.02,
+          "periodStart": "2025-03-17T23:52:13.603Z",
+          "periodEnd": "2025-03-17T23:53:10.461Z",
+          "salary": 53477.27272727273,
+          "_id": "67d8537647a610756c0345f2"
+        },
+        {
+          "day": 18,
+          "overTimeHours": 0,
+          "workingHours": 0,
+          "periodStart": "2025-03-18T00:50:59.172Z",
+          "periodEnd": "2025-03-18T13:17:13.540Z",
+          "salary": -50000,
+          "_id": "67d90feb6684af95abd48540"
+        }
+      ],
+      "totalSalary": 741170.45,
+      "note": "thêm khoản thưởng + phí 3/2025",
+      "periodStart": "2025-02-28T17:00:00.000Z",
+      "periodEnd": "2025-03-31T16:59:59.999Z",
+      "paymentDate": "2025-03-31T16:59:59.999Z",
+      "createdAt": "2025-03-15T06:57:28.446Z",
+      "updatedAt": "2025-03-20T14:34:54.434Z",
+      "__v": 25
+    },
+    {
+      "_id": "67d837747d75c0fc26fe1d7b",
+      "employeeId": "67d556f0138751a9f2083a25",
+      "year": 2025,
+      "month": 3,
+      "baseSalary": 10000000,
+      "allowances": [
+        {
+          "name": "Tiền xăng",
+          "amount": 500000,
+          "_id": "67dcfab91557cbf2f7a13e7c"
+        }
+      ],
+      "bonuses": [],
+      "deductions": [],
+      "daySalary": [
+        {
+          "day": 17,
+          "overTimeHours": 3.89,
+          "workingHours": 7.75,
+          "periodStart": "2025-03-17T14:53:40.920Z",
+          "periodEnd": "2025-03-17T14:53:40.920Z",
+          "salary": 793977.2727272727,
+          "_id": "67d837747d75c0fc26fe1d7c"
+        }
+      ],
+      "totalSalary": 793977.27,
+      "note": "",
+      "periodStart": "2025-02-28T17:00:00.000Z",
+      "periodEnd": "2025-03-31T16:59:59.999Z",
+      "paymentDate": "2025-03-31T16:59:59.999Z",
+      "createdAt": "2025-03-17T14:53:40.998Z",
+      "updatedAt": "2025-03-21T05:36:07.580Z",
+      "__v": 2
+    }
+  ],
+  "attendances": [
+    {
+      "_id": "67cd76e69ce4537e779bf353",
+      "employeeId": "67cc66da54b39517aeb79005",
+      "date": "2025-03-08T17:00:00.000Z",
+      "checkIn": "2025-03-09T11:09:26.734Z",
+      "status": "LATE",
+      "overtimeHours": 0.73,
+      "morningHours": 0,
+      "afternoonHours": 0.08,
+      "breakHours": 1.5,
+      "lateMinutes": 579,
+      "earlyLeaveMinutes": 0,
+      "note": " Performance score: 0.01",
+      "createdAt": "2025-03-09T11:09:26.738Z",
+      "updatedAt": "2025-03-09T11:14:03.180Z",
+      "__v": 0,
+      "checkOut": "2025-03-09T11:14:03.177Z"
+    },
+    {
+      "_id": "67cd79d2103f0845fa24e078",
+      "employeeId": "67cbfd6984d55987e4b20b97",
+      "date": "2025-03-08T17:00:00.000Z",
+      "checkIn": "2025-03-09T11:21:54.160Z",
+      "status": "LATE",
+      "overtimeHours": 0.38,
+      "morningHours": 0,
+      "afternoonHours": 0.01,
+      "breakHours": 1.5,
+      "lateMinutes": 591,
+      "earlyLeaveMinutes": 0,
+      "note": " Performance score: 0",
+      "createdAt": "2025-03-09T11:21:54.166Z",
+      "updatedAt": "2025-03-09T11:22:43.985Z",
+      "__v": 0,
+      "checkOut": "2025-03-09T11:22:43.984Z"
+    },
+    {
+      "_id": "67ce5a19978d54c3f53dd12c",
+      "employeeId": "67cc66da54b39517aeb79005",
+      "date": "2025-03-09T17:00:00.000Z",
+      "checkIn": "2025-03-10T03:18:49.410Z",
+      "status": "LATE",
+      "workingHours": 0.01,
+      "overtimeHours": 0,
+      "morningHours": 0.01,
+      "afternoonHours": 0,
+      "breakHours": 1.5,
+      "lateMinutes": 108,
+      "earlyLeaveMinutes": 0,
+      "note": " Performance score: 0",
+      "createdAt": "2025-03-10T03:18:49.414Z",
+      "updatedAt": "2025-03-10T03:19:38.459Z",
+      "__v": 0,
+      "checkOut": "2025-03-10T03:19:38.457Z"
+    },
+    {
+      "_id": "67ce5b8a0ebe1baaa7300b32",
+      "employeeId": "67cbfd6984d55987e4b20b97",
+      "date": "2025-03-09T17:00:00.000Z",
+      "checkIn": "2025-03-10T03:24:58.482Z",
+      "status": "LATE",
+      "workingHours": 10,
+      "overtimeHours": 3.92,
+      "morningHours": 1.58,
+      "afternoonHours": 8.42,
+      "breakHours": 1.5,
+      "lateMinutes": 114,
+      "earlyLeaveMinutes": 0,
+      "note": " Performance score: 1.25",
+      "createdAt": "2025-03-10T03:24:58.487Z",
+      "updatedAt": "2025-03-10T14:55:13.372Z",
+      "__v": 0,
+      "checkOut": "2025-03-10T14:55:13.368Z"
+    },
+    {
+      "_id": "67cf0472dd39ea4e0fcaccf4",
+      "employeeId": "67cb7e76651e8ab881d49e12",
+      "date": "2025-03-09T17:00:00.000Z",
+      "checkIn": "2025-03-10T15:25:38.776Z",
+      "status": "LATE",
+      "workingHours": 0.63,
+      "overtimeHours": 5.05,
+      "morningHours": 0,
+      "afternoonHours": 0.63,
+      "breakHours": 1.5,
+      "lateMinutes": 835,
+      "earlyLeaveMinutes": 0,
+      "note": " Performance score: 0.08",
+      "createdAt": "2025-03-10T15:25:38.780Z",
+      "updatedAt": "2025-03-10T16:03:29.932Z",
+      "__v": 0,
+      "checkOut": "2025-03-10T16:03:29.927Z"
+    },
+    {
+      "_id": "67cfdb74fe4cc71f230a0754",
+      "employeeId": "67cb7e76651e8ab881d49e12",
+      "date": "2025-03-11T00:00:00.000Z",
+      "checkIn": "2025-03-11T13:42:26.211Z",
+      "status": "EARLY_LEAVE",
+      "workingHours": 0.01,
+      "overtimeHours": 0,
+      "morningHours": 0,
+      "afternoonHours": 0.01,
+      "breakHours": 1.5,
+      "lateMinutes": 11,
+      "earlyLeaveMinutes": 257,
+      "note": " Performance score: 0",
+      "createdAt": "2025-03-11T06:43:00.941Z",
+      "updatedAt": "2025-03-11T06:43:14.384Z",
+      "__v": 0,
+      "checkOut": "2025-03-11T13:43:14.384Z"
+    },
+    {
+      "_id": "67d12f31cef545d404ee3a89",
+      "employeeId": "67cb7e76651e8ab881d49e12",
+      "date": "2025-03-12T00:00:00.000Z",
+      "checkIn": "2025-03-12T13:51:54.644Z",
+      "status": "LATE",
+      "workingHours": 4.28,
+      "overtimeHours": 0.14,
+      "morningHours": 0,
+      "afternoonHours": 4.28,
+      "breakHours": 1.5,
+      "lateMinutes": 20,
+      "earlyLeaveMinutes": 0,
+      "note": " Performance score: 0.54",
+      "createdAt": "2025-03-12T06:52:33.100Z",
+      "updatedAt": "2025-03-12T11:08:51.301Z",
+      "__v": 0,
+      "checkOut": "2025-03-12T18:08:51.298Z"
+    },
+    {
+      "_id": "67d2ae58f8ff98e05d6bc3b3",
+      "employeeId": "67cb7e76651e8ab881d49e12",
+      "date": "2025-03-13T00:00:00.000Z",
+      "checkIn": "2025-03-13T17:07:20.583Z",
+      "status": "EARLY_LEAVE",
+      "workingHours": 0.01,
+      "overtimeHours": 0,
+      "morningHours": 0,
+      "afternoonHours": 0.01,
+      "breakHours": 1.5,
+      "lateMinutes": 217,
+      "earlyLeaveMinutes": 52,
+      "note": " Performance score: 0",
+      "createdAt": "2025-03-13T10:07:20.937Z",
+      "updatedAt": "2025-03-13T10:07:42.237Z",
+      "__v": 0,
+      "checkOut": "2025-03-13T17:07:41.864Z"
+    },
+    {
+      "_id": "67d3babbb8222a25956a2264",
+      "employeeId": "67d1c1980521a7bd468c388a",
+      "date": "2025-03-14T00:00:00.000Z",
+      "checkIn": "2025-03-14T12:12:27.327Z",
+      "status": "EARLY_LEAVE",
+      "workingHours": 0,
+      "overtimeHours": 0,
+      "morningHours": 0,
+      "afternoonHours": 0,
+      "breakHours": 1.5,
+      "lateMinutes": 0,
+      "earlyLeaveMinutes": 296,
+      "note": " Performance score: 0",
+      "createdAt": "2025-03-14T05:12:27.474Z",
+      "updatedAt": "2025-03-14T06:04:03.659Z",
+      "__v": 0,
+      "checkOut": "2025-03-14T13:04:03.194Z"
+    },
+    {
+      "_id": "67d3c9c18702a157235c1696",
+      "employeeId": "67cd3fd05ecdd54f5687c879",
+      "date": "2025-03-14T00:00:00.000Z",
+      "checkIn": "2025-03-14T13:16:33.052Z",
+      "status": "EARLY_LEAVE",
+      "workingHours": 0.34,
+      "overtimeHours": 0,
+      "morningHours": 0,
+      "afternoonHours": 0.34,
+      "breakHours": 1.5,
+      "lateMinutes": 0,
+      "earlyLeaveMinutes": 249,
+      "note": " Performance score: 0.04",
+      "createdAt": "2025-03-14T06:16:33.493Z",
+      "updatedAt": "2025-03-14T06:50:46.120Z",
+      "__v": 0,
+      "checkOut": "2025-03-14T13:50:45.709Z"
+    },
+    {
+      "_id": "67d3d6aec0d0d498895e622f",
+      "employeeId": "67d3cb7bf49724adc47a4001",
+      "date": "2025-03-14T00:00:00.000Z",
+      "checkIn": "2025-03-14T14:11:41.691Z",
+      "status": "EARLY_LEAVE",
+      "workingHours": 0,
+      "overtimeHours": 0,
+      "morningHours": 0,
+      "afternoonHours": 0,
+      "breakHours": 1.5,
+      "lateMinutes": 0,
+      "earlyLeaveMinutes": 229,
+      "note": " Performance score: 0",
+      "createdAt": "2025-03-14T07:11:42.188Z",
+      "updatedAt": "2025-03-14T07:11:47.009Z",
+      "__v": 0,
+      "checkOut": "2025-03-14T14:11:46.380Z"
+    },
+    {
+      "_id": "67d45beaaca050a62b19aa1a",
+      "employeeId": "67cb7e76651e8ab881d49e12",
+      "date": "2025-03-14T00:00:00.000Z",
+      "checkIn": "2025-03-14T23:40:09.893Z",
+      "status": "PRESENT",
+      "workingHours": 0.03,
+      "overtimeHours": 5.69,
+      "morningHours": 0,
+      "afternoonHours": 0.03,
+      "breakHours": 1.5,
+      "lateMinutes": 0,
+      "earlyLeaveMinutes": 0,
+      "note": " Performance score: 0",
+      "createdAt": "2025-03-14T16:40:10.013Z",
+      "updatedAt": "2025-03-14T16:41:55.130Z",
+      "__v": 0,
+      "checkOut": "2025-03-14T23:41:54.945Z"
+    },
+    {
+      "_id": "67d524bf4c4ab937684383df",
+      "employeeId": "67d3cb7bf49724adc47a4001",
+      "date": "2025-03-15T00:00:00.000Z",
+      "checkIn": "2025-03-15T13:57:03.849Z",
+      "status": "EARLY_LEAVE",
+      "workingHours": 0.01,
+      "overtimeHours": 0,
+      "morningHours": 0,
+      "afternoonHours": 0.01,
+      "breakHours": 1.5,
+      "lateMinutes": 0,
+      "earlyLeaveMinutes": 242,
+      "note": " Performance score: 0",
+      "createdAt": "2025-03-15T06:57:03.974Z",
+      "updatedAt": "2025-03-15T06:57:28.475Z",
+      "__v": 0,
+      "checkOut": "2025-03-15T13:57:28.275Z"
+    },
+    {
+      "_id": "67d54744b52935e80ef61e3e",
+      "employeeId": "67cd3fd05ecdd54f5687c879",
+      "date": "2025-03-15T00:00:00.000Z",
+      "checkIn": "2025-03-15T16:24:20.529Z",
+      "status": "PRESENT",
+      "workingHours": 0,
+      "overtimeHours": 0,
+      "morningHours": 0,
+      "afternoonHours": 0,
+      "breakHours": 0,
+      "lateMinutes": 0,
+      "earlyLeaveMinutes": 0,
+      "note": "",
+      "createdAt": "2025-03-15T09:24:20.762Z",
+      "updatedAt": "2025-03-15T09:24:20.762Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d5a2ac9aeb0d6df9067c52",
+      "employeeId": "67d556f0138751a9f2083a25",
+      "date": "2025-03-15T00:00:00.000Z",
+      "checkIn": "2025-03-15T22:54:20.688Z",
+      "status": "PRESENT",
+      "workingHours": 0.56,
+      "overtimeHours": 5.46,
+      "morningHours": 0,
+      "afternoonHours": 0.56,
+      "breakHours": 1.5,
+      "lateMinutes": 0,
+      "earlyLeaveMinutes": 0,
+      "note": " Performance score: 0.07",
+      "createdAt": "2025-03-15T15:54:20.955Z",
+      "updatedAt": "2025-03-15T16:27:55.301Z",
+      "__v": 0,
+      "checkOut": "2025-03-15T23:27:55.025Z"
+    },
+    {
+      "_id": "67d6d291a8db2ddca9d117df",
+      "employeeId": "67d3cb7bf49724adc47a4001",
+      "date": "2025-03-16T00:00:00.000Z",
+      "checkIn": "2025-03-16T20:30:57.787Z",
+      "status": "LATE",
+      "workingHours": 0,
+      "overtimeHours": 2.51,
+      "morningHours": 0,
+      "afternoonHours": 0,
+      "breakHours": 1.5,
+      "lateMinutes": 420,
+      "earlyLeaveMinutes": 0,
+      "note": " Performance score: 0",
+      "createdAt": "2025-03-16T13:30:57.987Z",
+      "updatedAt": "2025-03-16T13:31:04.774Z",
+      "__v": 0,
+      "checkOut": "2025-03-16T20:31:04.596Z"
+    },
+    {
+      "_id": "67d6f363da2bc07f79804709",
+      "employeeId": "67d3cb7bf49724adc47a4001",
+      "date": "2025-03-19T00:00:00.000Z",
+      "checkIn": "2025-03-19T00:00:00.000Z",
+      "checkOut": "2025-03-19T00:00:00.000Z",
+      "status": "LEAVE",
+      "workingHours": 0,
+      "overtimeHours": 0,
+      "morningHours": 0,
+      "afternoonHours": 0,
+      "breakHours": 1.5,
+      "lateMinutes": 0,
+      "earlyLeaveMinutes": 0,
+      "note": " Performance score: 0, Reason: aaaa",
+      "createdAt": "2025-03-16T15:50:59.059Z",
+      "updatedAt": "2025-03-16T15:50:59.059Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d7ca76679e5d23100fa32a",
+      "employeeId": "67d556f0138751a9f2083a25",
+      "date": "2025-03-17T00:00:00.000Z",
+      "checkIn": "2025-03-17T14:08:38.501Z",
+      "status": "LATE",
+      "workingHours": 7.75,
+      "overtimeHours": 3.89,
+      "morningHours": 0,
+      "afternoonHours": 7.75,
+      "breakHours": 1.5,
+      "lateMinutes": 38,
+      "earlyLeaveMinutes": 0,
+      "note": " Performance score: 0.97",
+      "createdAt": "2025-03-17T07:08:38.695Z",
+      "updatedAt": "2025-03-17T14:53:41.039Z",
+      "__v": 0,
+      "checkOut": "2025-03-17T21:53:40.717Z"
+    },
+    {
+      "_id": "67d910a46684af95abd48586",
+      "employeeId": "67d3cb7bf49724adc47a4001",
+      "date": "2025-03-18T00:00:00.000Z",
+      "checkIn": "2025-03-18T13:20:19.495Z",
+      "status": "PRESENT",
+      "workingHours": 0,
+      "overtimeHours": 0,
+      "morningHours": 0,
+      "afternoonHours": 0,
+      "breakHours": 0,
+      "lateMinutes": 0,
+      "earlyLeaveMinutes": 0,
+      "note": "",
+      "createdAt": "2025-03-18T06:20:20.580Z",
+      "updatedAt": "2025-03-18T06:20:20.580Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d912c86684af95abd4869f",
+      "employeeId": "67d3cb7bf49724adc47a4001",
+      "date": "2025-04-01T00:00:00.000Z",
+      "checkIn": "2025-04-01T00:00:00.000Z",
+      "checkOut": "2025-04-01T00:00:00.000Z",
+      "status": "LEAVE",
+      "workingHours": 0,
+      "overtimeHours": 0,
+      "morningHours": 0,
+      "afternoonHours": 0,
+      "breakHours": 1.5,
+      "lateMinutes": 0,
+      "earlyLeaveMinutes": 0,
+      "note": " Performance score: 0, Reason: wedding",
+      "createdAt": "2025-03-18T06:29:28.036Z",
+      "updatedAt": "2025-03-18T06:29:28.036Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d912c86684af95abd486a1",
+      "employeeId": "67d3cb7bf49724adc47a4001",
+      "date": "2025-04-02T00:00:00.000Z",
+      "checkIn": "2025-04-02T00:00:00.000Z",
+      "checkOut": "2025-04-02T00:00:00.000Z",
+      "status": "LEAVE",
+      "workingHours": 0,
+      "overtimeHours": 0,
+      "morningHours": 0,
+      "afternoonHours": 0,
+      "breakHours": 1.5,
+      "lateMinutes": 0,
+      "earlyLeaveMinutes": 0,
+      "note": " Performance score: 0, Reason: wedding",
+      "createdAt": "2025-03-18T06:29:28.372Z",
+      "updatedAt": "2025-03-18T06:29:28.372Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d913226684af95abd48774",
+      "employeeId": "67d3cb7bf49724adc47a4001",
+      "date": "2025-03-23T00:00:00.000Z",
+      "checkIn": "2025-03-23T00:00:00.000Z",
+      "checkOut": "2025-03-23T00:00:00.000Z",
+      "status": "LEAVE",
+      "workingHours": 0,
+      "overtimeHours": 0,
+      "morningHours": 0,
+      "afternoonHours": 0,
+      "breakHours": 1.5,
+      "lateMinutes": 0,
+      "earlyLeaveMinutes": 0,
+      "note": " Performance score: 0, Reason: travel",
+      "createdAt": "2025-03-18T06:30:58.151Z",
+      "updatedAt": "2025-03-18T06:30:58.151Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d913226684af95abd48776",
+      "employeeId": "67d3cb7bf49724adc47a4001",
+      "date": "2025-03-24T00:00:00.000Z",
+      "checkIn": "2025-03-24T00:00:00.000Z",
+      "checkOut": "2025-03-24T00:00:00.000Z",
+      "status": "LEAVE",
+      "workingHours": 0,
+      "overtimeHours": 0,
+      "morningHours": 0,
+      "afternoonHours": 0,
+      "breakHours": 1.5,
+      "lateMinutes": 0,
+      "earlyLeaveMinutes": 0,
+      "note": " Performance score: 0, Reason: travel",
+      "createdAt": "2025-03-18T06:30:58.242Z",
+      "updatedAt": "2025-03-18T06:30:58.242Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d913226684af95abd48778",
+      "employeeId": "67d3cb7bf49724adc47a4001",
+      "date": "2025-03-25T00:00:00.000Z",
+      "checkIn": "2025-03-25T00:00:00.000Z",
+      "checkOut": "2025-03-25T00:00:00.000Z",
+      "status": "LEAVE",
+      "workingHours": 0,
+      "overtimeHours": 0,
+      "morningHours": 0,
+      "afternoonHours": 0,
+      "breakHours": 1.5,
+      "lateMinutes": 0,
+      "earlyLeaveMinutes": 0,
+      "note": " Performance score: 0, Reason: travel",
+      "createdAt": "2025-03-18T06:30:58.332Z",
+      "updatedAt": "2025-03-18T06:30:58.332Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d913226684af95abd4877a",
+      "employeeId": "67d3cb7bf49724adc47a4001",
+      "date": "2025-03-26T00:00:00.000Z",
+      "checkIn": "2025-03-26T00:00:00.000Z",
+      "checkOut": "2025-03-26T00:00:00.000Z",
+      "status": "LEAVE",
+      "workingHours": 0,
+      "overtimeHours": 0,
+      "morningHours": 0,
+      "afternoonHours": 0,
+      "breakHours": 1.5,
+      "lateMinutes": 0,
+      "earlyLeaveMinutes": 0,
+      "note": " Performance score: 0, Reason: travel",
+      "createdAt": "2025-03-18T06:30:58.442Z",
+      "updatedAt": "2025-03-18T06:30:58.442Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dcf6becaef3f10b6da5167",
+      "employeeId": "67d3cb7bf49724adc47a4001",
+      "date": "2025-03-21T00:00:00.000Z",
+      "checkIn": "2025-03-21T12:18:54.713Z",
+      "status": "PRESENT",
+      "workingHours": 0,
+      "overtimeHours": 0,
+      "morningHours": 0,
+      "afternoonHours": 0,
+      "breakHours": 0,
+      "lateMinutes": 0,
+      "earlyLeaveMinutes": 0,
+      "note": "",
+      "createdAt": "2025-03-21T05:18:54.986Z",
+      "updatedAt": "2025-03-21T05:18:54.986Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dcfa971557cbf2f7a13e0b",
+      "employeeId": "67d556f0138751a9f2083a25",
+      "date": "2025-03-21T00:00:00.000Z",
+      "checkIn": "2025-03-21T12:35:19.325Z",
+      "status": "PRESENT",
+      "workingHours": 0,
+      "overtimeHours": 0,
+      "morningHours": 0,
+      "afternoonHours": 0,
+      "breakHours": 0,
+      "lateMinutes": 0,
+      "earlyLeaveMinutes": 0,
+      "note": "",
+      "createdAt": "2025-03-21T05:35:19.605Z",
+      "updatedAt": "2025-03-21T05:35:19.605Z",
+      "__v": 0
+    }
+  ],
+  "activity_logs": [
+    {
+      "_id": "67d5aa3bc94d585900c19b0c",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update department",
+      "entityType": "DEPARTMENT",
+      "entityId": "67cf218c87bf4fe6f0f5677d",
+      "oldValues": {
+        "_id": "67cf218c87bf4fe6f0f5677d",
+        "name": "IT Department",
+        "description": "Handles all IT-related operations and infrastructure",
+        "roomNumber": "AL-L101",
+        "managerId": "67cd71b33bc9d4b8f66fc115",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:29:48.779Z",
+        "updatedAt": "2025-03-14T06:55:25.788Z",
+        "__v": 0,
+        "createBy": "67cc66da54b39517aeb79003"
+      },
+      "newValues": {
+        "_id": "67cf218c87bf4fe6f0f5677d",
+        "name": "IT Department",
+        "description": "Handles all IT-related operations and infrastructure",
+        "roomNumber": "AL-L101",
+        "managerId": "67cd72413bc9d4b8f66fc145",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:29:48.779Z",
+        "updatedAt": "2025-03-15T16:26:35.557Z",
+        "__v": 0,
+        "createBy": "67cc66da54b39517aeb79003"
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-15T16:26:35.730Z",
+      "updatedAt": "2025-03-15T16:26:35.730Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d7e43679776be75c9fb697",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update department",
+      "entityType": "DEPARTMENT",
+      "entityId": "67cf2835adc5d29f1d6f5651",
+      "oldValues": {
+        "_id": "67cf2835adc5d29f1d6f5651",
+        "name": "HR Department",
+        "description": "Manages human resources and employee relations",
+        "roomNumber": "BE-205",
+        "managerId": "67d3cb7bf49724adc47a4001",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:58:13.783Z",
+        "updatedAt": "2025-03-15T15:34:41.914Z",
+        "__v": 0,
+        "createdBy": "67cc66da54b39517aeb79003"
+      },
+      "newValues": {
+        "_id": "67cf2835adc5d29f1d6f5651",
+        "name": "HR Department",
+        "description": "Manages human resources and employee relations",
+        "roomNumber": "BE-205",
+        "managerId": "67cd71b33bc9d4b8f66fc115",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:58:13.783Z",
+        "updatedAt": "2025-03-17T08:58:29.347Z",
+        "__v": 0,
+        "createdBy": "67cc66da54b39517aeb79003"
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-17T08:58:30.346Z",
+      "updatedAt": "2025-03-17T08:58:30.346Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d7e51179776be75c9fb742",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update department",
+      "entityType": "DEPARTMENT",
+      "entityId": "67cf2835adc5d29f1d6f5651",
+      "oldValues": {
+        "_id": "67cf2835adc5d29f1d6f5651",
+        "name": "HR Department",
+        "description": "Manages human resources and employee relations",
+        "roomNumber": "BE-205",
+        "managerId": "67cd71b33bc9d4b8f66fc115",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:58:13.783Z",
+        "updatedAt": "2025-03-17T08:58:29.347Z",
+        "__v": 0,
+        "createdBy": "67cc66da54b39517aeb79003"
+      },
+      "newValues": {
+        "_id": "67cf2835adc5d29f1d6f5651",
+        "name": "HR Department",
+        "description": "Manages human resources and employee relations",
+        "roomNumber": "BE-205",
+        "managerId": "67d3cb7bf49724adc47a4001",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:58:13.783Z",
+        "updatedAt": "2025-03-17T09:02:08.415Z",
+        "__v": 0,
+        "createdBy": "67cc66da54b39517aeb79003"
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-17T09:02:09.428Z",
+      "updatedAt": "2025-03-17T09:02:09.428Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d7e72379776be75c9fb7b2",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update department",
+      "entityType": "DEPARTMENT",
+      "entityId": "67cf2835adc5d29f1d6f5651",
+      "oldValues": {
+        "_id": "67cf2835adc5d29f1d6f5651",
+        "name": "HR Department",
+        "description": "Manages human resources and employee relations",
+        "roomNumber": "BE-205",
+        "managerId": "67d3cb7bf49724adc47a4001",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:58:13.783Z",
+        "updatedAt": "2025-03-17T09:02:08.415Z",
+        "__v": 0,
+        "createdBy": "67cc66da54b39517aeb79003"
+      },
+      "newValues": {
+        "_id": "67cf2835adc5d29f1d6f5651",
+        "name": "HR Department",
+        "description": "Manages human resources and employee relations",
+        "roomNumber": "BE-205",
+        "managerId": "67cd73ba3bc9d4b8f66fc219",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:58:13.783Z",
+        "updatedAt": "2025-03-17T09:10:58.843Z",
+        "__v": 0,
+        "createdBy": "67cc66da54b39517aeb79003"
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-17T09:10:59.921Z",
+      "updatedAt": "2025-03-17T09:10:59.921Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d7e99a3a0d8062008abc88",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update department",
+      "entityType": "DEPARTMENT",
+      "entityId": "67cf328f84dff9f2a0e897c6",
+      "oldValues": {
+        "_id": "67cf328f84dff9f2a0e897c6",
+        "name": "Marketing Department",
+        "description": "Oversees branding, advertising, and outreach",
+        "roomNumber": "DE-101",
+        "managerId": "67d1c1980521a7bd468c388a",
+        "deleted": false,
+        "createBy": "67cc66da54b39517aeb79003",
+        "createdAt": "2025-03-10T18:42:23.094Z",
+        "updatedAt": "2025-03-14T06:55:36.913Z",
+        "__v": 0
+      },
+      "newValues": {
+        "_id": "67cf328f84dff9f2a0e897c6",
+        "name": "Marketing Department",
+        "description": "Oversees branding, advertising, and outreach",
+        "roomNumber": "DE-101",
+        "managerId": "67d556f0138751a9f2083a25",
+        "deleted": false,
+        "createBy": "67cc66da54b39517aeb79003",
+        "createdAt": "2025-03-10T18:42:23.094Z",
+        "updatedAt": "2025-03-17T09:21:29.680Z",
+        "__v": 0
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-17T09:21:30.430Z",
+      "updatedAt": "2025-03-17T09:21:30.430Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d827be3a8cbe668bd7b561",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update department",
+      "entityType": "DEPARTMENT",
+      "entityId": "67d5a35ebeb6691e3d4f3d09",
+      "oldValues": {
+        "_id": "67d5a35ebeb6691e3d4f3d09",
+        "name": "Tester Department",
+        "roomNumber": "BE-312",
+        "managerId": null,
+        "deleted": false,
+        "createBy": "67cb7e76651e8ab881d49e10",
+        "createdAt": "2025-03-15T15:57:18.493Z",
+        "updatedAt": "2025-03-17T09:21:29.002Z",
+        "__v": 0
+      },
+      "newValues": {
+        "_id": "67d5a35ebeb6691e3d4f3d09",
+        "name": "Tester Department",
+        "roomNumber": "BE-312",
+        "managerId": "67d3cb7bf49724adc47a4001",
+        "deleted": false,
+        "createBy": "67cb7e76651e8ab881d49e10",
+        "createdAt": "2025-03-15T15:57:18.493Z",
+        "updatedAt": "2025-03-17T13:46:37.875Z",
+        "__v": 0
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-17T13:46:38.052Z",
+      "updatedAt": "2025-03-17T13:46:38.052Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d828203a8cbe668bd7b5be",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update department",
+      "entityType": "DEPARTMENT",
+      "entityId": "67cf218c87bf4fe6f0f5677d",
+      "oldValues": {
+        "_id": "67cf218c87bf4fe6f0f5677d",
+        "name": "IT Department",
+        "description": "Handles all IT-related operations and infrastructure",
+        "roomNumber": "AL-L101",
+        "managerId": "67cd72413bc9d4b8f66fc145",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:29:48.779Z",
+        "updatedAt": "2025-03-15T16:26:35.557Z",
+        "__v": 0,
+        "createBy": "67cc66da54b39517aeb79003"
+      },
+      "newValues": {
+        "_id": "67cf218c87bf4fe6f0f5677d",
+        "name": "IT Department",
+        "description": "Handles all IT-related operations and infrastructure",
+        "roomNumber": "AL-L101",
+        "managerId": "67d3cb7bf49724adc47a4001",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:29:48.779Z",
+        "updatedAt": "2025-03-17T13:48:15.898Z",
+        "__v": 0,
+        "createBy": "67cc66da54b39517aeb79003"
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-17T13:48:16.080Z",
+      "updatedAt": "2025-03-17T13:48:16.080Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d828e4e08f673efe1ee6bd",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update department",
+      "entityType": "DEPARTMENT",
+      "entityId": "67cf2835adc5d29f1d6f5651",
+      "oldValues": {
+        "_id": "67cf2835adc5d29f1d6f5651",
+        "name": "HR Department",
+        "description": "Manages human resources and employee relations",
+        "roomNumber": "BE-205",
+        "managerId": "67cd73ba3bc9d4b8f66fc219",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:58:13.783Z",
+        "updatedAt": "2025-03-17T09:10:58.843Z",
+        "__v": 0,
+        "createdBy": "67cc66da54b39517aeb79003"
+      },
+      "newValues": {
+        "_id": "67cf2835adc5d29f1d6f5651",
+        "name": "HR Department",
+        "description": "Manages human resources and employee relations",
+        "roomNumber": "BE-205",
+        "managerId": "67d3cb7bf49724adc47a4001",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:58:13.783Z",
+        "updatedAt": "2025-03-17T13:51:32.492Z",
+        "__v": 0,
+        "createdBy": "67cc66da54b39517aeb79003"
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-17T13:51:32.683Z",
+      "updatedAt": "2025-03-17T13:51:32.683Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d851815b3c6b39cbdce734",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update department",
+      "entityType": "DEPARTMENT",
+      "entityId": "67cf2835adc5d29f1d6f5651",
+      "oldValues": {
+        "_id": "67cf2835adc5d29f1d6f5651",
+        "name": "HR Department",
+        "description": "Manages human resources and employee relations",
+        "roomNumber": "BE-205",
+        "managerId": "67d3cb7bf49724adc47a4001",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:58:13.783Z",
+        "updatedAt": "2025-03-17T13:51:32.492Z",
+        "__v": 0,
+        "createdBy": "67cc66da54b39517aeb79003"
+      },
+      "newValues": {
+        "_id": "67cf2835adc5d29f1d6f5651",
+        "name": "HR Department",
+        "description": "Manages human resources and employee relations",
+        "roomNumber": "BE-205",
+        "managerId": "67cd73353bc9d4b8f66fc1ca",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:58:13.783Z",
+        "updatedAt": "2025-03-17T16:44:49.554Z",
+        "__v": 0,
+        "createdBy": "67cc66da54b39517aeb79003"
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-17T16:44:49.816Z",
+      "updatedAt": "2025-03-17T16:44:49.816Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d8543a5b3c6b39cbdcea4f",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update department",
+      "entityType": "DEPARTMENT",
+      "entityId": "67cb7a7124a86d7f04c49ef8",
+      "oldValues": {
+        "_id": "67cb7a7124a86d7f04c49ef8",
+        "name": "IT Support",
+        "roomNumber": "AL-R101",
+        "deleted": false,
+        "createdAt": "2025-03-07T23:00:01.802Z",
+        "updatedAt": "2025-03-16T19:26:02.251Z",
+        "__v": 0,
+        "managerId": "67cd3fd05ecdd54f5687c879",
+        "createBy": "67cc66da54b39517aeb79003"
+      },
+      "newValues": {
+        "_id": "67cb7a7124a86d7f04c49ef8",
+        "name": "IT Support",
+        "roomNumber": "AL-R101",
+        "deleted": false,
+        "createdAt": "2025-03-07T23:00:01.802Z",
+        "updatedAt": "2025-03-17T16:56:26.506Z",
+        "__v": 0,
+        "managerId": "67cbfd6984d55987e4b20b97",
+        "createBy": "67cc66da54b39517aeb79003"
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-17T16:56:26.697Z",
+      "updatedAt": "2025-03-17T16:56:26.697Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d856b75b3c6b39cbdced56",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update department",
+      "entityType": "DEPARTMENT",
+      "entityId": "67cb7a7124a86d7f04c49ef8",
+      "oldValues": {
+        "_id": "67cb7a7124a86d7f04c49ef8",
+        "name": "IT Support",
+        "roomNumber": "AL-R101",
+        "deleted": false,
+        "createdAt": "2025-03-07T23:00:01.802Z",
+        "updatedAt": "2025-03-17T16:56:26.506Z",
+        "__v": 0,
+        "managerId": "67cbfd6984d55987e4b20b97",
+        "createBy": "67cc66da54b39517aeb79003"
+      },
+      "newValues": {
+        "_id": "67cb7a7124a86d7f04c49ef8",
+        "name": "IT Support",
+        "roomNumber": "AL-R101",
+        "deleted": false,
+        "createdAt": "2025-03-07T23:00:01.802Z",
+        "updatedAt": "2025-03-17T17:07:03.316Z",
+        "__v": 0,
+        "managerId": "67cd3fd05ecdd54f5687c879",
+        "createBy": "67cc66da54b39517aeb79003"
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-17T17:07:03.524Z",
+      "updatedAt": "2025-03-17T17:07:03.524Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d85dc05b3c6b39cbdcf236",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update department",
+      "entityType": "DEPARTMENT",
+      "entityId": "67cf218c87bf4fe6f0f5677d",
+      "oldValues": {
+        "_id": "67cf218c87bf4fe6f0f5677d",
+        "name": "IT Department",
+        "description": "Handles all IT-related operations and infrastructure",
+        "roomNumber": "AL-L101",
+        "managerId": null,
+        "deleted": false,
+        "createdAt": "2025-03-10T17:29:48.779Z",
+        "updatedAt": "2025-03-17T13:51:32.446Z",
+        "__v": 0,
+        "createBy": "67cc66da54b39517aeb79003"
+      },
+      "newValues": {
+        "_id": "67cf218c87bf4fe6f0f5677d",
+        "name": "IT Department",
+        "description": "Handles all IT-related operations and infrastructure",
+        "roomNumber": "AL-L101",
+        "managerId": "67cb7e76651e8ab881d49e12",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:29:48.779Z",
+        "updatedAt": "2025-03-17T17:37:04.268Z",
+        "__v": 0,
+        "createBy": "67cc66da54b39517aeb79003"
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-17T17:37:04.554Z",
+      "updatedAt": "2025-03-17T17:37:04.554Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d85dc65b3c6b39cbdcf24b",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update department",
+      "entityType": "DEPARTMENT",
+      "entityId": "67cf2c3655d04cb273733f32",
+      "oldValues": {
+        "_id": "67cf2c3655d04cb273733f32",
+        "name": "Finance Department",
+        "description": "Responsible for financial planning and budgeting",
+        "roomNumber": "DE-303",
+        "managerId": "67caf311edd34b13d0cf7a7c",
+        "deleted": false,
+        "createBy": "67cc66da54b39517aeb79003",
+        "createdAt": "2025-03-10T18:15:18.523Z",
+        "updatedAt": "2025-03-10T18:48:07.097Z",
+        "__v": 0
+      },
+      "newValues": {
+        "_id": "67cf2c3655d04cb273733f32",
+        "name": "Finance Department",
+        "description": "Responsible for financial planning and budgeting",
+        "roomNumber": "DE-303",
+        "managerId": "67cd71b33bc9d4b8f66fc115",
+        "deleted": false,
+        "createBy": "67cc66da54b39517aeb79003",
+        "createdAt": "2025-03-10T18:15:18.523Z",
+        "updatedAt": "2025-03-17T17:37:10.191Z",
+        "__v": 0
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-17T17:37:10.400Z",
+      "updatedAt": "2025-03-17T17:37:10.400Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d85dcb5b3c6b39cbdcf260",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update department",
+      "entityType": "DEPARTMENT",
+      "entityId": "67cf328f84dff9f2a0e897c6",
+      "oldValues": {
+        "_id": "67cf328f84dff9f2a0e897c6",
+        "name": "Marketing Department",
+        "description": "Oversees branding, advertising, and outreach",
+        "roomNumber": "DE-101",
+        "managerId": "67d556f0138751a9f2083a25",
+        "deleted": false,
+        "createBy": "67cc66da54b39517aeb79003",
+        "createdAt": "2025-03-10T18:42:23.094Z",
+        "updatedAt": "2025-03-17T09:21:29.680Z",
+        "__v": 0
+      },
+      "newValues": {
+        "_id": "67cf328f84dff9f2a0e897c6",
+        "name": "Marketing Department",
+        "description": "Oversees branding, advertising, and outreach",
+        "roomNumber": "DE-101",
+        "managerId": "67d1c1980521a7bd468c388a",
+        "deleted": false,
+        "createBy": "67cc66da54b39517aeb79003",
+        "createdAt": "2025-03-10T18:42:23.094Z",
+        "updatedAt": "2025-03-17T17:37:15.033Z",
+        "__v": 0
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-17T17:37:15.285Z",
+      "updatedAt": "2025-03-17T17:37:15.285Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d85dd75b3c6b39cbdcf275",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update department",
+      "entityType": "DEPARTMENT",
+      "entityId": "67d5a35ebeb6691e3d4f3d09",
+      "oldValues": {
+        "_id": "67d5a35ebeb6691e3d4f3d09",
+        "name": "Tester Department",
+        "roomNumber": "BE-312",
+        "managerId": null,
+        "deleted": false,
+        "createBy": "67cb7e76651e8ab881d49e10",
+        "createdAt": "2025-03-15T15:57:18.493Z",
+        "updatedAt": "2025-03-17T13:48:15.852Z",
+        "__v": 0
+      },
+      "newValues": {
+        "_id": "67d5a35ebeb6691e3d4f3d09",
+        "name": "Tester Department",
+        "roomNumber": "BE-312",
+        "managerId": "67cbfd6984d55987e4b20b97",
+        "deleted": false,
+        "createBy": "67cb7e76651e8ab881d49e10",
+        "createdAt": "2025-03-15T15:57:18.493Z",
+        "updatedAt": "2025-03-17T17:37:27.220Z",
+        "__v": 0
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-17T17:37:27.470Z",
+      "updatedAt": "2025-03-17T17:37:27.470Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d8603155aaa9ace37faab7",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update department",
+      "entityType": "DEPARTMENT",
+      "entityId": "67cf218c87bf4fe6f0f5677d",
+      "oldValues": {
+        "_id": "67cf218c87bf4fe6f0f5677d",
+        "name": "IT Department",
+        "description": "Handles all IT-related operations and infrastructure",
+        "roomNumber": "AL-L101",
+        "managerId": "67cb7e76651e8ab881d49e12",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:29:48.779Z",
+        "updatedAt": "2025-03-17T17:37:04.268Z",
+        "__v": 0,
+        "createBy": "67cc66da54b39517aeb79003"
+      },
+      "newValues": {
+        "_id": "67cf218c87bf4fe6f0f5677d",
+        "name": "IT Department",
+        "description": "Handles all IT-related operations and infrastructure",
+        "roomNumber": "AL-L101",
+        "managerId": "67d1c1980521a7bd468c388a",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:29:48.779Z",
+        "updatedAt": "2025-03-17T17:47:28.839Z",
+        "__v": 0,
+        "createBy": "67cc66da54b39517aeb79003"
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-17T17:47:29.022Z",
+      "updatedAt": "2025-03-17T17:47:29.022Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d861f955aaa9ace37fac4d",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update department",
+      "entityType": "DEPARTMENT",
+      "entityId": "67cf2835adc5d29f1d6f5651",
+      "oldValues": {
+        "_id": "67cf2835adc5d29f1d6f5651",
+        "name": "HR Department",
+        "description": "Manages human resources and employee relations",
+        "roomNumber": "BE-205",
+        "managerId": "67cd73353bc9d4b8f66fc1ca",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:58:13.783Z",
+        "updatedAt": "2025-03-17T16:44:49.554Z",
+        "__v": 0,
+        "createdBy": "67cc66da54b39517aeb79003"
+      },
+      "newValues": {
+        "_id": "67cf2835adc5d29f1d6f5651",
+        "name": "HR Department",
+        "description": "Manages human resources and employee relations",
+        "roomNumber": "BE-205",
+        "managerId": "67d3cb7bf49724adc47a4001",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:58:13.783Z",
+        "updatedAt": "2025-03-17T17:55:05.797Z",
+        "__v": 0,
+        "createdBy": "67cc66da54b39517aeb79003"
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-17T17:55:05.975Z",
+      "updatedAt": "2025-03-17T17:55:05.975Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dc50872233faee35b78e53",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update department",
+      "entityType": "DEPARTMENT",
+      "entityId": "67cf2c3655d04cb273733f32",
+      "oldValues": {
+        "_id": "67cf2c3655d04cb273733f32",
+        "name": "Finance Department",
+        "description": "Responsible for financial planning and budgeting",
+        "roomNumber": "DE-303",
+        "managerId": "67cd71b33bc9d4b8f66fc115",
+        "deleted": false,
+        "createBy": "67cc66da54b39517aeb79003",
+        "createdAt": "2025-03-10T18:15:18.523Z",
+        "updatedAt": "2025-03-17T17:37:10.191Z",
+        "__v": 0
+      },
+      "newValues": {
+        "_id": "67cf2c3655d04cb273733f32",
+        "name": "Finance Department",
+        "description": "Responsible for financial planning and budgeting",
+        "roomNumber": "DE-303",
+        "managerId": "67dc3777541b0df644e572c5",
+        "deleted": false,
+        "createBy": "67cc66da54b39517aeb79003",
+        "createdAt": "2025-03-10T18:15:18.523Z",
+        "updatedAt": "2025-03-20T17:29:42.811Z",
+        "__v": 0
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-20T17:29:43.040Z",
+      "updatedAt": "2025-03-20T17:29:43.040Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dc56cf8aa56274bde9a8b0",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update department",
+      "entityType": "DEPARTMENT",
+      "entityId": "67cf218c87bf4fe6f0f5677d",
+      "oldValues": {
+        "_id": "67cf218c87bf4fe6f0f5677d",
+        "name": "IT Department",
+        "description": "Handles all IT-related operations and infrastructure",
+        "roomNumber": "AL-L101",
+        "managerId": "67d1c1980521a7bd468c388a",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:29:48.779Z",
+        "updatedAt": "2025-03-17T17:47:28.839Z",
+        "__v": 0,
+        "createBy": "67cc66da54b39517aeb79003"
+      },
+      "newValues": {
+        "_id": "67cf218c87bf4fe6f0f5677d",
+        "name": "IT Department",
+        "description": "Handles all IT-related operations and infrastructure",
+        "roomNumber": "AL-L101",
+        "managerId": "67d556f0138751a9f2083a25",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:29:48.779Z",
+        "updatedAt": "2025-03-20T17:56:31.276Z",
+        "__v": 0,
+        "createBy": "67cc66da54b39517aeb79003"
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-20T17:56:31.508Z",
+      "updatedAt": "2025-03-20T17:56:31.508Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dc5f698aa56274bde9aa3d",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update department",
+      "entityType": "DEPARTMENT",
+      "entityId": "67cf2835adc5d29f1d6f5651",
+      "oldValues": {
+        "_id": "67cf2835adc5d29f1d6f5651",
+        "name": "HR Department",
+        "description": "Manages human resources and employee relations",
+        "roomNumber": "BE-205",
+        "managerId": null,
+        "deleted": false,
+        "createdAt": "2025-03-10T17:58:13.783Z",
+        "updatedAt": "2025-03-20T17:50:40.705Z",
+        "__v": 0,
+        "createdBy": "67cc66da54b39517aeb79003"
+      },
+      "newValues": {
+        "_id": "67cf2835adc5d29f1d6f5651",
+        "name": "HR Department",
+        "description": "Manages human resources and employee relations",
+        "roomNumber": "BE-205",
+        "managerId": "67d3cb7bf49724adc47a4001",
+        "deleted": false,
+        "createdAt": "2025-03-10T17:58:13.783Z",
+        "updatedAt": "2025-03-20T18:33:13.012Z",
+        "__v": 0,
+        "createdBy": "67cc66da54b39517aeb79003"
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-20T18:33:13.197Z",
+      "updatedAt": "2025-03-20T18:33:13.197Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dc7c71a7188da1cd7deb30",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update account admin",
+      "entityType": "ADMIN",
+      "entityId": "67cb7e76651e8ab881d49e12",
+      "oldValues": {
+        "leaveBalance": {
+          "annual": 12,
+          "sick": 10,
+          "unpaid": 0
+        },
+        "_id": "67cb7e76651e8ab881d49e12",
+        "userId": "67cb7e76651e8ab881d49e10",
+        "fullName": "Phan Van Huynh",
+        "dateOfBirth": "2003-06-26T00:00:00.000Z",
+        "gender": "MALE",
+        "address": "Hung Yen",
+        "phoneNumber": "0377262942",
+        "departmentId": "67cf218c87bf4fe6f0f5677d",
+        "position": "Manager IT",
+        "baseSalary": 10000000,
+        "hireDate": "2025-03-08T00:00:00.000Z",
+        "avatarUrl": "https://res.cloudinary.com/dooe5iqxo/image/upload/v1742321689/employee-avatars/avatar-d49e12.jpg",
+        "isActive": true,
+        "createdAt": "2025-03-07T23:17:10.502Z",
+        "updatedAt": "2025-03-20T20:36:06.794Z",
+        "__v": 0,
+        "avaterUrl": ""
+      },
+      "newValues": {
+        "leaveBalance": {
+          "annual": 12,
+          "sick": 10,
+          "unpaid": 0
+        },
+        "_id": "67cb7e76651e8ab881d49e12",
+        "userId": "67cb7e76651e8ab881d49e10",
+        "fullName": "Phan Van Huynh 1",
+        "dateOfBirth": "2003-06-26T00:00:00.000Z",
+        "gender": "MALE",
+        "address": "Hung Yen",
+        "phoneNumber": "0377262942",
+        "departmentId": "67cf218c87bf4fe6f0f5677d",
+        "position": "Manager IT",
+        "baseSalary": 10000000,
+        "hireDate": "2025-03-08T00:00:00.000Z",
+        "avatarUrl": "https://res.cloudinary.com/dooe5iqxo/image/upload/v1742321689/employee-avatars/avatar-d49e12.jpg",
+        "isActive": true,
+        "createdAt": "2025-03-07T23:17:10.502Z",
+        "updatedAt": "2025-03-20T20:37:05.392Z",
+        "__v": 0,
+        "avaterUrl": ""
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-20T20:37:05.487Z",
+      "updatedAt": "2025-03-20T20:37:05.487Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dc827a9d1716e7c5750c1e",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update account admin",
+      "entityType": "ADMIN",
+      "entityId": "67cb7e76651e8ab881d49e12",
+      "oldValues": {
+        "leaveBalance": {
+          "annual": 12,
+          "sick": 10,
+          "unpaid": 0
+        },
+        "_id": "67cb7e76651e8ab881d49e12",
+        "userId": "67cb7e76651e8ab881d49e10",
+        "fullName": "Phan Van Huynh 1",
+        "dateOfBirth": "2003-06-26T00:00:00.000Z",
+        "gender": "MALE",
+        "address": "Hung Yen",
+        "phoneNumber": "0377262942",
+        "departmentId": "67cf218c87bf4fe6f0f5677d",
+        "position": "67dc4390cee98e680f97642f",
+        "baseSalary": 10000000,
+        "hireDate": "2025-03-08T00:00:00.000Z",
+        "avatarUrl": "https://res.cloudinary.com/dooe5iqxo/image/upload/v1742321689/employee-avatars/avatar-d49e12.jpg",
+        "isActive": true,
+        "createdAt": "2025-03-07T23:17:10.502Z",
+        "updatedAt": "2025-03-20T20:37:05.392Z",
+        "__v": 0,
+        "avaterUrl": ""
+      },
+      "newValues": {
+        "leaveBalance": {
+          "annual": 12,
+          "sick": 10,
+          "unpaid": 0
+        },
+        "_id": "67cb7e76651e8ab881d49e12",
+        "userId": "67cb7e76651e8ab881d49e10",
+        "fullName": "Phan Van Huynh",
+        "dateOfBirth": "2003-06-26T00:00:00.000Z",
+        "gender": "MALE",
+        "address": "Hung Yen",
+        "phoneNumber": "0377262942",
+        "departmentId": "67cf218c87bf4fe6f0f5677d",
+        "position": "67dc4390cee98e680f97642f",
+        "baseSalary": 10000000,
+        "hireDate": "2025-03-08T00:00:00.000Z",
+        "avatarUrl": "https://res.cloudinary.com/dooe5iqxo/image/upload/v1742321689/employee-avatars/avatar-d49e12.jpg",
+        "isActive": true,
+        "createdAt": "2025-03-07T23:17:10.502Z",
+        "updatedAt": "2025-03-20T21:02:50.682Z",
+        "__v": 0,
+        "avaterUrl": ""
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-20T21:02:50.776Z",
+      "updatedAt": "2025-03-20T21:02:50.776Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dc91edc269e55fb5de3529",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Create new account admin",
+      "entityType": "ADMIN",
+      "entityId": "67dc91eac269e55fb5de3526",
+      "oldValues": null,
+      "newValues": {
+        "userId": "67dc91eac269e55fb5de3524",
+        "fullName": "Huynh Phan",
+        "dateOfBirth": "2003-05-31T17:00:00.000Z",
+        "gender": "MALE",
+        "address": "Hung Yen",
+        "phoneNumber": "0377262944",
+        "baseSalary": 1000,
+        "hireDate": "2025-03-20T22:08:27.050Z",
+        "isActive": true,
+        "leaveBalance": {
+          "annual": 12,
+          "sick": 10,
+          "unpaid": 0
+        },
+        "_id": "67dc91eac269e55fb5de3526",
+        "createdAt": "2025-03-20T22:08:42.405Z",
+        "updatedAt": "2025-03-20T22:08:42.405Z",
+        "__v": 0
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-20T22:08:45.459Z",
+      "updatedAt": "2025-03-20T22:08:45.459Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dd04596ddd098abd12a547",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update employee",
+      "entityType": "EMPLOYEE",
+      "entityId": "67dc583a50911f0daa0bb965",
+      "oldValues": {
+        "leaveBalance": {
+          "annual": 12,
+          "sick": 10,
+          "unpaid": 0
+        },
+        "_id": "67dc583a50911f0daa0bb965",
+        "userId": "67dc583a50911f0daa0bb963",
+        "fullName": "Hoàn",
+        "dateOfBirth": "2003-05-08T17:00:00.000Z",
+        "gender": "MALE",
+        "address": "Hưng Yên",
+        "phoneNumber": "0869212858",
+        "departmentId": "67cf2835adc5d29f1d6f5651",
+        "position": "67dc57578aa56274bde9a8d5",
+        "baseSalary": 10000000,
+        "hireDate": "2025-03-20T18:01:54.571Z",
+        "avatarUrl": "/assets/images/avatar-default.png",
+        "isActive": true,
+        "createdAt": "2025-03-20T18:02:34.567Z",
+        "updatedAt": "2025-03-21T05:23:23.695Z",
+        "__v": 0
+      },
+      "newValues": {
+        "leaveBalance": {
+          "annual": 12,
+          "sick": 10,
+          "unpaid": 0
+        },
+        "_id": "67dc583a50911f0daa0bb965",
+        "userId": "67dc583a50911f0daa0bb963",
+        "fullName": "Hoàn",
+        "dateOfBirth": "2003-05-08T17:00:00.000Z",
+        "gender": "MALE",
+        "address": "Hưng Yên",
+        "phoneNumber": "0869212858",
+        "departmentId": "67cf2835adc5d29f1d6f5651",
+        "position": "67dc4390cee98e680f97642f",
+        "baseSalary": 10000000,
+        "hireDate": "2025-03-20T18:01:54.571Z",
+        "avatarUrl": "/assets/images/avatar-default.png",
+        "isActive": true,
+        "createdAt": "2025-03-20T18:02:34.567Z",
+        "updatedAt": "2025-03-21T06:16:57.200Z",
+        "__v": 0
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-21T06:16:57.648Z",
+      "updatedAt": "2025-03-21T06:16:57.648Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dd045a6ddd098abd12a554",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update employee",
+      "entityType": "EMPLOYEE",
+      "entityId": "67dc583a50911f0daa0bb965",
+      "oldValues": {
+        "leaveBalance": {
+          "annual": 12,
+          "sick": 10,
+          "unpaid": 0
+        },
+        "_id": "67dc583a50911f0daa0bb965",
+        "userId": "67dc583a50911f0daa0bb963",
+        "fullName": "Hoàn",
+        "dateOfBirth": "2003-05-08T17:00:00.000Z",
+        "gender": "MALE",
+        "address": "Hưng Yên",
+        "phoneNumber": "0869212858",
+        "departmentId": "67cf2835adc5d29f1d6f5651",
+        "position": "67dc4390cee98e680f97642f",
+        "baseSalary": 10000000,
+        "hireDate": "2025-03-20T18:01:54.571Z",
+        "avatarUrl": "/assets/images/avatar-default.png",
+        "isActive": true,
+        "createdAt": "2025-03-20T18:02:34.567Z",
+        "updatedAt": "2025-03-21T06:16:57.200Z",
+        "__v": 0
+      },
+      "newValues": {
+        "leaveBalance": {
+          "annual": 12,
+          "sick": 10,
+          "unpaid": 0
+        },
+        "_id": "67dc583a50911f0daa0bb965",
+        "userId": "67dc583a50911f0daa0bb963",
+        "fullName": "Hoàn",
+        "dateOfBirth": "2003-05-08T17:00:00.000Z",
+        "gender": "MALE",
+        "address": "Hưng Yên",
+        "phoneNumber": "0869212858",
+        "departmentId": "67cf2835adc5d29f1d6f5651",
+        "position": "67dc4390cee98e680f97642f",
+        "baseSalary": 10000000,
+        "hireDate": "2025-03-20T18:01:54.571Z",
+        "avatarUrl": "/assets/images/avatar-default.png",
+        "isActive": true,
+        "createdAt": "2025-03-20T18:02:34.567Z",
+        "updatedAt": "2025-03-21T06:16:58.271Z",
+        "__v": 0
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-21T06:16:58.575Z",
+      "updatedAt": "2025-03-21T06:16:58.575Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dd046f6ddd098abd12a587",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "action": "Update employee",
+      "entityType": "EMPLOYEE",
+      "entityId": "67dc583a50911f0daa0bb965",
+      "oldValues": {
+        "leaveBalance": {
+          "annual": 12,
+          "sick": 10,
+          "unpaid": 0
+        },
+        "_id": "67dc583a50911f0daa0bb965",
+        "userId": "67dc583a50911f0daa0bb963",
+        "fullName": "Hoàn",
+        "dateOfBirth": "2003-05-08T17:00:00.000Z",
+        "gender": "MALE",
+        "address": "Hưng Yên",
+        "phoneNumber": "0869212858",
+        "departmentId": "67cf2835adc5d29f1d6f5651",
+        "position": "67dc4390cee98e680f97642f",
+        "baseSalary": 10000000,
+        "hireDate": "2025-03-20T18:01:54.571Z",
+        "avatarUrl": "/assets/images/avatar-default.png",
+        "isActive": true,
+        "createdAt": "2025-03-20T18:02:34.567Z",
+        "updatedAt": "2025-03-21T06:16:58.271Z",
+        "__v": 0
+      },
+      "newValues": {
+        "leaveBalance": {
+          "annual": 12,
+          "sick": 10,
+          "unpaid": 0
+        },
+        "_id": "67dc583a50911f0daa0bb965",
+        "userId": "67dc583a50911f0daa0bb963",
+        "fullName": "Hoàn",
+        "dateOfBirth": "2003-05-08T17:00:00.000Z",
+        "gender": "MALE",
+        "address": "Hưng Yên",
+        "phoneNumber": "0869212858",
+        "departmentId": "67cf2835adc5d29f1d6f5651",
+        "position": "67dc57578aa56274bde9a8d5",
+        "baseSalary": 10000000,
+        "hireDate": "2025-03-20T18:01:54.571Z",
+        "avatarUrl": "/assets/images/avatar-default.png",
+        "isActive": true,
+        "createdAt": "2025-03-20T18:02:34.567Z",
+        "updatedAt": "2025-03-21T06:17:18.835Z",
+        "__v": 0
+      },
+      "ipAddress": "::1",
+      "createdAt": "2025-03-21T06:17:19.351Z",
+      "updatedAt": "2025-03-21T06:17:19.351Z",
+      "__v": 0
+    }
+  ],
+  "employees": [
+    {
+      "_id": "67cb7e76651e8ab881d49e12",
+      "userId": "67cb7e76651e8ab881d49e10",
+      "fullName": "Phan Van Huynh",
+      "dateOfBirth": "2003-06-26T00:00:00.000Z",
+      "gender": "MALE",
+      "address": "Hung Yen",
+      "phoneNumber": "0377262942",
+      "baseSalary": 10000000,
+      "hireDate": "2025-03-08T00:00:00.000Z",
+      "avatarUrl": "https://res.cloudinary.com/dooe5iqxo/image/upload/v1742321689/employee-avatars/avatar-d49e12.jpg",
+      "isActive": true,
+      "leaveBalance": {
+        "annual": 12,
+        "sick": 10,
+        "unpaid": 0
+      },
+      "createdAt": "2025-03-07T23:17:10.502Z",
+      "updatedAt": "2025-03-20T21:02:50.682Z",
+      "__v": 0,
+      "avaterUrl": ""
+    },
+    {
+      "_id": "67d3cb7bf49724adc47a4001",
+      "userId": "67d3cb7af49724adc47a3fff",
+      "fullName": "Tôi Là Nhân Viên",
+      "dateOfBirth": "2003-06-26T00:00:00.000Z",
+      "gender": "MALE",
+      "address": "Hung Yen",
+      "phoneNumber": "0377262941",
+      "departmentId": "67cf2835adc5d29f1d6f5651",
+      "position": "67dc4390cee98e680f97642f",
+      "baseSalary": 1000000,
+      "hireDate": "2025-03-14T00:00:00.000Z",
+      "avatarUrl": "https://res.cloudinary.com/dooe5iqxo/image/upload/v1742231346/employee-avatars/avatar-7a4001.png",
+      "isActive": false,
+      "leaveBalance": {
+        "annual": 12,
+        "sick": 10,
+        "unpaid": 0
+      },
+      "createdAt": "2025-03-14T06:23:55.285Z",
+      "updatedAt": "2025-03-20T18:33:13.151Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d556f0138751a9f2083a25",
+      "userId": "67d556f0138751a9f2083a23",
+      "fullName": "Nhân Viên 2",
+      "dateOfBirth": "2003-06-26T00:00:00.000Z",
+      "gender": "MALE",
+      "address": "Hung Yen",
+      "phoneNumber": "0377262941",
+      "departmentId": "67cf218c87bf4fe6f0f5677d",
+      "position": "67dc4390cee98e680f97642f",
+      "baseSalary": 10000000,
+      "hireDate": "2025-03-08T00:00:00.000Z",
+      "avatarUrl": "/assets/images/avatar-default.png",
+      "isActive": true,
+      "leaveBalance": {
+        "annual": 12,
+        "sick": 10,
+        "unpaid": 0
+      },
+      "createdAt": "2025-03-15T10:31:12.435Z",
+      "updatedAt": "2025-03-20T17:56:31.452Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dbd087002ff71fb1d902be",
+      "userId": "67dbd086002ff71fb1d902bc",
+      "fullName": "Nguyen Van Si",
+      "dateOfBirth": "2000-03-18T17:00:00.000Z",
+      "gender": "MALE",
+      "address": "Ha Noi",
+      "phoneNumber": "0353385425",
+      "baseSalary": 1000,
+      "hireDate": "2025-03-20T08:23:09.742Z",
+      "avatarUrl": "/assets/images/avatar-default.png",
+      "isActive": true,
+      "leaveBalance": {
+        "annual": 12,
+        "sick": 10,
+        "unpaid": 0
+      },
+      "createdAt": "2025-03-20T08:23:35.157Z",
+      "updatedAt": "2025-03-20T08:23:35.157Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dc3777541b0df644e572c5",
+      "userId": "67dc3777541b0df644e572c3",
+      "fullName": "Đào Khôi",
+      "dateOfBirth": "2025-03-19T17:00:00.000Z",
+      "gender": "MALE",
+      "address": "HUNG YEN",
+      "phoneNumber": "0352986307",
+      "departmentId": "67cb7a7124a86d7f04c49ef8",
+      "position": "67dc57578aa56274bde9a8d5",
+      "baseSalary": 10000000,
+      "hireDate": "2025-03-20T15:42:15.479Z",
+      "avatarUrl": "https://res.cloudinary.com/dooe5iqxo/image/upload/v1742487795/employee-avatars/avatar-e572c5.png",
+      "isActive": true,
+      "leaveBalance": {
+        "annual": 12,
+        "sick": 10,
+        "unpaid": 0
+      },
+      "createdAt": "2025-03-20T15:42:47.967Z",
+      "updatedAt": "2025-03-20T21:33:20.204Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dc583a50911f0daa0bb965",
+      "userId": "67dc583a50911f0daa0bb963",
+      "fullName": "Hoàn",
+      "dateOfBirth": "2003-05-08T17:00:00.000Z",
+      "gender": "MALE",
+      "address": "Hưng Yên",
+      "phoneNumber": "0869212858",
+      "departmentId": "67cf2835adc5d29f1d6f5651",
+      "position": "67dc57578aa56274bde9a8d5",
+      "baseSalary": 10000000,
+      "hireDate": "2025-03-20T18:01:54.571Z",
+      "avatarUrl": "/assets/images/avatar-default.png",
+      "isActive": true,
+      "leaveBalance": {
+        "annual": 12,
+        "sick": 10,
+        "unpaid": 0
+      },
+      "createdAt": "2025-03-20T18:02:34.567Z",
+      "updatedAt": "2025-03-21T06:17:18.835Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dc91eac269e55fb5de3526",
+      "userId": "67dc91eac269e55fb5de3524",
+      "fullName": "Huynh Phan",
+      "dateOfBirth": "2003-05-31T17:00:00.000Z",
+      "gender": "MALE",
+      "address": "Hung Yen",
+      "phoneNumber": "0377262944",
+      "baseSalary": 1000,
+      "hireDate": "2025-03-20T22:08:27.050Z",
+      "isActive": true,
+      "leaveBalance": {
+        "annual": 12,
+        "sick": 10,
+        "unpaid": 0
+      },
+      "createdAt": "2025-03-20T22:08:42.405Z",
+      "updatedAt": "2025-03-20T22:08:42.405Z",
+      "__v": 0
+    }
+  ],
+  "notifications": [
+    {
+      "_id": "67d4c3729890a73f0e8436c5",
+      "title": "Cập nhật chính sách bảo mật",
+      "content": "Từ ngày 01/04/2025, chính sách bảo mật mới sẽ có hiệu lực.",
+      "type": "SYSTEM",
+      "departmentId": [],
+      "recipientId": [],
+      "readBy": [
+        "67cb7e76651e8ab881d49e12",
+        "67d3cb7bf49724adc47a4001",
+        "67dc583a50911f0daa0bb965"
+      ],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-15T00:01:54.995Z",
+      "updatedAt": "2025-03-20T18:07:28.295Z",
+      "__v": 3,
+      "sendToAll": false
+    },
+    {
+      "_id": "67d4c53454e6940c3e031d21",
+      "title": "Thông báo chung toàn công ty",
+      "content": "Tất cả các phòng ban tham gia cuộc họp vào 9h sáng mai.",
+      "type": "DEPARTMENT",
+      "departmentId": [],
+      "sendToAll": true,
+      "recipientId": [],
+      "readBy": [
+        "67cb7e76651e8ab881d49e12",
+        "67d3cb7bf49724adc47a4001",
+        "67dc583a50911f0daa0bb965"
+      ],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-15T00:09:24.832Z",
+      "updatedAt": "2025-03-20T18:07:27.022Z",
+      "__v": 3
+    },
+    {
+      "_id": "67d4d83389b33740e6316fe1",
+      "title": "Họp định kỳ phòng Kinh doanh",
+      "content": "Tất cả thành viên phòng Kinh doanh tham gia họp lúc 9h sáng mai",
+      "type": "DEPARTMENT",
+      "departmentId": [
+        "67cf2c3655d04cb273733f32"
+      ],
+      "sendToAll": false,
+      "recipientId": [],
+      "readBy": [
+        "67d3cb7bf49724adc47a4001"
+      ],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-15T01:30:27.734Z",
+      "updatedAt": "2025-03-15T04:50:27.304Z",
+      "__v": 1
+    },
+    {
+      "_id": "67d52fbe9423bce405264b29",
+      "title": "Đánh giá hiệu suất",
+      "content": "Cuộc họp đánh giá hiệu suất của bạn đã được lên lịch vào thứ Năm.",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67d3cb7bf49724adc47a4001"
+      ],
+      "readBy": [
+        "67d3cb7bf49724adc47a4001"
+      ],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-15T07:43:58.606Z",
+      "updatedAt": "2025-03-17T14:32:59.023Z",
+      "__v": 1
+    },
+    {
+      "_id": "67d558bb185e6c734fc3bc0f",
+      "title": "Chúc mừng sinh nhật",
+      "content": "Chúc mừng sinh nhật",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67d556f0138751a9f2083a25"
+      ],
+      "readBy": [
+        "67d556f0138751a9f2083a25"
+      ],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-15T10:38:51.615Z",
+      "updatedAt": "2025-03-15T10:39:11.084Z",
+      "__v": 1
+    },
+    {
+      "_id": "67d55e730293b3ddcb873f77",
+      "title": "Báo cáo ngân sách hạn cuối",
+      "content": "Vui lòng nộp báo cáo ngân sách quý 2 trước cuối tuần này.",
+      "type": "DEPARTMENT",
+      "departmentId": [
+        "67cf2c3655d04cb273733f32"
+      ],
+      "sendToAll": false,
+      "recipientId": [],
+      "readBy": [
+        "67d556f0138751a9f2083a25"
+      ],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-15T11:03:15.136Z",
+      "updatedAt": "2025-03-15T11:03:36.942Z",
+      "__v": 1
+    },
+    {
+      "_id": "67d56033cda5e43deb1d0c7f",
+      "title": "Cập nhật chính sách nhân sự",
+      "content": "Vui lòng xem lại chính sách nghỉ phép cập nhật trong sổ tay nhân viên.",
+      "type": "DEPARTMENT",
+      "departmentId": [
+        "67cb7a7124a86d7f04c49ef8",
+        "67cf218c87bf4fe6f0f5677d",
+        "67cf2835adc5d29f1d6f5651",
+        "67cf2c3655d04cb273733f32",
+        "67cf328f84dff9f2a0e897c6"
+      ],
+      "sendToAll": false,
+      "recipientId": [],
+      "readBy": [
+        "67d3cb7bf49724adc47a4001",
+        "67cb7e76651e8ab881d49e12",
+        "67cb7e76651e8ab881d49e12",
+        "67cb7e76651e8ab881d49e12",
+        "67cb7e76651e8ab881d49e12",
+        "67dc583a50911f0daa0bb965"
+      ],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-15T11:10:43.800Z",
+      "updatedAt": "2025-03-20T18:07:25.671Z",
+      "__v": 6
+    },
+    {
+      "_id": "67d56bb1cda5e43deb1d0e59",
+      "title": "Đào tạo bảo mật CNTT",
+      "content": "Buổi đào tạo bảo mật bắt buộc vào 10 giờ sáng thứ Ba tuần sau.",
+      "type": "DEPARTMENT",
+      "departmentId": [
+        "67cf2c3655d04cb273733f32"
+      ],
+      "sendToAll": false,
+      "recipientId": [],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-15T11:59:45.237Z",
+      "updatedAt": "2025-03-15T11:59:45.237Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d57219cda5e43deb1d0f90",
+      "title": "Báo cáo ngân sách hạn cuối",
+      "content": "Vui lòng nộp báo cáo ngân sách quý 2 trước cuối tuần này.",
+      "type": "DEPARTMENT",
+      "departmentId": [
+        "67cf2c3655d04cb273733f32"
+      ],
+      "sendToAll": false,
+      "recipientId": [],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-15T12:27:05.811Z",
+      "updatedAt": "2025-03-15T12:27:05.811Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d5a35ebeb6691e3d4f3d0c",
+      "title": "Thông báo",
+      "content": "Bạn đã được bổ nhiệm làm trưởng phòng Tester Department",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67d556f0138751a9f2083a25"
+      ],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-15T15:57:18.584Z",
+      "updatedAt": "2025-03-15T15:57:18.584Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d5aa3bc94d585900c19b08",
+      "title": "Thông báo",
+      "content": "Bạn đã được bổ nhiệm làm trưởng phòng IT Department",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67cd72413bc9d4b8f66fc145"
+      ],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-15T16:26:35.604Z",
+      "updatedAt": "2025-03-15T16:26:35.604Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d7e43579776be75c9fb693",
+      "title": "Thông báo",
+      "content": "Bạn đã được bổ nhiệm làm trưởng phòng HR Department",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67cd71b33bc9d4b8f66fc115"
+      ],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-17T08:58:29.616Z",
+      "updatedAt": "2025-03-17T08:58:29.616Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d7e72379776be75c9fb7ae",
+      "title": "Thông báo",
+      "content": "Bạn đã được bổ nhiệm làm trưởng phòng HR Department",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67cd73ba3bc9d4b8f66fc219"
+      ],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-17T09:10:59.114Z",
+      "updatedAt": "2025-03-17T09:10:59.114Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d7e9993a0d8062008abc84",
+      "title": "Thông báo",
+      "content": "Bạn đã được bổ nhiệm làm trưởng phòng Marketing Department",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67d556f0138751a9f2083a25"
+      ],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-17T09:21:29.867Z",
+      "updatedAt": "2025-03-17T09:21:29.867Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d83303d96c75d450c8abcf",
+      "title": "Báo cáo ngân sách hạn cuối",
+      "content": "Vui lòng nộp báo cáo ngân sách quý 2 trước cuối tuần này.",
+      "type": "DEPARTMENT",
+      "departmentId": [
+        "67cf2835adc5d29f1d6f5651"
+      ],
+      "sendToAll": false,
+      "recipientId": [],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-17T14:34:43.866Z",
+      "updatedAt": "2025-03-17T14:34:43.866Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d8350a7d75c0fc26fe1c98",
+      "title": "Đánh giá hiệu suất",
+      "content": "Cuộc họp đánh giá hiệu suất của bạn đã được lên lịch vào thứ Năm.",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67d3cb7bf49724adc47a4001"
+      ],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-17T14:43:22.756Z",
+      "updatedAt": "2025-03-17T14:43:22.756Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d851815b3c6b39cbdce730",
+      "title": "Thông báo",
+      "content": "Bạn đã được bổ nhiệm làm trưởng phòng HR Department",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67cd73353bc9d4b8f66fc1ca"
+      ],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-17T16:44:49.622Z",
+      "updatedAt": "2025-03-17T16:44:49.622Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d8543a5b3c6b39cbdcea4b",
+      "title": "Thông báo",
+      "content": "Bạn đã được bổ nhiệm làm trưởng phòng IT Support",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67cbfd6984d55987e4b20b97"
+      ],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-17T16:56:26.557Z",
+      "updatedAt": "2025-03-17T16:56:26.557Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d856b75b3c6b39cbdced52",
+      "title": "Thông báo",
+      "content": "Bạn đã được bổ nhiệm làm trưởng phòng IT Support",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67cd3fd05ecdd54f5687c879"
+      ],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-17T17:07:03.364Z",
+      "updatedAt": "2025-03-17T17:07:03.364Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d85dc05b3c6b39cbdcf232",
+      "title": "Thông báo",
+      "content": "Bạn đã được bổ nhiệm làm trưởng phòng IT Department",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67cb7e76651e8ab881d49e12"
+      ],
+      "readBy": [
+        "67cb7e76651e8ab881d49e12"
+      ],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-17T17:37:04.344Z",
+      "updatedAt": "2025-03-17T17:47:01.702Z",
+      "__v": 1
+    },
+    {
+      "_id": "67d85dc65b3c6b39cbdcf247",
+      "title": "Thông báo",
+      "content": "Bạn đã được bổ nhiệm làm trưởng phòng Finance Department",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67cd71b33bc9d4b8f66fc115"
+      ],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-17T17:37:10.243Z",
+      "updatedAt": "2025-03-17T17:37:10.243Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d85dcb5b3c6b39cbdcf25c",
+      "title": "Thông báo",
+      "content": "Bạn đã được bổ nhiệm làm trưởng phòng Marketing Department",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67d1c1980521a7bd468c388a"
+      ],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-17T17:37:15.095Z",
+      "updatedAt": "2025-03-17T17:37:15.095Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d85dd75b3c6b39cbdcf271",
+      "title": "Thông báo",
+      "content": "Bạn đã được bổ nhiệm làm trưởng phòng Tester Department",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67cbfd6984d55987e4b20b97"
+      ],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-17T17:37:27.281Z",
+      "updatedAt": "2025-03-17T17:37:27.281Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d8603055aaa9ace37faab3",
+      "title": "Thông báo",
+      "content": "Bạn đã được bổ nhiệm làm trưởng phòng IT Department",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67d1c1980521a7bd468c388a"
+      ],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-17T17:47:28.887Z",
+      "updatedAt": "2025-03-17T17:47:28.887Z",
+      "__v": 0
+    },
+    {
+      "_id": "67d861f955aaa9ace37fac49",
+      "title": "Thông báo",
+      "content": "Bạn đã được bổ nhiệm làm trưởng phòng HR Department",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67d3cb7bf49724adc47a4001"
+      ],
+      "readBy": [
+        "67d3cb7bf49724adc47a4001"
+      ],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-17T17:55:05.843Z",
+      "updatedAt": "2025-03-17T18:07:16.063Z",
+      "__v": 1
+    },
+    {
+      "_id": "67d8647e9e7c5ca58d0f6f09",
+      "title": "Thông báo",
+      "content": "Đơn nghỉ phép của bạn đã được duyệt!",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67d3cb7bf49724adc47a4001"
+      ],
+      "readBy": [
+        "67d3cb7bf49724adc47a4001"
+      ],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-17T18:05:50.277Z",
+      "updatedAt": "2025-03-17T18:07:16.066Z",
+      "__v": 1
+    },
+    {
+      "_id": "67d864a99e7c5ca58d0f6f43",
+      "title": "Thông báo",
+      "content": "Đơn nghỉ phép của bạn đã bị từ chối!",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67d3cb7bf49724adc47a4001"
+      ],
+      "readBy": [
+        "67d3cb7bf49724adc47a4001"
+      ],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-17T18:06:33.726Z",
+      "updatedAt": "2025-03-17T18:07:16.066Z",
+      "__v": 1
+    },
+    {
+      "_id": "67d867688dc228c02348fd02",
+      "title": "Thông báo",
+      "content": "Đơn nghỉ phép của bạn đã được duyệt!",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67d3cb7bf49724adc47a4001"
+      ],
+      "readBy": [
+        "67d3cb7bf49724adc47a4001"
+      ],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-17T18:18:16.972Z",
+      "updatedAt": "2025-03-18T06:23:32.637Z",
+      "__v": 1
+    },
+    {
+      "_id": "67d912c86684af95abd486a4",
+      "title": "Thông báo",
+      "content": "Đơn nghỉ phép của bạn đã được duyệt!",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67d3cb7bf49724adc47a4001"
+      ],
+      "readBy": [
+        "67d3cb7bf49724adc47a4001"
+      ],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-18T06:29:28.573Z",
+      "updatedAt": "2025-03-18T06:29:46.814Z",
+      "__v": 1
+    },
+    {
+      "_id": "67d913226684af95abd4877d",
+      "title": "Thông báo",
+      "content": "Đơn nghỉ phép của bạn đã được duyệt!",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67d3cb7bf49724adc47a4001"
+      ],
+      "readBy": [
+        "67d3cb7bf49724adc47a4001"
+      ],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-18T06:30:58.700Z",
+      "updatedAt": "2025-03-18T06:32:43.608Z",
+      "__v": 1
+    },
+    {
+      "_id": "67dc50862233faee35b78e4f",
+      "title": "Thông báo",
+      "content": "Bạn đã được bổ nhiệm làm trưởng phòng Finance Department",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67dc3777541b0df644e572c5"
+      ],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-20T17:29:42.870Z",
+      "updatedAt": "2025-03-20T17:29:42.870Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dc56cf8aa56274bde9a8ac",
+      "title": "Thông báo",
+      "content": "Bạn đã được bổ nhiệm làm trưởng phòng IT Department",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67d556f0138751a9f2083a25"
+      ],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-20T17:56:31.342Z",
+      "updatedAt": "2025-03-20T17:56:31.342Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dc5f698aa56274bde9aa39",
+      "title": "Thông báo",
+      "content": "Bạn đã được bổ nhiệm làm trưởng phòng HR Department",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67d3cb7bf49724adc47a4001"
+      ],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-20T18:33:13.062Z",
+      "updatedAt": "2025-03-20T18:33:13.062Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dd0011969103c9161574c1",
+      "title": "Test Deploy",
+      "content": "Test",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67dc3777541b0df644e572c5"
+      ],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-21T05:58:41.094Z",
+      "updatedAt": "2025-03-21T05:58:41.094Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dd05b2969103c916157592",
+      "title": "Test 1",
+      "content": "Test 1",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67dc3777541b0df644e572c5"
+      ],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-21T06:22:42.070Z",
+      "updatedAt": "2025-03-21T06:22:42.070Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dd07df969103c9161575d7",
+      "title": "Test 2",
+      "content": "Test 2",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67dc3777541b0df644e572c5"
+      ],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-21T06:31:59.482Z",
+      "updatedAt": "2025-03-21T06:31:59.482Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dd0a9f969103c916157664",
+      "title": "Test 3",
+      "content": "test 3",
+      "type": "PERSONAL",
+      "departmentId": [],
+      "sendToAll": false,
+      "recipientId": [
+        "67d3cb7bf49724adc47a4001"
+      ],
+      "readBy": [],
+      "createdBy": "67cb7e76651e8ab881d49e10",
+      "createdAt": "2025-03-21T06:43:43.885Z",
+      "updatedAt": "2025-03-21T06:43:43.885Z",
+      "__v": 0
+    }
+  ],
+  "positions": [
+    {
+      "_id": "67dc4390cee98e680f97642f",
+      "name": "Nhân Viên IT",
+      "description": "Nhân Viên IT",
+      "createdAt": "2025-03-20T16:34:24.495Z",
+      "updatedAt": "2025-03-20T18:35:13.810Z",
+      "__v": 0
+    },
+    {
+      "_id": "67dc57578aa56274bde9a8d5",
+      "name": "Quản lý",
+      "description": "Quản lý nhân viên",
+      "createdAt": "2025-03-20T17:58:47.220Z",
+      "updatedAt": "2025-03-20T17:58:47.220Z",
+      "__v": 0
+    }
+  ]
+}
