@@ -2,7 +2,7 @@ import axios from "axios";
 import { refreshToken } from "@/apis/auth/auth.js";
 
 const instance = axios.create({
-    baseURL: "https://api.codemy.id.vn/",
+    baseURL: "https://api.codemy.id.vn",
     withCredentials: true,
     headers: {
         "Content-Type": "application/json",

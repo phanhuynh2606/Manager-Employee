@@ -1,0 +1,1 @@
+import{m as e}from"./index-Bwc4gm7I.js";const n=async()=>{try{return await e.get("/admin")}catch(r){throw r}},a=async r=>{try{return await e.get(`/admin/${r}`)}catch(t){throw t}},o=async r=>{try{return await e.post("/admin/create",r)}catch(t){throw t}};export{a,o as c,n as g};
