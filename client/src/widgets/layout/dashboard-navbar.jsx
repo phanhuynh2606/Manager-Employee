@@ -149,7 +149,7 @@ export function DashboardNavbar() {
                                     Sao lưu dữ liệu
                                 </Button>
 
-                                <Button color="blue" className="flex items-center gap-2" onClick={handleRestores} disabled={true}>
+                                <Button color="blue" className="flex items-center gap-2" onClick={handleRestores}>
                                     Phục hồi dữ liệu
                                 </Button>
                             </div>
