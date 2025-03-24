@@ -69,6 +69,7 @@ export function DashboardNavbar() {
     const handleBackups = async () => {
         try {
             const response = await backupsData();
+            console.log(response, "123");
             if(response.success) {
                 toast.success(response.message, {
                     autoClose: 3000,
@@ -148,7 +149,7 @@ export function DashboardNavbar() {
                                     Sao lưu dữ liệu
                                 </Button>
 
-                                <Button color="blue" className="flex items-center gap-2" onClick={handleRestores}>
+                                <Button color="blue" className="flex items-center gap-2" onClick={handleRestores} disabled={true}>
                                     Phục hồi dữ liệu
                                 </Button>
                             </div>

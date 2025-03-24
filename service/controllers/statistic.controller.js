@@ -7,7 +7,6 @@ const mongoose = require("mongoose")
 module.exports.statisticEmployee = async (req, res) => {
     try {
         const { department, position } = req.body;
-
         let find = {};
         if (department && department.length > 0) {
             find.departmentId = { $in: department.map((id, index) => new mongoose.Types.ObjectId(id)) }
