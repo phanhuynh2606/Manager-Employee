@@ -176,7 +176,7 @@ const downloadLatestBackup = async (req, res) => {
         res.setHeader('Content-Type', 'application/json');
 
         const fileStream = fs.createReadStream(filePath);
-        
+
         fileStream.pipe(res);
     } catch (error) {
         console.log("Lỗi khi tải file backup:", error);
@@ -231,7 +231,7 @@ const createBackupFromMongoDB = async (req, res) => {
 
             // Lấy tất cả documents
             const documents = await collection.find({}).toArray();
-            
+
             // Chuyển đổi dữ liệu sang định dạng JSON thuần
             backupData[collectionName] = documents.map(doc => {
                 // Chuyển ObjectId thành string và xử lý các kiểu dữ liệu đặc biệt
@@ -268,169 +268,304 @@ const createBackupFromMongoDB = async (req, res) => {
 
 const restoreLatestBackup = async (req, res) => {
     try {
-        const files = fs.readdirSync(BACKUP_DIR)
-            .filter(file => file.endsWith('.json'))
-            .map(file => ({
+        const files = fs
+            .readdirSync(BACKUP_DIR)
+            .filter((file) => file.endsWith(".json"))
+            .map((file) => ({
                 name: file,
                 time: fs.statSync(path.join(BACKUP_DIR, file)).mtime.getTime()
             }))
             .sort((a, b) => b.time - a.time);
 
+
         if (files.length === 0) {
-            return res.status(404).json({ success: false, message: "Không tìm thấy file backup nào!" });
+            return res
+                .status(404)
+                .json({ success: false, message: "Không tìm thấy file backup nào!" });
         }
+
 
         const latestFile = files[0].name;
         const filePath = path.join(BACKUP_DIR, latestFile);
-        const backupData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        const backupData = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+
 
         const toObjectId = (value) => {
-            if (!value || typeof value !== 'string') return value;
+            if (!value) return value;
+            if (typeof value === "object" && value.$oid) value = value.$oid;
+            if (typeof value !== "string") return value;
             try {
                 return new mongoose.Types.ObjectId(value);
             } catch (e) {
-                console.log(`Không thể chuyển đổi ${value} thành ObjectId: ${e.message}`);
+                console.log(
+                    `Không thể chuyển đổi ${value} thành ObjectId: ${e.message}`
+                );
                 return value;
             }
         };
 
+
         const toDate = (value) => {
-            if (typeof value === 'string') {
-                const date = new Date(value);
-                return isNaN(date.getTime()) ? value : date;
+            if (typeof value === "object" && value.$date) value = value.$date;
+            const date = new Date(value);
+            return isNaN(date.getTime()) ? value : date;
+        };
+
+
+        const convertValues = (
+            doc,
+            objectIdFields,
+            dateFields,
+            arrayObjectIdFields
+        ) => {
+            // Chuyển đổi các trường ObjectId đơn
+            objectIdFields.forEach((field) => {
+                if (doc[field]) {
+                    doc[field] = toObjectId(doc[field]);
+                }
+            });
+
+
+            // Chuyển đổi các trường ObjectId trong mảng
+            arrayObjectIdFields.forEach((field) => {
+                if (doc[field] && Array.isArray(doc[field])) {
+                    doc[field] = doc[field].map((item) => toObjectId(item));
+                }
+            });
+
+
+            // Chuyển đổi các trường Date
+            dateFields.forEach((field) => {
+                if (doc[field]) {
+                    doc[field] = toDate(doc[field]);
+                }
+            });
+
+
+            // Chuyển đổi các trường ObjectId và Date trong các đối tượng lồng nhau
+            if (doc.oldValues || doc.newValues) {
+                ["oldValues", "newValues"].forEach((nestedField) => {
+                    if (doc[nestedField]) {
+                        for (const key in doc[nestedField]) {
+                            if (doc[nestedField].hasOwnProperty(key)) {
+                                if (
+                                    key === "_id" ||
+                                    key === "createdBy" ||
+                                    key === "managerId" ||
+                                    key === "userId" ||
+                                    key === "departmentId" ||
+                                    key === "position"
+                                ) {
+                                    doc[nestedField][key] = toObjectId(doc[nestedField][key]);
+                                } else if (key === "createdAt" || key === "updatedAt") {
+                                    doc[nestedField][key] = toDate(doc[nestedField][key]);
+                                }
+                            }
+                        }
+                    }
+                });
             }
-            return value;
+
+
+            if (doc.allowances || doc.bonuses || doc.deductions || doc.daySalary) {
+                ["allowances", "bonuses", "deductions", "daySalary"].forEach(
+                    (nestedField) => {
+                        if (doc[nestedField] && Array.isArray(doc[nestedField])) {
+                            doc[nestedField] = doc[nestedField].map((item) => {
+                                if (item._id) item._id = toObjectId(item._id);
+                                if (item.periodStart)
+                                    item.periodStart = toDate(item.periodStart);
+                                if (item.periodEnd) item.periodEnd = toDate(item.periodEnd);
+                                return item;
+                            });
+                        }
+                    }
+                );
+            }
+
+
+            return doc;
         };
 
-        // Xác định chính xác các trường là ObjectId dựa trên schema
+
         const objectIdFields = {
-            attendances: ['_id', 'employeeId'],
-            backups: ['_id', 'createdBy'],
-            departments: ['_id', 'managerId', 'createBy'],
-            employees: ['_id', 'userId', 'departmentId'],
-            leaves: ['_id', 'employeeId'],
-            leaveRequests: ['_id', 'employeeId', 'approvedBy'],
-            logs: ['_id', 'userId', 'entityId'],
-            notifications: ['_id', 'createdBy'],
-            positions: ['_id'],
-            salarys: ['_id', 'employeeId'],
-            sessions: ['_id', 'userId'],
-            users: ['_id', 'employeeId'],
+            attendances: ["_id", "employeeId"],
+            backups: ["_id", "createdBy"],
+            departments: ["_id", "managerId", "createBy"],
+            employees: ["_id", "userId", "departmentId", "position"],
+            leaves: ["_id", "employeeId"],
+            leaveRequests: ["_id", "employeeId", "approvedBy"],
+            activity_logs: ["_id", "userId", "entityId"],
+            notifications: ["_id", "createdBy"],
+            positions: ["_id"],
+            salaries: ["_id", "employeeId"],
+            user_session: ["_id", "userId"],
+            users: ["_id", "employeeId"]
         };
 
-        // Xác định các trường mảng chứa ObjectId
+
         const arrayObjectIdFields = {
-            notifications: ['departmentId', 'recipientId', 'readBy'],
+            notifications: ["departmentId", "recipientId", "readBy"]
         };
 
-        // Xác định các trường kiểu Date
+
         const dateFields = {
-            attendances: ['date', 'checkIn', 'checkOut', 'createdAt', 'updatedAt'],
-            backups: ['createdAt'],
-            departments: ['createdAt', 'updatedAt'],
-            employees: ['dateOfBirth', 'hireDate', 'createdAt', 'updatedAt'],
-            leaves: ['startDate', 'endDate', 'createdAt', 'updatedAt'],
-            leaveRequests: ['startDate', 'endDate', 'approvedAt', 'createdAt', 'updatedAt'],
-            logs: ['createdAt'],
-            notifications: ['createdAt', 'updatedAt'],
-            positions: ['createdAt', 'updatedAt'],
-            salarys: ['periodStart', 'periodEnd', 'paymentDate', 'createdAt', 'updatedAt'],
-            sessions: ['lastAccessed', 'createdAt', 'updatedAt'],
-            users: ['lastLogin', 'createdAt', 'updatedAt'],
+            attendances: ["date", "checkIn", "checkOut", "createdAt", "updatedAt"],
+            backups: ["createdAt"],
+            departments: ["createdAt", "updatedAt"],
+            employees: ["dateOfBirth", "hireDate", "createdAt", "updatedAt"],
+            leaves: ["startDate", "endDate", "createdAt", "updatedAt"],
+            leaveRequests: [
+                "startDate",
+                "endDate",
+                "approvedAt",
+                "createdAt",
+                "updatedAt"
+            ],
+            activity_logs: ["createdAt"],
+            notifications: ["createdAt", "updatedAt"],
+            positions: ["createdAt", "updatedAt"],
+            salaries: [
+                "periodStart",
+                "periodEnd",
+                "paymentDate",
+                "createdAt",
+                "updatedAt"
+            ],
+            user_session: ["lastAccessed", "createdAt", "updatedAt"],
+            users: ["lastLogin", "createdAt", "updatedAt"]
         };
+
 
         for (const collectionName in backupData) {
             if (backupData.hasOwnProperty(collectionName)) {
                 const collection = mongoose.connection.collection(collectionName);
                 const documents = backupData[collectionName];
-                const fieldsToConvertToObjectId = objectIdFields[collectionName] || ['_id'];
-                const fieldsToConvertToDate = dateFields[collectionName] || ['createdAt', 'updatedAt'];
+                const fieldsToConvertToObjectId = objectIdFields[collectionName] || [
+                    "_id"
+                ];
+                const fieldsToConvertToDate = dateFields[collectionName] || [
+                    "createdAt",
+                    "updatedAt"
+                ];
                 const arrayFieldsToConvert = arrayObjectIdFields[collectionName] || [];
+
 
                 if (documents && documents.length > 0) {
                     for (const doc of documents) {
-                        const restoredDoc = { ...doc };
+                        let restoredDoc = { ...doc };
 
-                        // Chuyển đổi các trường ObjectId đơn
-                        fieldsToConvertToObjectId.forEach(field => {
-                            if (restoredDoc[field]) {
-                                restoredDoc[field] = toObjectId(restoredDoc[field]);
-                            }
-                        });
 
-                        // Chuyển đổi các trường ObjectId trong mảng
-                        arrayFieldsToConvert.forEach(field => {
-                            if (restoredDoc[field] && Array.isArray(restoredDoc[field])) {
-                                restoredDoc[field] = restoredDoc[field].map(item => toObjectId(item));
-                            }
-                        });
+                        // Chuyển đổi các trường ObjectId và Date
+                        restoredDoc = convertValues(
+                            restoredDoc,
+                            fieldsToConvertToObjectId,
+                            fieldsToConvertToDate,
+                            arrayFieldsToConvert
+                        );
 
-                        // Chuyển đổi các trường Date
-                        fieldsToConvertToDate.forEach(field => {
-                            if (restoredDoc[field]) {
-                                restoredDoc[field] = toDate(restoredDoc[field]);
-                            }
-                        });
 
                         // Xử lý các trường đặc biệt
-                        
+
+
                         // Xử lý các trường Date trong mảng daySalary của salary
-                        if (collectionName === 'salarys' && restoredDoc.daySalary && Array.isArray(restoredDoc.daySalary)) {
-                            restoredDoc.daySalary = restoredDoc.daySalary.map(day => ({
-                                ...day,
-                                periodStart: toDate(day.periodStart),
-                                periodEnd: toDate(day.periodEnd),
-                            }));
+                        if (
+                            collectionName === "salaries" &&
+                            restoredDoc.daySalary &&
+                            Array.isArray(restoredDoc.daySalary)
+                        ) {
+                            restoredDoc.daySalary = restoredDoc.daySalary.map((day) =>
+                                convertValues(day, [], ["periodStart", "periodEnd"], [])
+                            );
                         }
 
+
                         // Xử lý mật khẩu cho users
-                        if (collectionName === 'users' && restoredDoc.password) {
-                            if (!restoredDoc.password.startsWith('$2a$') && !restoredDoc.password.startsWith('$2b$')) {
-                                restoredDoc.password = await bcrypt.hash(restoredDoc.password, 10);
-                                console.log(`Mật khẩu của ${restoredDoc._id} chưa mã hóa, đã mã hóa lại.`);
+                        if (collectionName === "users" && restoredDoc.password) {
+                            if (
+                                !restoredDoc.password.startsWith("$2a$") &&
+                                !restoredDoc.password.startsWith("$2b$")
+                            ) {
+                                restoredDoc.password = await bcrypt.hash(
+                                    restoredDoc.password,
+                                    10
+                                );
+                                console.log(
+                                    `Mật khẩu của ${restoredDoc._id} chưa mã hóa, đã mã hóa lại.`
+                                );
                             }
                         }
 
+
                         // Kiểm tra document đã tồn tại chưa
-                        const existingDoc = await collection.findOne({ _id: restoredDoc._id });
+                        const existingDoc = await collection.findOne({
+                            _id: restoredDoc._id
+                        });
+
 
                         if (!existingDoc) {
                             await collection.insertOne(restoredDoc);
-                            console.log(`Thêm document vào ${collectionName}: ${restoredDoc._id}`);
+                            console.log(
+                                `Thêm document vào ${collectionName}: ${restoredDoc._id}`
+                            );
                         } else {
                             // Chuẩn hóa document hiện tại để so sánh
                             const normalizedExistingDoc = {};
                             for (const key in existingDoc) {
-                                if (fieldsToConvertToObjectId.includes(key) && existingDoc[key] instanceof mongoose.Types.ObjectId) {
+                                if (
+                                    fieldsToConvertToObjectId.includes(key) &&
+                                    existingDoc[key] instanceof mongoose.Types.ObjectId
+                                ) {
                                     normalizedExistingDoc[key] = existingDoc[key].toString();
-                                } else if (arrayFieldsToConvert.includes(key) && Array.isArray(existingDoc[key])) {
-                                    normalizedExistingDoc[key] = existingDoc[key].map(id => 
+                                } else if (
+                                    arrayFieldsToConvert.includes(key) &&
+                                    Array.isArray(existingDoc[key])
+                                ) {
+                                    normalizedExistingDoc[key] = existingDoc[key].map((id) =>
                                         id instanceof mongoose.Types.ObjectId ? id.toString() : id
                                     );
-                                } else if (fieldsToConvertToDate.includes(key) && existingDoc[key] instanceof Date) {
+                                } else if (
+                                    fieldsToConvertToDate.includes(key) &&
+                                    existingDoc[key] instanceof Date
+                                ) {
                                     normalizedExistingDoc[key] = existingDoc[key].toISOString();
-                                } else if (key === 'daySalary' && Array.isArray(existingDoc[key])) {
-                                    normalizedExistingDoc[key] = existingDoc[key].map(day => ({
+                                } else if (
+                                    key === "daySalary" &&
+                                    Array.isArray(existingDoc[key])
+                                ) {
+                                    normalizedExistingDoc[key] = existingDoc[key].map((day) => ({
                                         ...day,
-                                        periodStart: day.periodStart instanceof Date ? day.periodStart.toISOString() : day.periodStart,
-                                        periodEnd: day.periodEnd instanceof Date ? day.periodEnd.toISOString() : day.periodEnd,
+                                        periodStart:
+                                            day.periodStart instanceof Date
+                                                ? day.periodStart.toISOString()
+                                                : day.periodStart,
+                                        periodEnd:
+                                            day.periodEnd instanceof Date
+                                                ? day.periodEnd.toISOString()
+                                                : day.periodEnd
                                     }));
                                 } else {
                                     normalizedExistingDoc[key] = existingDoc[key];
                                 }
                             }
 
+
                             // So sánh để quyết định cập nhật
-                            const isEqual = JSON.stringify(normalizedExistingDoc) === JSON.stringify(doc);
+                            const isEqual =
+                                JSON.stringify(normalizedExistingDoc) === JSON.stringify(doc);
                             if (!isEqual) {
                                 await collection.updateOne(
                                     { _id: restoredDoc._id },
                                     { $set: restoredDoc },
                                     { upsert: true }
                                 );
-                                console.log(`Cập nhật document trong ${collectionName}: ${restoredDoc._id}`);
+                                console.log(
+                                    `Cập nhật document trong ${collectionName}: ${restoredDoc._id}`
+                                );
                             } else {
-                                console.log(`Document với _id ${restoredDoc._id} trong ${collectionName} đã khớp, bỏ qua.`);
+                                console.log(
+                                    `Document với _id ${restoredDoc._id} trong ${collectionName} đã khớp, bỏ qua.`
+                                );
                             }
                         }
                     }
@@ -438,17 +573,18 @@ const restoreLatestBackup = async (req, res) => {
             }
         }
 
-        return res.status(200).json({ 
+
+        return res.status(200).json({
             success: true,
             message: "Phục hồi dữ liệu hoàn tất!",
-            restoredFile: latestFile 
+            restoredFile: latestFile
         });
     } catch (error) {
         console.error("Lỗi khi phục hồi từ file mới nhất:", error);
-        return res.status(500).json({ 
-            success: false, 
+        return res.status(500).json({
+            success: false,
             message: "Lỗi khi phục hồi dữ liệu từ file mới nhất!",
-            error: error.message 
+            error: error.message
         });
     }
 };
@@ -470,7 +606,7 @@ const restoreLatestBackup = async (req, res) => {
 
 //         const latestFile = files[0].name;
 //         const filePath = path.join(BACKUP_DIR, latestFile);
-        
+
 //         // Đọc dữ liệu từ file backup mới nhất
 //         const backupData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 
@@ -531,7 +667,5 @@ const restoreLatestBackup = async (req, res) => {
 //         return res.status(500).json({ message: "Lỗi khi phục hồi dữ liệu từ file mới nhất!" });
 //     }
 // };
-
-
 
 module.exports = { backupDatabase, cleanupOldBackups, restoreDatabase, downloadLatestBackup, restoreLatestBackup, createBackupFromMongoDB };
