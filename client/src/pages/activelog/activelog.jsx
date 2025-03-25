@@ -62,6 +62,7 @@ export function ActiveLogTable() {
           "endDate": endDate,
           "entityType": entityTypeFilter
         });
+        console.log("Response is",response)
         setLogs(response.data);
         setNumberOfPage(response.totalItem);
       } catch (error) {

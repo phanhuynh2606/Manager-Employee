@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import {
@@ -32,7 +32,7 @@ import { CheckCircleIcon, ClockIcon } from "@heroicons/react/24/solid";
 import { Square3Stack3DIcon } from "@heroicons/react/24/outline";
 import Chart from "react-apexcharts"
 import instance from "../../configs/axiosCustomize"
-import { func } from "prop-types";
+
 
 export default function StatisticEmployee() {
     const [total, setTotal] = React.useState(0);
@@ -45,7 +45,7 @@ export default function StatisticEmployee() {
     const [departmentCheckbox,setDepartmentCheckBox] = React.useState([]);
     const [postionCheckBox,setPositionCheckbox] = React.useState([]);
     const [position,setPosition] = React.useState([]);
-    
+    const [tempList,setTempList] = React.useState([])
     const getDataDepartment = async () => {
         try {
             const position = await instance.get("/positions"); 
@@ -56,19 +56,48 @@ export default function StatisticEmployee() {
             console.log(error)
         }
     }
+    const getSeniority = (list) =>{
+        const seniority = list.map((item)=>{
+            const seno = Date.now() - new Date(item.hireDate).getTime();
+            const years = seno / (1000 * 60 * 60 * 24 * 365)
+            let category = "";
+            if(years<1) {
+                category = "Dưới 1 năm"
+            }else if(years >=1 && seno<3) 
+                category= "Từ 1 đến 3 năm"
+            else if(years>=3 && seno <5) 
+                category = "Từ 3 đến 5 năm"    
+            else 
+                category = "Trên 5 năm"
+            return {
+                category:category
+            }
+        })
+        const groupedCategory = seniority.reduce((acc, item) => {
+            const existingCategory = acc.find(entry => entry.category === item.category);
+            if (existingCategory) {
+              existingCategory.number += 1;
+            } else {
+              acc.push({ category: item.category, number: 1 });
+            }
+            return acc;
+          }, []);
+          return groupedCategory
+    }
     const getDataEmployee = async () => {
         try {
-            const respone = await instance.post("/statistic/employee",{
-                department: departmentCheckbox.map((item,index) => item._id),
-                position: postionCheckBox.map((item) => item._id)
-            })
+            const respone = await instance.get("/statistic/employee")
             console.log(respone)
             setListEmployee(respone.listEmployee)
+            setTempList(respone.listEmployee)
             setTotal(respone.total)
             setTotalFemale(respone.totalFeMale)
             setTotalMale(respone.totalMale)
-            setSeniority(respone.seniority)
-            console.log(respone)
+           
+            const seniority = getSeniority(listEmployee)
+            console.log(seniority)
+            setSeniority(seniority)
+
         } catch (error) {
             console.log(error)
         }
@@ -76,7 +105,7 @@ export default function StatisticEmployee() {
     React.useEffect(() => {
         getDataEmployee();
         getDataDepartment();
-    }, [departmentCheckbox,postionCheckBox])
+    }, [])
 
     const checkBoxCheckDepartment = (item) => {
         setDepartmentCheckBox(prev => {
@@ -98,12 +127,12 @@ export default function StatisticEmployee() {
         })
     }
     const exportToExcel = () => {
-        if (listEmployee.length === 0) {
+        if (tempList.length === 0) {
             alert("Không có dữ liệu để xuất!");
             return;
         }
 
-        const data = listEmployee.map((item, index) => {
+        const data = tempList.map((item, index) => {
             const hireDate = new Date(item.hireDate);
             const formattedHireDate = hireDate.toLocaleString("vi-VN", {
                 day: "2-digit",
@@ -146,9 +175,31 @@ export default function StatisticEmployee() {
 
         saveAs(dataBlob, "Employee_List.xlsx");
     };
-    
-    
-    console.log("POSSS",postionCheckBox)
+    useEffect( () =>{
+        let list =[]
+        if(departmentCheckbox.length>0 || postionCheckBox.length>0) {
+            list = listEmployee.filter((item) => {
+                const isDepartmentValid = departmentCheckbox.length > 0 
+                    ? departmentCheckbox.some((dep) => dep._id == item.departmentId?._id) 
+                    : true;
+            
+                const isPositionValid = postionCheckBox.length > 0 
+                    ? postionCheckBox.some((pos) => pos._id == item.position) 
+                    : true;
+            
+                return isDepartmentValid && isPositionValid;
+            });
+        }else {
+            list= listEmployee
+        }
+        
+      setTempList(list)
+      setTotal(list.length)
+      setTotalFemale(list.filter((item)=> { return item.gender=="FEMALE"}).length)
+      setTotalMale(list.filter((item)=> { return item.gender=="MALE"}).length)
+      const seno = getSeniority(list)
+      setSeniority(seno)
+    },[departmentCheckbox,postionCheckBox])
     return (
         <>
         <Card>

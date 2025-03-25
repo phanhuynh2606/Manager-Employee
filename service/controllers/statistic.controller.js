@@ -7,56 +7,14 @@ const mongoose = require("mongoose")
 module.exports.statisticEmployee = async (req, res) => {
     try {
         const { department, position } = req.body;
-        let find = {};
-        if (department && department.length > 0) {
-            find.departmentId = { $in: department.map((id, index) => new mongoose.Types.ObjectId(id)) }
-        }
-        if (position && position.length > 0) {
-            find.position = { $in: position.map((id, index) => new mongoose.Types.ObjectId(id)) }
-        }
-        const totalEmployee = await Employee.countDocuments(find);
-        const totalMale = await Employee.countDocuments({ ...find, gender: "MALE" });
-        const totalFeMale = await Employee.countDocuments({ ...find, gender: "FEMALE" });
-        const hireDateStats = await Employee.aggregate([
-            {
-                $match: find
-            },
-            {
-                $addFields: {
-                    yearsOfExperience: {
-                        $subtract: [{ $year: "$$NOW" }, { $year: "$hireDate" }]
-                    }
-                }
-            },
-            {
-                $group: {
-                    _id: {
-                        category: {
-                            $switch: {
-                                branches: [
-                                    { case: { $lt: ["$yearsOfExperience", 1] }, then: "Dưới 1 năm" },
-                                    { case: { $lt: ["$yearsOfExperience", 3] }, then: "1 - 3 năm" },
-                                    { case: { $lt: ["$yearsOfExperience", 5] }, then: "3 - 5 năm" },
-
-                                ],
-                                default: "Trên 5 năm"
-                            }
-                        }
-                    },
-                    count: { $sum: 1 }
-                }
-            }
-        ]);
-
-        const seniority = hireDateStats.map((item, index) => {
-            return { category: item._id.category, number: item.count }
-        })
-        const listEmployee = await Employee.find(find).populate("departmentId");
+        const totalEmployee = await Employee.countDocuments();
+        const totalMale = await Employee.countDocuments({gender: "MALE" });
+        const totalFeMale = await Employee.countDocuments({ gender: "FEMALE" });
+        const listEmployee = await Employee.find().populate("departmentId");
         res.status(200).json({
             total: totalEmployee,
             totalMale: totalMale,
             totalFeMale: totalFeMale,
-            seniority: seniority,
             listEmployee: listEmployee
         })
     } catch (error) {
