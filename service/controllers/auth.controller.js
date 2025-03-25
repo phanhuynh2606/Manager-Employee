@@ -50,7 +50,7 @@ const authLogin = async (req, res) => {
         const cookieOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "Strict",
+            sameSite: "None",
             path: "/"
         };
 
@@ -108,7 +108,7 @@ const refreshAccessToken = async (req, res) => {
         res.cookie("accessToken", newAccessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "Strict",
+            sameSite: "None",
             path: "/",
             maxAge: 15 * 60 * 1000
         });
@@ -204,14 +204,14 @@ const authLogout = async (req, res) => {
         res.clearCookie("accessToken", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "Strict",
+            sameSite: "None",
             path: "/"
         });
 
         res.clearCookie("refreshToken", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "Strict",
+            sameSite: "None",
             path: "/"
         });
 

@@ -10,14 +10,14 @@ const port = process.env.PORT || 9000;
 const http = require('http');
 const { initSocket } = require('./config/socket');
 const server = http.createServer(app);
-app.use(cors(
-  {
-    origin: 'http://localhost:5173',
+app.use(
+  cors({
+    origin: "https://codemy.id.vn",
     credentials: true,
-    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Content-Disposition'],
-  }
-));
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization", "Content-Disposition"],
+  })
+);
 
 initSocket(server);
 app.use(express.json());
@@ -30,5 +30,5 @@ connectDB();
 initRoutes(app);
 
 server.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server is running on https://api.codemy.id.vn/${port}`);
 });
